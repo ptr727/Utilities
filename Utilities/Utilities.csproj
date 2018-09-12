@@ -3,6 +3,9 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Pieter Viljoen</Authors>
+    <Company>Viljoen Pieter</Company>
+    <Description>Generally useful utility classes</Description>
   </PropertyGroup>
 
 </Project>
