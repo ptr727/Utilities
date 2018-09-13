@@ -5,8 +5,8 @@ General utility classes.
 TODO.
 
 # Build and Test
-TODO. 
+[Dynamic Version Numbers](https://liftcodeplay.com/2017/11/17/build-and-deploy-a-net-core-2-0-or-net-standard-2-0-nuget-package-using-vsts/)
 
 # Contribute
 TODO. 
-[guidelines](https://www.visualstudio.com/en-us/docs/git/create-a-readme).
+[Examples](https://www.visualstudio.com/en-us/docs/git/create-a-readme).
