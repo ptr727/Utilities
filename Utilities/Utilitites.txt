@@ -1,4 +1,6 @@
-﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+﻿AssemblyInfo.tt:
+
+<#@ template debug="false" hostspecific="false" language="C#" #>
 <#@ output extension=".cs" #>
 <#
     // Major and minor version numbers
@@ -29,3 +31,26 @@ using System.Reflection;
 [assembly: AssemblyVersion("<#= $"{major}.{minor}.0.0" #>")]
 [assembly: AssemblyFileVersion("<#= $"{major}.{minor}.{build}.{revision}" #>")]
 [assembly: AssemblyInformationalVersion("<#= $"{major}.{minor}.{build}" #>")]
+
+
+Utilitites.csproj:
+
+<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+<GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+<GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+
+<ItemGroup>
+<None Update="AssemblyInfo.tt">
+    <Generator>TextTemplatingFileGenerator</Generator>
+    <LastGenOutput>AssemblyInfo.cs</LastGenOutput>
+</None>
+</ItemGroup>
+
+
+<ItemGroup>
+<Compile Update="AssemblyInfo.cs">
+    <DesignTime>True</DesignTime>
+    <AutoGen>True</AutoGen>
+    <DependentUpon>AssemblyInfo.tt</DependentUpon>
+</Compile>
+</ItemGroup>
