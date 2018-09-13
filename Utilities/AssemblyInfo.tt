@@ -10,10 +10,16 @@
     int build = (1000 * (buildTime.Year % 100)) + buildTime.DayOfYear;
     int revision = (100 * buildTime.Hour) + buildTime.Minute;
 
-	// Version
-    string version = $"{major}.{minor}.{build:000000}.{revision:0000}";
+	// See: 
+	// https://codingforsmarties.wordpress.com/2016/01/21/how-to-version-assemblies-destined-for-nuget/
+	// https://marketplace.visualstudio.com/items?itemName=kherzog.AssemblyInfoReader
+	// https://liftcodeplay.com/2017/11/17/build-and-deploy-a-net-core-2-0-or-net-standard-2-0-nuget-package-using-vsts/
+	// https://chordious.com/2017/01/10/what-the-chordious-version-numbers-mean/
+	// https://github.com/GitTools/GitVersion/issues/1231#issuecomment-310776762
+
  #>
 using System.Reflection;
 
-[assembly: AssemblyVersion("<#= version #>")]
-[assembly: AssemblyFileVersion("<#= version #>")]
+[assembly: AssemblyVersion("<#= $"{major}.0.0.0" #>")]
+[assembly: AssemblyFileVersion("<#= $"{major}.{minor}.{build:00000}.{revision:0000}" #>")]
+[assembly: AssemblyInformationalVersion("<#= $"{major}.{minor}.{build:00000}" #>")]
