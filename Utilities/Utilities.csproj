@@ -8,6 +8,7 @@
     <Description>Generally useful utility classes</Description>
     <Version>1.0.1</Version>
     <FileVersion>1.0.1.0</FileVersion>
+    <PackageId>InsaneGenius.Utilities</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
