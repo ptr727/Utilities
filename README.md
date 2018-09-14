@@ -1,5 +1,5 @@
 # Introduction
-General utility classes.
+General useful utility classes.
 
 # Getting Started
 TODO.
@@ -8,5 +8,4 @@ TODO.
 TODO.
 
 # Contribute
-TODO. 
-[Examples](https://www.visualstudio.com/en-us/docs/git/create-a-readme).
+TODO.
