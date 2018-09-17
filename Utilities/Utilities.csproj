@@ -9,6 +9,8 @@
     <Version>1.0.1</Version>
     <FileVersion>1.0.1.0</FileVersion>
     <PackageId>InsaneGenius.Utilities</PackageId>
+    <AssemblyName>InsaneGenius.Utilities</AssemblyName>
+    <RootNamespace>InsaneGenius.Utilities</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

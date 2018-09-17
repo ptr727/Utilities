@@ -2,7 +2,7 @@
 using System.IO;
 using System.Net;
 
-namespace Utilities
+namespace InsaneGenius.Utilities
 {
     public static class Download
     {
