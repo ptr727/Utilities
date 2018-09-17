@@ -1,20 +1,47 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace InsaneGenius.Utilities
 {
-    public static class FileEx
+    public class FileEx
     {
-        // Settings for file operations
-        public class Settings
+        public class CancelEx
         {
-            public Settings()
+            public CancelEx()
+            {
+                _cancelevent = new ManualResetEvent(false);
+            }
+
+            public bool Cancel
+            {
+                get => _cancelevent.WaitOne(0);
+                set
+                {
+                    // Signal or reset the event
+                    if (value)
+                        _cancelevent.Set();
+                    else
+                        _cancelevent.Reset();
+                }
+            }
+
+            public bool WaitForCancel(int milliseconds)
+            {
+                // Wait for event to be signalled
+                return _cancelevent.WaitOne(milliseconds);
+            }
+
+            private readonly ManualResetEvent _cancelevent;
+        }
+
+        // Settings for file operations
+        public class SettingsEx
+        {
+            public SettingsEx()
             {
                 Cancel = new CancelEx();
-
-                // Assign the default static object
-                Default = this;
             }
             public bool TestNoModify { get; set; }
             public CancelEx Cancel { get; }
@@ -24,28 +51,28 @@ namespace InsaneGenius.Utilities
             {
                 return Cancel.WaitForCancel(FileRetryWaitTime * 1000);
             }
-
-            public static Settings Default;
         }
+
+        public static SettingsEx Settings = new SettingsEx();
 
         // Delete file, and retry in case of failure
         public static bool DeleteFile(string filename)
         {
             // Test
-            if (Settings.Default.TestNoModify)
+            if (Settings.TestNoModify)
                 return true;
 
             bool result = false;
-            for (int retrycount = 0; retrycount < Settings.Default.FileRetryCount; retrycount++)
+            for (int retrycount = 0; retrycount < Settings.FileRetryCount; retrycount ++)
             {
                 // Break on cancel
-                if (Settings.Default.Cancel.Cancel)
+                if (Settings.Cancel.Cancel)
                     break;
 
                 // Try to delete the file
                 try
                 {
-                    ConsoleEx.WriteLine($"Deleting ({retrycount + 1} / {Settings.Default.FileRetryCount}) : \"{filename}\"");
+                    ConsoleEx.WriteLine($"Deleting ({retrycount + 1} / {Settings.FileRetryCount}) : \"{filename}\"");
                     if (File.Exists(filename))
                         File.Delete(filename);
                     result = true;
@@ -55,7 +82,7 @@ namespace InsaneGenius.Utilities
                 {
                     // Retry
                     ConsoleEx.WriteLineError(e.Message);
-                    Settings.Default.WaitForCancelFileRetry();
+                    Settings.WaitForCancelFileRetry();
                 }
                 catch (Exception e)
                 {
@@ -71,20 +98,20 @@ namespace InsaneGenius.Utilities
         public static bool DeleteDirectory(string directory)
         {
             // Test
-            if (Settings.Default.TestNoModify)
+            if (Settings.TestNoModify)
                 return true;
 
             bool result = false;
-            for (int retrycount = 0; retrycount < Settings.Default.FileRetryCount; retrycount++)
+            for (int retrycount = 0; retrycount < Settings.FileRetryCount; retrycount++)
             {
                 // Break on cancel
-                if (Settings.Default.Cancel.Cancel)
+                if (Settings.Cancel.Cancel)
                     break;
 
                 // Try to delete the directory
                 try
                 {
-                    ConsoleEx.WriteLine($"Deleting ({retrycount + 1} / {Settings.Default.FileRetryCount}) : \"{directory}\"");
+                    ConsoleEx.WriteLine($"Deleting ({retrycount + 1} / {Settings.FileRetryCount}) : \"{directory}\"");
                     if (Directory.Exists(directory))
                         Directory.Delete(directory);
                     result = true;
@@ -96,7 +123,7 @@ namespace InsaneGenius.Utilities
 
                     // Retry
                     ConsoleEx.WriteLineError(e.Message);
-                    Settings.Default.WaitForCancelFileRetry();
+                    Settings.WaitForCancelFileRetry();
                 }
                 catch (Exception e)
                 {
@@ -112,7 +139,7 @@ namespace InsaneGenius.Utilities
         public static bool RenameFile(string originalname, string newname)
         {
             // Test
-            if (Settings.Default.TestNoModify)
+            if (Settings.TestNoModify)
                 return true;
 
             // Split path components so we can use them for pretty printing
@@ -122,10 +149,10 @@ namespace InsaneGenius.Utilities
             string newfile = Path.GetFileName(newname);
 
             bool result = false;
-            for (int retrycount = 0; retrycount < Settings.Default.FileRetryCount; retrycount++)
+            for (int retrycount = 0; retrycount < Settings.FileRetryCount; retrycount++)
             {
                 // Break on cancel
-                if (Settings.Default.Cancel.Cancel)
+                if (Settings.Cancel.Cancel)
                     break;
 
                 // Try to rename the file
@@ -133,8 +160,8 @@ namespace InsaneGenius.Utilities
                 try
                 {
                     ConsoleEx.WriteLine(originaldirectory.Equals(newdirectory, StringComparison.OrdinalIgnoreCase)
-                        ? $"Renaming ({retrycount + 1} / {Settings.Default.FileRetryCount}) : \"{originaldirectory}\" : \"{originalfile}\" to \"{newfile}\""
-                        : $"Renaming ({retrycount + 1} / {Settings.Default.FileRetryCount}) : \"{originalname}\" to \"{newname}\"");
+                        ? $"Renaming ({retrycount + 1} / {Settings.FileRetryCount}) : \"{originaldirectory}\" : \"{originalfile}\" to \"{newfile}\""
+                        : $"Renaming ({retrycount + 1} / {Settings.FileRetryCount}) : \"{originalname}\" to \"{newname}\"");
                     if (File.Exists(newname))
                         File.Delete(newname);
                     File.Move(originalname, newname);
@@ -151,7 +178,7 @@ namespace InsaneGenius.Utilities
                 {
                     // Retry
                     ConsoleEx.WriteLineError(e.Message);
-                    Settings.Default.WaitForCancelFileRetry();
+                    Settings.WaitForCancelFileRetry();
                 }
                 catch (Exception e)
                 {
@@ -167,20 +194,20 @@ namespace InsaneGenius.Utilities
         public static bool RenameFolder(string originalname, string newname)
         {
             // Test
-            if (Settings.Default.TestNoModify)
+            if (Settings.TestNoModify)
                 return true;
 
             bool result = false;
-            for (int retrycount = 0; retrycount < Settings.Default.FileRetryCount; retrycount++)
+            for (int retrycount = 0; retrycount < Settings.FileRetryCount; retrycount++)
             {
                 // Break on cancel
-                if (Settings.Default.Cancel.Cancel)
+                if (Settings.Cancel.Cancel)
                     break;
 
                 // Try to move the folder
                 try
                 {
-                    ConsoleEx.WriteLine($"Renaming ({retrycount + 1} / {Settings.Default.FileRetryCount}) : \"{originalname}\" to \"{newname}\"");
+                    ConsoleEx.WriteLine($"Renaming ({retrycount + 1} / {Settings.FileRetryCount}) : \"{originalname}\" to \"{newname}\"");
                     if (Directory.Exists(newname))
                         DeleteDirectory(newname, true);
                     Directory.Move(originalname, newname);
@@ -197,7 +224,7 @@ namespace InsaneGenius.Utilities
                 {
                     // Retry
                     ConsoleEx.WriteLineError(e.Message);
-                    Settings.Default.WaitForCancelFileRetry();
+                    Settings.WaitForCancelFileRetry();
                 }
                 catch (Exception e)
                 {
@@ -286,16 +313,16 @@ namespace InsaneGenius.Utilities
         public static bool WaitFileReadAble(string filename)
         {
             bool result = false;
-            for (int retrycount = 0; retrycount < Settings.Default.FileRetryCount; retrycount++)
+            for (int retrycount = 0; retrycount < Settings.FileRetryCount; retrycount++)
             {
                 // Break on cancel
-                if (Settings.Default.Cancel.Cancel)
+                if (Settings.Cancel.Cancel)
                     break;
 
                 // Try to access the file
                 try
                 {
-                    ConsoleEx.WriteLine($"Waiting for file to become readable ({retrycount + 1} / {Settings.Default.FileRetryCount}) : \"{filename}\"");
+                    ConsoleEx.WriteLine($"Waiting for file to become readable ({retrycount + 1} / {Settings.FileRetryCount}) : \"{filename}\"");
                     FileInfo fileinfo = new FileInfo(filename);
                     FileStream stream = fileinfo.Open(FileMode.Open, FileAccess.Read, FileShare.None);
                     stream.Close();
@@ -306,7 +333,7 @@ namespace InsaneGenius.Utilities
                 {
                     // Retry
                     ConsoleEx.WriteLineError(e.Message);
-                    Settings.Default.WaitForCancelFileRetry();
+                    Settings.WaitForCancelFileRetry();
                 }
                 catch (Exception e)
                 {
