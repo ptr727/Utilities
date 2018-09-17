@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace Utilities
+namespace InsaneGenius.Utilities
 {
     public static class ConsoleEx
     {

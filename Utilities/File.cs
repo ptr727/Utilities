@@ -2,10 +2,32 @@
 using System.IO;
 using System.Linq;
 
-namespace Utilities
+namespace InsaneGenius.Utilities
 {
     public static class FileEx
     {
+        // Settings for file operations
+        public class Settings
+        {
+            public Settings()
+            {
+                Cancel = new CancelEx();
+
+                // Assign the default static object
+                Default = this;
+            }
+            public bool TestNoModify { get; set; }
+            public CancelEx Cancel { get; }
+            public int FileRetryCount { get; set; }
+            public int FileRetryWaitTime { get; set; }
+            public bool WaitForCancelFileRetry()
+            {
+                return Cancel.WaitForCancel(FileRetryWaitTime * 1000);
+            }
+
+            public static Settings Default;
+        }
+
         // Delete file, and retry in case of failure
         public static bool DeleteFile(string filename)
         {

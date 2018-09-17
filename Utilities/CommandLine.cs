@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Utilities
+namespace InsaneGenius.Utilities
 {
     public static class CommandLineEx
     {

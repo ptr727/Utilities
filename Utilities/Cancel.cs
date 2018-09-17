@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 
-namespace Utilities
+namespace InsaneGenius.Utilities
 {
     public class CancelEx
     {
