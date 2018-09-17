@@ -1,55 +1,25 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Threading;
 
 namespace InsaneGenius.Utilities
 {
     public class FileEx
     {
-        public class CancelEx
-        {
-            public CancelEx()
-            {
-                _cancelevent = new ManualResetEvent(false);
-            }
-
-            public bool Cancel
-            {
-                get => _cancelevent.WaitOne(0);
-                set
-                {
-                    // Signal or reset the event
-                    if (value)
-                        _cancelevent.Set();
-                    else
-                        _cancelevent.Reset();
-                }
-            }
-
-            public bool WaitForCancel(int milliseconds)
-            {
-                // Wait for event to be signalled
-                return _cancelevent.WaitOne(milliseconds);
-            }
-
-            private readonly ManualResetEvent _cancelevent;
-        }
-
         // Settings for file operations
         public class SettingsEx
         {
             public SettingsEx()
             {
-                Cancel = new CancelEx();
+                Cancel = new Signal();
             }
             public bool TestNoModify { get; set; }
-            public CancelEx Cancel { get; }
+            public Signal Cancel { get; }
             public int FileRetryCount { get; set; }
             public int FileRetryWaitTime { get; set; }
             public bool WaitForCancelFileRetry()
             {
-                return Cancel.WaitForCancel(FileRetryWaitTime * 1000);
+                return Cancel.WaitForSet(FileRetryWaitTime * 1000);
             }
         }
 
@@ -66,7 +36,7 @@ namespace InsaneGenius.Utilities
             for (int retrycount = 0; retrycount < Settings.FileRetryCount; retrycount ++)
             {
                 // Break on cancel
-                if (Settings.Cancel.Cancel)
+                if (Settings.Cancel.State)
                     break;
 
                 // Try to delete the file
@@ -105,7 +75,7 @@ namespace InsaneGenius.Utilities
             for (int retrycount = 0; retrycount < Settings.FileRetryCount; retrycount++)
             {
                 // Break on cancel
-                if (Settings.Cancel.Cancel)
+                if (Settings.Cancel.State)
                     break;
 
                 // Try to delete the directory
@@ -152,7 +122,7 @@ namespace InsaneGenius.Utilities
             for (int retrycount = 0; retrycount < Settings.FileRetryCount; retrycount++)
             {
                 // Break on cancel
-                if (Settings.Cancel.Cancel)
+                if (Settings.Cancel.State)
                     break;
 
                 // Try to rename the file
@@ -201,7 +171,7 @@ namespace InsaneGenius.Utilities
             for (int retrycount = 0; retrycount < Settings.FileRetryCount; retrycount++)
             {
                 // Break on cancel
-                if (Settings.Cancel.Cancel)
+                if (Settings.Cancel.State)
                     break;
 
                 // Try to move the folder
@@ -316,7 +286,7 @@ namespace InsaneGenius.Utilities
             for (int retrycount = 0; retrycount < Settings.FileRetryCount; retrycount++)
             {
                 // Break on cancel
-                if (Settings.Cancel.Cancel)
+                if (Settings.Cancel.State)
                     break;
 
                 // Try to access the file
