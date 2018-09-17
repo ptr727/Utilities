@@ -7,7 +7,7 @@ namespace InsaneGenius.Utilities
     {
         public static void WriteLineColor(ConsoleColor color, string value)
         {
-            lock (_writelinelock)
+            lock (WriteLineLock)
             {
                 ConsoleColor oldcolor = Console.ForegroundColor;
                 Console.ForegroundColor = color;
@@ -72,7 +72,7 @@ namespace InsaneGenius.Utilities
                 }
         */
 
-        private static object _writelinelock = new object();
+        private static readonly object WriteLineLock = new object();
 
         public const ConsoleColor ToolColor = ConsoleColor.Green;
         public const ConsoleColor ErrorColor = ConsoleColor.Red;

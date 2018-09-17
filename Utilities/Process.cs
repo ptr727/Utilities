@@ -103,7 +103,7 @@ namespace InsaneGenius.Utilities
             int exitcode = process.ExecuteEx(executable, parameters);
 
             // Restore console color
-            Console.ForegroundColor = _originalcolor;
+            Console.ForegroundColor = OriginalColor;
             return exitcode;
         }
 
@@ -122,7 +122,7 @@ namespace InsaneGenius.Utilities
             output = process.OutputText;
 
             // Restore console color
-            Console.ForegroundColor = _originalcolor;
+            Console.ForegroundColor = OriginalColor;
             return exitcode;
         }
 
@@ -144,13 +144,13 @@ namespace InsaneGenius.Utilities
             error = process.ErrorText;
 
             // Restore console color
-            Console.ForegroundColor = _originalcolor;
+            Console.ForegroundColor = OriginalColor;
             return exitcode;
         }
 
-        private StringBuilder _outputtext;
-        private StringBuilder _errortext;
+        private readonly StringBuilder _outputtext;
+        private readonly StringBuilder _errortext;
         private string _processname;
-        private static ConsoleColor _originalcolor = Console.ForegroundColor;
+        private static readonly ConsoleColor OriginalColor = Console.ForegroundColor;
     }
 }
