@@ -105,6 +105,17 @@ namespace InsaneGenius.Utilities
             return result;
         }
 
+        // Recursively delete the directory and files
+        public static bool DeleteDirectory(string directory, bool recursive)
+        {
+            // Just delete the directory, will fail if not empty
+            if (!recursive)
+                return DeleteDirectory(directory);
+
+            // Recursively delete inside the directory and the directory
+            return DeleteInsideDirectory(directory) && DeleteDirectory(directory);
+        }
+
         // Rename file, and retry in case of failure
         public static bool RenameFile(string originalname, string newname)
         {
@@ -232,6 +243,10 @@ namespace InsaneGenius.Utilities
         // Recursively delete all the files and directories inside the directory
         public static bool DeleteInsideDirectory(string directory)
         {
+            // Skip if directory does not exist
+            if (!Directory.Exists(directory))
+                return true;
+
             // Delete all files in this directory
             DirectoryInfo parentinfo = new DirectoryInfo(directory);
             if (parentinfo.GetFiles().Any(fileinfo => !DeleteFile(fileinfo.FullName)))
@@ -252,17 +267,6 @@ namespace InsaneGenius.Utilities
             }
 
             return true;
-        }
-
-        // Recursively delete the directory and files
-        public static bool DeleteDirectory(string directory, bool recursive)
-        {
-            // Just delete the directory, will fail if not empty
-            if (!recursive)
-                return DeleteDirectory(directory);
-
-            // Recursively delete inside the directory and the directory
-            return DeleteInsideDirectory(directory) && DeleteDirectory(directory);
         }
 
         public static bool IsFileReadable(string filename)
