@@ -2,7 +2,10 @@
 
 // Generated code
 // https://msdn.microsoft.com/en-us/library/dd820620.aspx
+using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 
 namespace InsaneGenius.Utilities
 {
@@ -26,6 +29,54 @@ namespace InsaneGenius.Utilities
         public string RefName { get; set; }
         // Comment relating to one or more of the columns
         public string Comment { get; set; }
+
+        public static Iso6393 FromString(string language, List<Iso6393> iso6393list)
+        {
+            // Match the input string type
+            Iso6393 lang;
+            if (language.Length > 3 && language.ElementAt(2) == '-')
+            {
+                // Treat the language as a culture form, e.g. en-us
+                CultureInfo cix = new CultureInfo(language);
+
+                // Recursively call using the ISO 639-2 code
+                return FromString(cix.ThreeLetterISOLanguageName, iso6393list);
+            }
+            if (language.Length > 3)
+            {
+                // Try long form
+                lang = iso6393list.FirstOrDefault(item => item.RefName.Equals(language, StringComparison.OrdinalIgnoreCase));
+                if (lang != null)
+                    return lang;
+            }
+            if (language.Length == 3)
+            {
+                // Try 639-3
+                lang = iso6393list.FirstOrDefault(item => item.Id.Equals(language, StringComparison.OrdinalIgnoreCase));
+                if (lang != null)
+                    return lang;
+
+                // Try the 639-2/B
+                lang = iso6393list.FirstOrDefault(item => item.Part2B.Equals(language, StringComparison.OrdinalIgnoreCase));
+                if (lang != null)
+                    return lang;
+
+                // Try the 639-2/T
+                lang = iso6393list.FirstOrDefault(item => item.Part2T.Equals(language, StringComparison.OrdinalIgnoreCase));
+                if (lang != null)
+                    return lang;
+            }
+            if (language.Length == 2)
+            {
+                // Try 639-1
+                lang = iso6393list.FirstOrDefault(item => item.Part1.Equals(language, StringComparison.OrdinalIgnoreCase));
+                if (lang != null)
+                    return lang;
+            }
+
+            // Not found
+            return null;
+        }
 
 		// Create a list of all known codes
 		public static List<Iso6393> Create()
