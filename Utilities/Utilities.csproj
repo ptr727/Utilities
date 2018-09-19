@@ -6,21 +6,31 @@
     <Authors>Pieter Viljoen</Authors>
     <Company>Pieter Viljoen</Company>
     <Description>Generally useful utility classes</Description>
-    <Version>1.0.2</Version>
-    <FileVersion>1.0.2.0</FileVersion>
+    <Version>1.0.3</Version>
+    <FileVersion>1.0.3.0</FileVersion>
     <PackageId>InsaneGenius.Utilities</PackageId>
     <AssemblyName>InsaneGenius.Utilities</AssemblyName>
     <RootNamespace>InsaneGenius.Utilities</RootNamespace>
-    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
     <NeutralLanguage>en</NeutralLanguage>
+    <PackageProjectUrl>https://dev.azure.com/pieterv/</PackageProjectUrl>
+    <Copyright>Pieter Viljoen</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="TODO.txt" />
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
 
   <ItemGroup>
-    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+    <None Update="ISO-639-3.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ISO-639-3.cs</LastGenOutput>
+    </None>
+    <Compile Update="ISO-639-3.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ISO-639-3.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   
 </Project>
