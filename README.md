@@ -1,5 +1,5 @@
 # Introduction
-General useful utility classes.
+General useful utility classes and projects.
 
 # Getting Started
 TODO.
