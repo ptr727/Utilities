@@ -7,8 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utilities", "Utilities\Util
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C02ADEE0-B2CB-465B-912B-41D102239980}"
 	ProjectSection(SolutionItems) = preProject
+		Utilities\ISO-639-3.tab = Utilities\ISO-639-3.tab
 		README.md = README.md
-		Utilities\TODO.txt = Utilities\TODO.txt
+		TODO.txt = TODO.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EchoArgs", "EchoArgs\EchoArgs.csproj", "{DF539822-EDB5-40D5-B066-68A4536039A2}"
