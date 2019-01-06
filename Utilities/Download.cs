@@ -13,11 +13,15 @@ namespace InsaneGenius.Utilities
             try
             {
                 // Get the file details
-                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-                req.Method = "HEAD";
-                HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
-                size = resp.ContentLength;
-                modifiedtime = resp.LastModified;
+                WebRequest request = WebRequest.Create(url);
+                request.Method = "HEAD";
+                WebResponse response = request.GetResponse();
+                size = response.ContentLength;
+                if (response.GetType() == typeof(HttpWebResponse))
+                {
+                    HttpWebResponse httpresponse = (HttpWebResponse)response;
+                    modifiedtime = httpresponse.LastModified;
+                }
             }
             catch (Exception e)
             {
@@ -36,28 +40,31 @@ namespace InsaneGenius.Utilities
         {
             try
             {
-                // Open web request with timeout and credentials if set
-                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-                req.Timeout = Timeout;
-                req.ReadWriteTimeout = req.Timeout;
+                // Open request with timeout and credentials if set
+                WebRequest request = WebRequest.Create(url);
+                request.Timeout = Timeout;
+                if (request.GetType() == typeof(HttpWebRequest))
+                {
+                    HttpWebRequest httprequest = (HttpWebRequest)request;
+                    httprequest.ReadWriteTimeout = request.Timeout;
+                }
                 if (string.IsNullOrEmpty(username) == false || string.IsNullOrEmpty(password) == false)
                 {
-                    req.Credentials = new NetworkCredential(username, password);
+                    request.Credentials = new NetworkCredential(username, password);
                 }
 
                 // Get the response
-                HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
-                Stream wstrm = resp.GetResponseStream();
-                if (wstrm == null) throw new ArgumentNullException(nameof(wstrm));
+                WebResponse response = request.GetResponse();
+                Stream webstream = response.GetResponseStream();
+                if (webstream == null) throw new ArgumentNullException(nameof(webstream));
 
                 // Write response to file
-                using (FileStream fstrm = File.OpenWrite(filename))
+                using (FileStream filestream = File.OpenWrite(filename))
                 {
-                    wstrm.CopyTo(fstrm);
-                    fstrm.Close();
-                    wstrm.Close();
+                    webstream.CopyTo(filestream);
+                    filestream.Close();
+                    webstream.Close();
                 }
-
             }
             catch (Exception e)
             {
