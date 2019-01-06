@@ -29,12 +29,23 @@ namespace InsaneGenius.Utilities
 
         public static bool DownloadFile(string url, string filename)
         {
+            return DownloadFile(url, null, null, filename);
+        }
+
+        public static bool DownloadFile(string url, string username, string password, string filename)
+        {
             try
             {
-                // Open web request with timeout
+                // Open web request with timeout and credentials if set
                 HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-                req.Timeout = 15 * 1000;
+                req.Timeout = Timeout;
                 req.ReadWriteTimeout = req.Timeout;
+                if (string.IsNullOrEmpty(username) == false || string.IsNullOrEmpty(password) == false)
+                {
+                    req.Credentials = new NetworkCredential(username, password);
+                }
+
+                // Get the response
                 HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
                 Stream wstrm = resp.GetResponseStream();
                 if (wstrm == null) throw new ArgumentNullException(nameof(wstrm));
@@ -46,6 +57,7 @@ namespace InsaneGenius.Utilities
                     fstrm.Close();
                     wstrm.Close();
                 }
+
             }
             catch (Exception e)
             {
@@ -55,5 +67,6 @@ namespace InsaneGenius.Utilities
             return true;
         }
 
+        const int Timeout = 15 * 1000;
     }
 }

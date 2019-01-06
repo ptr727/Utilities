@@ -6,12 +6,12 @@
     <Authors>Pieter Viljoen</Authors>
     <Company>Pieter Viljoen</Company>
     <Description>Generally useful utility classes</Description>
-    <Version>1.0.3</Version>
-    <FileVersion>1.0.3.0</FileVersion>
+    <Version>1.0.4</Version>
+    <FileVersion>1.0.4.0</FileVersion>
     <PackageId>InsaneGenius.Utilities</PackageId>
     <AssemblyName>InsaneGenius.Utilities</AssemblyName>
     <RootNamespace>InsaneGenius.Utilities</RootNamespace>
-    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <AssemblyVersion>1.0.4.0</AssemblyVersion>
     <NeutralLanguage>en</NeutralLanguage>
     <PackageProjectUrl>https://dev.azure.com/pieterv/</PackageProjectUrl>
     <Copyright>Pieter Viljoen</Copyright>
