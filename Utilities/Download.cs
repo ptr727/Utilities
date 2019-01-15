@@ -13,7 +13,7 @@ namespace InsaneGenius.Utilities
             try
             {
                 // Get the file details
-                WebRequest request = WebRequest.Create(url);
+                WebRequest request = WebRequest.Create(Uri.EscapeUriString(url));
                 request.Method = "HEAD";
                 WebResponse response = request.GetResponse();
                 size = response.ContentLength;
@@ -41,7 +41,7 @@ namespace InsaneGenius.Utilities
             try
             {
                 // Open request with timeout and credentials if set
-                WebRequest request = WebRequest.Create(url);
+                WebRequest request = WebRequest.Create(Uri.EscapeUriString(url));
                 request.Timeout = Timeout;
                 if (request.GetType() == typeof(HttpWebRequest))
                 {
@@ -74,6 +74,6 @@ namespace InsaneGenius.Utilities
             return true;
         }
 
-        const int Timeout = 15 * 1000;
+        const int Timeout = 30 * 1000;
     }
 }
