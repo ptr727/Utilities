@@ -8,17 +8,20 @@
     <Description>Generally useful utility classes</Description>
     <Version>1.0.5</Version>
     <FileVersion>1.0.5.0</FileVersion>
+    <AssemblyVersion>1.0.5.0</AssemblyVersion>
     <PackageId>InsaneGenius.Utilities</PackageId>
     <AssemblyName>InsaneGenius.Utilities</AssemblyName>
     <RootNamespace>InsaneGenius.Utilities</RootNamespace>
-    <AssemblyVersion>1.0.5.0</AssemblyVersion>
     <NeutralLanguage>en</NeutralLanguage>
     <PackageProjectUrl>https://dev.azure.com/pieterv/</PackageProjectUrl>
     <Copyright>Pieter Viljoen</Copyright>
+<!-- Azure DevOps does not yet support snupkgs:
+     https://github.com/dotnet/sourcelink/issues/230
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>  
+-->
   </PropertyGroup>
   
   <ItemGroup>
