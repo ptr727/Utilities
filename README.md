@@ -16,59 +16,6 @@ https://dev.azure.com/pieterv/Utilities
 https://dev.azure.com/pieterv/Utilities
 
 # TODO
-AssemblyInfo.tt:
-
-<#@ template debug="false" hostspecific="false" language="C#" #>
-<#@ output extension=".cs" #>
-<#
-    // Major and minor version numbers
-	int major = 1;
-    int minor = 0;
-
-    // Set build to year + day of year
-    DateTime buildTime = DateTime.UtcNow;
-    int build = buildTime.Year + buildTime.DayOfYear;
-    // Set revision to seconds elapsed in day
-    // 86400 seconds per day, but version must be less than 65535, so divide by 2
-    TimeSpan sinceMidnight = DateTime.UtcNow - DateTime.UtcNow.Date;
-    int revision = Convert.ToInt32(sinceMidnight.TotalSeconds / 2.0);
-
-	// See: 
-	// https://codingforsmarties.wordpress.com/2016/01/21/how-to-version-assemblies-destined-for-nuget/
-	// https://marketplace.visualstudio.com/items?itemName=kherzog.AssemblyInfoReader
-	// https://liftcodeplay.com/2017/11/17/build-and-deploy-a-net-core-2-0-or-net-standard-2-0-nuget-package-using-vsts/
-	// https://chordious.com/2017/01/10/what-the-chordious-version-numbers-mean/
-	// https://github.com/GitTools/GitVersion/issues/1231#issuecomment-310776762
-	// https://marketplace.visualstudio.com/items?itemName=richardfennellBM.BM-VSTS-Versioning-Task#overview
-	// https://marketplace.visualstudio.com/items?itemName=sebastianlux.UpdateAssemblyInfo
-
-
- #>
-using System.Reflection;
-
-[assembly: AssemblyVersion("<#= $"{major}.{minor}.0.0" #>")]
-[assembly: AssemblyFileVersion("<#= $"{major}.{minor}.{build}.{revision}" #>")]
-[assembly: AssemblyInformationalVersion("<#= $"{major}.{minor}.{build}" #>")]
-
-
-Utilitites.csproj:
-
-<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-<GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
-<GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-
-<ItemGroup>
-<None Update="AssemblyInfo.tt">
-    <Generator>TextTemplatingFileGenerator</Generator>
-    <LastGenOutput>AssemblyInfo.cs</LastGenOutput>
-</None>
-</ItemGroup>
-
-
-<ItemGroup>
-<Compile Update="AssemblyInfo.cs">
-    <DesignTime>True</DesignTime>
-    <AutoGen>True</AutoGen>
-    <DependentUpon>AssemblyInfo.tt</DependentUpon>
-</Compile>
-</ItemGroup>
+- Build the TT file in the build pipeline, currently only visual Studio will run the TT generator.
+- Update the version numbers in the version manifest at build time, currently a custom step in the pipeline updates the manifest version.
+- Add NuGet symbol support, see https://github.com/dotnet/sourcelink/issues/230
