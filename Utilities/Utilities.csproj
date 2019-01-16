@@ -17,11 +17,12 @@
     <Copyright>Pieter Viljoen</Copyright>
 <!-- Azure DevOps does not yet support snupkgs:
      https://github.com/dotnet/sourcelink/issues/230
+-->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>  
--->
+
   </PropertyGroup>
   
   <ItemGroup>
