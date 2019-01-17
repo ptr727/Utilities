@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Authors>Pieter Viljoen</Authors>
+    <Company>Pieter Viljoen</Company>
+    <Copyright>Pieter Viljoen</Copyright>
+    <Description>Generally useful utility classes</Description>
+    <Version>1.1.0.1</Version>
+    <FileVersion>1.1.0.1</FileVersion>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <PackageId>InsaneGenius.Utilities.Tests</PackageId>
+    <AssemblyName>InsaneGenius.Utilities.Tests</AssemblyName>
+    <RootNamespace>InsaneGenius.Utilities.Tests</RootNamespace>
+    <NeutralLanguage>en</NeutralLanguage>
+    <PackageProjectUrl>https://dev.azure.com/pieterv/</PackageProjectUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Utilities\Utilities.csproj" />
+  </ItemGroup>
+
+</Project>
