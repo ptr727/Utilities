@@ -352,5 +352,20 @@ namespace InsaneGenius.Utilities
             }
             return true;
         }
+
+        // Combine paths and remove any extra root separators
+        // Default Path.Combine() logic will treat rooted paths as only path
+        public static string CombinePath(string path1, string path2)
+        {
+            // Trim roots from second path
+            if (Path.IsPathRooted(path2))
+            {
+                path2 = path2.TrimStart(Path.DirectorySeparatorChar);
+                path2 = path2.TrimStart(Path.AltDirectorySeparatorChar);
+            }
+            // Combine using normal logic, after stripping roots
+            return Path.Combine(path1, path2);
+        }
+
     }
 }
