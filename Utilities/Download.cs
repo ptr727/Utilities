@@ -6,21 +6,21 @@ namespace InsaneGenius.Utilities
 {
     public static class Download
     {
-        public static bool GetContentInfo(string url, out long size, out DateTime modifiedtime)
+        public static bool GetContentInfo(string url, out long size, out DateTime modifiedTime)
         {
             size = 0;
-            modifiedtime = DateTime.MinValue;
+            modifiedTime = DateTime.MinValue;
             try
             {
                 // Get the file details
-                WebRequest request = WebRequest.Create(Uri.EscapeUriString(url));
+                WebRequest request = WebRequest.Create(url);
                 request.Method = "HEAD";
                 WebResponse response = request.GetResponse();
                 size = response.ContentLength;
                 if (response.GetType() == typeof(HttpWebResponse))
                 {
                     HttpWebResponse httpresponse = (HttpWebResponse)response;
-                    modifiedtime = httpresponse.LastModified;
+                    modifiedTime = httpresponse.LastModified;
                 }
             }
             catch (Exception e)
@@ -40,8 +40,8 @@ namespace InsaneGenius.Utilities
         {
             try
             {
-                // Open request with timeout and credentials if set
-                WebRequest request = WebRequest.Create(Uri.EscapeUriString(url));
+                // Open request with timeout and credentials
+                WebRequest request = WebRequest.Create(url);
                 request.Timeout = Timeout;
                 if (request.GetType() == typeof(HttpWebRequest))
                 {
