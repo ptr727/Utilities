@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace InsaneGenius.Utilities
 {
-    public class FileEx
+    public static class FileEx
     {
         // Settings for file operations
         public class FileExOptions
