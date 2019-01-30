@@ -7,8 +7,8 @@ namespace InsaneGenius.Utilities.Tests
         [Fact]
         public void ParseArguments_Split()
         {
-            string input = @"/src:""C:\tmp\Some Folder\Sub Folder"" /users:""abcdefg@hijkl.com"" tasks:""SomeTask,Some Other Task"" -someParam foo D:\";
-            string[] expected = new string[] 
+            const string input = @"/src:""C:\tmp\Some Folder\Sub Folder"" /users:""abcdefg@hijkl.com"" tasks:""SomeTask,Some Other Task"" -someParam foo D:\";
+            string[] expected =  
             {
                 @"/src:""C:\tmp\Some Folder\Sub Folder""",
                 @"/users:""abcdefg@hijkl.com""",
