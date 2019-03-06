@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -269,6 +270,7 @@ namespace InsaneGenius.Utilities
             return true;
         }
 
+        // Try to open the file for read access
         public static bool IsFileReadable(string filename)
         {
             try
@@ -282,6 +284,7 @@ namespace InsaneGenius.Utilities
             }
         }
 
+        // Wait for the file to become readable
         public static bool WaitFileReadAble(string filename)
         {
             bool result = false;
@@ -317,6 +320,7 @@ namespace InsaneGenius.Utilities
             return result;
         }
 
+        // Try to open the file for read access
         public static bool IsFileReadable(FileInfo fileinfo)
         {
             try
@@ -331,6 +335,7 @@ namespace InsaneGenius.Utilities
             return true;
         }
 
+        // Test if all files in the directory are readable
         public static bool AreFilesInDirectoryReadable(string directory)
         {
             // Test each file in directory for readability
@@ -338,6 +343,7 @@ namespace InsaneGenius.Utilities
             return dirinfo.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly).All(IsFileReadable);
         }
 
+        // Create directory if it does not already exists
         public static bool CreateDirectory(string directory)
         {
             try
@@ -367,5 +373,49 @@ namespace InsaneGenius.Utilities
             return Path.Combine(path1, path2);
         }
 
+        // Enumerate all files and directories in the list of source directories
+        // The source directories will be added to the directory list
+        public static bool EnumerateDirectories(List<string> sourceList, out List<FileInfo> fileList, out List<DirectoryInfo> directoryList)
+        {
+            directoryList = new List<DirectoryInfo>();
+            fileList = new List<FileInfo>();
+
+            try
+            {
+                // Add all directories and files from the list of folders
+                foreach (string folder in sourceList)
+                {
+                    // Add this folder to the directory list
+                    DirectoryInfo dirinfo = new DirectoryInfo(folder);
+                    directoryList.Add(dirinfo);
+
+                    // Recursively add all child folders
+                    directoryList.AddRange(dirinfo.EnumerateDirectories("*", SearchOption.AllDirectories));
+                }
+
+                // Add all files from all the directories to the file list
+                foreach (DirectoryInfo dirinfo in directoryList)
+                {
+                    // Add all files in this folder
+                    fileList.AddRange(dirinfo.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly));
+                }
+            }
+            catch (Exception e)
+            {
+                ConsoleEx.WriteLineError(e);
+                return false;
+            }
+
+            return true;
+        }
+
+        // Enumerate all files and directories in the directory
+        // This directory  will be added to the directory list
+        public static bool EnumerateDirectory(string directory, out List<FileInfo> fileList, out List<DirectoryInfo> directoryList)
+        {
+            List<string> sourceList = new List<string>();
+            sourceList.Add(directory);
+            return EnumerateDirectories(sourceList, out fileList, out directoryList);
+        }
     }
 }
