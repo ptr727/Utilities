@@ -45,7 +45,13 @@ namespace InsaneGenius.Utilities
                 {
                     ConsoleEx.WriteLine($"Deleting ({retrycount + 1} / {Options.FileRetryCount}) : \"{filename}\"");
                     if (File.Exists(filename))
+                    {
+                        // Reset attributes, e.g. in case of read-only
+                        File.SetAttributes(filename, FileAttributes.Normal);
+
+                        // Delete the file
                         File.Delete(filename);
+                    }
                     result = true;
                     break;
                 }
@@ -84,7 +90,13 @@ namespace InsaneGenius.Utilities
                 {
                     ConsoleEx.WriteLine($"Deleting ({retrycount + 1} / {Options.FileRetryCount}) : \"{directory}\"");
                     if (Directory.Exists(directory))
+                    {
+                        // Reset attributes, e.g. in case of read-only
+                        File.SetAttributes(directory, FileAttributes.Normal);
+
+                        // Delete the folder
                         Directory.Delete(directory);
+                    }
                     result = true;
                     break;
                 }
