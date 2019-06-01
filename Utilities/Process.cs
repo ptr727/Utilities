@@ -15,7 +15,7 @@ namespace InsaneGenius.Utilities
             RedirectError = false;
             PrintError = false;
             _errortext = new StringBuilder();
-            _processname = String.Empty;
+            _processname = string.Empty;
         }
 
         public int ExecuteEx(string executable, string parameters)
@@ -68,7 +68,7 @@ namespace InsaneGenius.Utilities
 
         private static void OutputHandler(DataReceivedEventArgs e, ProcessEx redirected)
         {
-            if (String.IsNullOrEmpty(e.Data))
+            if (string.IsNullOrEmpty(e.Data))
                 return;
 
             redirected._outputtext.AppendLine(e.Data);
@@ -78,7 +78,7 @@ namespace InsaneGenius.Utilities
 
         private static void ErrorHandler(DataReceivedEventArgs e, ProcessEx redirected)
         {
-            if (String.IsNullOrEmpty(e.Data))
+            if (string.IsNullOrEmpty(e.Data))
                 return;
 
             redirected._errortext.AppendLine(e.Data);

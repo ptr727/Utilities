@@ -74,6 +74,6 @@ namespace InsaneGenius.Utilities
             return true;
         }
 
-        const int Timeout = 30 * 1000;
+        private const int Timeout = 30 * 1000;
     }
 }
