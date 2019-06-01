@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
+using System.Security.Principal;
 
 namespace InsaneGenius.Utilities
 {
@@ -45,13 +47,7 @@ namespace InsaneGenius.Utilities
                 {
                     ConsoleEx.WriteLine($"Deleting ({retrycount + 1} / {Options.FileRetryCount}) : \"{filename}\"");
                     if (File.Exists(filename))
-                    {
-                        // Reset attributes, e.g. in case of read-only
-                        File.SetAttributes(filename, FileAttributes.Normal);
-
-                        // Delete the file
                         File.Delete(filename);
-                    }
                     result = true;
                     break;
                 }
@@ -90,13 +86,7 @@ namespace InsaneGenius.Utilities
                 {
                     ConsoleEx.WriteLine($"Deleting ({retrycount + 1} / {Options.FileRetryCount}) : \"{directory}\"");
                     if (Directory.Exists(directory))
-                    {
-                        // Reset attributes, e.g. in case of read-only
-                        File.SetAttributes(directory, FileAttributes.Normal);
-
-                        // Delete the folder
                         Directory.Delete(directory);
-                    }
                     result = true;
                     break;
                 }
@@ -381,6 +371,7 @@ namespace InsaneGenius.Utilities
                 path2 = path2.TrimStart(Path.DirectorySeparatorChar);
                 path2 = path2.TrimStart(Path.AltDirectorySeparatorChar);
             }
+            
             // Combine using normal logic, after stripping roots
             return Path.Combine(path1, path2);
         }
@@ -425,9 +416,35 @@ namespace InsaneGenius.Utilities
         // This directory  will be added to the directory list
         public static bool EnumerateDirectory(string directory, out List<FileInfo> fileList, out List<DirectoryInfo> directoryList)
         {
-            List<string> sourceList = new List<string>();
-            sourceList.Add(directory);
+            List<string> sourceList = new List<string> {directory};
             return EnumerateDirectories(sourceList, out fileList, out directoryList);
+        }
+
+        // Reset permissions on the directory
+        // Grant everyone full control
+        public static bool ResetDirectoryPermissions(string directory)
+        {
+            // Test
+            if (Options.TestNoModify)
+                return true;
+
+            try
+            {
+                // Grant everyone full control
+                DirectoryInfo di = new DirectoryInfo(directory);
+                SecurityIdentifier everyone = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
+                FileSystemAccessRule fsar = new FileSystemAccessRule(everyone, FileSystemRights.FullControl, AccessControlType.Allow);
+                DirectorySecurity ds = di.GetAccessControl();
+                ds.AddAccessRule(fsar);
+                di.SetAccessControl(ds);
+            }
+            catch (Exception e)
+            {
+                ConsoleEx.WriteLineError(e);
+                return false;
+            }
+
+            return true;
         }
     }
 }
