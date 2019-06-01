@@ -11,7 +11,7 @@ namespace InsaneGenius.Utilities
             {
                 ConsoleColor oldcolor = Console.ForegroundColor;
                 Console.ForegroundColor = color;
-                Console.WriteLine(String.IsNullOrEmpty(value) ? $"{value}" : $"{DateTime.Now.ToString(CultureInfo.CurrentCulture)} : {value}");
+                Console.WriteLine(string.IsNullOrEmpty(value) ? $"{value}" : $"{DateTime.Now.ToString(CultureInfo.CurrentCulture)} : {value}");
                 Console.ForegroundColor = oldcolor;
             }
         }
