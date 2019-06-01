@@ -20,3 +20,4 @@ https://dev.azure.com/pieterv/Utilities
 - Build the TT file in the build pipeline, currently only visual Studio will run the TT generator.
 - Update the version numbers in the version manifest at build time, currently a custom step in the pipeline updates the manifest version.
 - Add NuGet symbol support, see https://github.com/dotnet/sourcelink/issues/230
+- Add file and directory permission recovery logic when delete fails
