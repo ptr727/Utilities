@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Pieter Viljoen</Authors>
     <Company>Pieter Viljoen</Company>
@@ -22,9 +22,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.IO.FileSystem.AccessControl" Version="4.5.0" />
-    <PackageReference Include="System.Security.AccessControl" Version="4.5.0" />
-    <PackageReference Include="System.Security.Principal.Windows" Version="4.5.1" />
+    <PackageReference Include="System.IO.FileSystem.AccessControl" Version="4.7.0" />
+    <PackageReference Include="System.Security.AccessControl" Version="4.7.0" />
+    <PackageReference Include="System.Security.Principal.Windows" Version="4.7.0" />
   </ItemGroup>
   
   <ItemGroup>
