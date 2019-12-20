@@ -26,7 +26,7 @@ namespace InsaneGenius.Utilities
             }
         }
 
-        public static FileExOptions Options = new FileExOptions();
+        public static readonly FileExOptions Options = new FileExOptions();
 
         // Delete file, and retry in case of failure
         public static bool DeleteFile(string filename)

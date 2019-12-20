@@ -59,12 +59,10 @@ namespace InsaneGenius.Utilities
                 if (webstream == null) throw new ArgumentNullException(nameof(webstream));
 
                 // Write response to file
-                using (FileStream filestream = File.OpenWrite(filename))
-                {
-                    webstream.CopyTo(filestream);
-                    filestream.Close();
-                    webstream.Close();
-                }
+                using FileStream filestream = File.OpenWrite(filename);
+                webstream.CopyTo(filestream);
+                filestream.Close();
+                webstream.Close();
             }
             catch (Exception e)
             {
