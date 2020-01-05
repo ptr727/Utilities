@@ -11,11 +11,11 @@ namespace InsaneGenius.Utilities
         {
             RedirectOutput = false;
             PrintOutput = false;
-            _outputtext = new StringBuilder();
+            OutputString = new StringBuilder();
             RedirectError = false;
             PrintError = false;
-            _errortext = new StringBuilder();
-            _processname = string.Empty;
+            ErrorString = new StringBuilder();
+            ProcessName = string.Empty;
         }
 
         public int ExecuteEx(string executable, string parameters)
@@ -32,21 +32,21 @@ namespace InsaneGenius.Utilities
             };
 
             // Output handlers
-            void Outputhandler(object s, DataReceivedEventArgs e) => OutputHandler(e, this);
-            void Errorhandler(object s, DataReceivedEventArgs e) => ErrorHandler(e, this);
+            void OutputHandlerEx(object s, DataReceivedEventArgs e) => OutputHandler(e, this);
+            void ErrorHandlerEx(object s, DataReceivedEventArgs e) => ErrorHandler(e, this);
             process.StartInfo.RedirectStandardOutput = RedirectOutput;
-            process.OutputDataReceived += Outputhandler;
+            process.OutputDataReceived += OutputHandlerEx;
             process.StartInfo.RedirectStandardError = RedirectError;
-            process.ErrorDataReceived += Errorhandler;
+            process.ErrorDataReceived += ErrorHandlerEx;
             try
             {
                 // Get the EXE name for print purposes
-                FileInfo filenfo = new FileInfo(executable);
-                _processname = filenfo.Name;
+                FileInfo fileInfo = new FileInfo(executable);
+                ProcessName = fileInfo.Name;
 
                 // Start process
-                _outputtext.Clear();
-                _errortext.Clear();
+                OutputString.Clear();
+                ErrorString.Clear();
                 process.Start();
 
                 // Read output and error
@@ -71,9 +71,9 @@ namespace InsaneGenius.Utilities
             if (string.IsNullOrEmpty(e.Data))
                 return;
 
-            redirected._outputtext.AppendLine(e.Data);
+            redirected.OutputString.AppendLine(e.Data);
             if (redirected.PrintOutput)
-                ConsoleEx.WriteLineTool($"{redirected._processname} : {e.Data}");
+                ConsoleEx.WriteLineTool($"{redirected.ProcessName} : {e.Data}");
         }
 
         private static void ErrorHandler(DataReceivedEventArgs e, ProcessEx redirected)
@@ -81,17 +81,17 @@ namespace InsaneGenius.Utilities
             if (string.IsNullOrEmpty(e.Data))
                 return;
 
-            redirected._errortext.AppendLine(e.Data);
+            redirected.ErrorString.AppendLine(e.Data);
             if (redirected.PrintError)
-                ConsoleEx.WriteLineError($"{redirected._processname} : {e.Data}");
+                ConsoleEx.WriteLineError($"{redirected.ProcessName} : {e.Data}");
         }
 
         public bool RedirectOutput { get; set; }
         public bool PrintOutput { get; set; }
-        public string OutputText => _outputtext.ToString();
+        public string OutputText => OutputString.ToString();
         public bool RedirectError { get; set; }
         public bool PrintError { get; set; }
-        public string ErrorText => _errortext.ToString();
+        public string ErrorText => ErrorString.ToString();
 
         public static int Execute(string executable, string parameters)
         {
@@ -100,11 +100,11 @@ namespace InsaneGenius.Utilities
 
             // Create new process
             ProcessEx process = new ProcessEx();
-            int exitcode = process.ExecuteEx(executable, parameters);
+            int exitCode = process.ExecuteEx(executable, parameters);
 
             // Restore console color
             Console.ForegroundColor = OriginalColor;
-            return exitcode;
+            return exitCode;
         }
 
         public static int Execute(string executable, string parameters, out string output)
@@ -139,18 +139,18 @@ namespace InsaneGenius.Utilities
                 RedirectError = true,
                 PrintError = false
             };
-            int exitcode = process.ExecuteEx(executable, parameters);
+            int exitCode = process.ExecuteEx(executable, parameters);
             output = process.OutputText;
             error = process.ErrorText;
 
             // Restore console color
             Console.ForegroundColor = OriginalColor;
-            return exitcode;
+            return exitCode;
         }
 
-        private readonly StringBuilder _outputtext;
-        private readonly StringBuilder _errortext;
-        private string _processname;
+        private readonly StringBuilder OutputString;
+        private readonly StringBuilder ErrorString;
+        private string ProcessName;
         private static readonly ConsoleColor OriginalColor = Console.ForegroundColor;
     }
 }
