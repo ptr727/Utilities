@@ -14,10 +14,12 @@ Classes are published as InsaneGenius.Utilities on NuGet.
 
 [Azure DevOps](https://dev.azure.com/pieterv/Utilities)
 
+## Notes
+
+- ISO 639-3 language data is sourced from the [ISO 639-3 Registration Authority](https://iso639-3.sil.org/code_tables/download_tables).
+
 ## TODO
 
 - Add more unit tests.
 - Build the TT file in the build pipeline, currently only visual Studio will run the TT generator.
-- Update the version numbers in the version manifest at build time, currently a custom step in the pipeline updates the manifest version.
-- Add [NuGet symbol support](https://github.com/dotnet/sourcelink/issues/230).
 - Add file and directory permission recovery logic when delete fails.

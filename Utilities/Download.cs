@@ -19,8 +19,8 @@ namespace InsaneGenius.Utilities
                 size = response.ContentLength;
                 if (response.GetType() == typeof(HttpWebResponse))
                 {
-                    HttpWebResponse httpresponse = (HttpWebResponse)response;
-                    modifiedTime = httpresponse.LastModified;
+                    HttpWebResponse httpResponse = (HttpWebResponse)response;
+                    modifiedTime = httpResponse.LastModified;
                 }
             }
             catch (Exception e)
@@ -31,12 +31,12 @@ namespace InsaneGenius.Utilities
             return true;
         }
 
-        public static bool DownloadFile(string url, string filename)
+        public static bool DownloadFile(string url, string fileName)
         {
-            return DownloadFile(url, null, null, filename);
+            return DownloadFile(url, null, null, fileName);
         }
 
-        public static bool DownloadFile(string url, string username, string password, string filename)
+        public static bool DownloadFile(string url, string userName, string password, string fileName)
         {
             try
             {
@@ -45,24 +45,24 @@ namespace InsaneGenius.Utilities
                 request.Timeout = Timeout;
                 if (request.GetType() == typeof(HttpWebRequest))
                 {
-                    HttpWebRequest httprequest = (HttpWebRequest)request;
-                    httprequest.ReadWriteTimeout = request.Timeout;
+                    HttpWebRequest httpRequest = (HttpWebRequest)request;
+                    httpRequest.ReadWriteTimeout = request.Timeout;
                 }
-                if (string.IsNullOrEmpty(username) == false || string.IsNullOrEmpty(password) == false)
+                if (string.IsNullOrEmpty(userName) == false || string.IsNullOrEmpty(password) == false)
                 {
-                    request.Credentials = new NetworkCredential(username, password);
+                    request.Credentials = new NetworkCredential(userName, password);
                 }
 
                 // Get the response
                 WebResponse response = request.GetResponse();
-                Stream webstream = response.GetResponseStream();
-                if (webstream == null) throw new ArgumentNullException(nameof(webstream));
+                Stream webStream = response.GetResponseStream();
+                if (webStream == null) throw new ArgumentNullException(nameof(webStream));
 
                 // Write response to file
-                using FileStream filestream = File.OpenWrite(filename);
-                webstream.CopyTo(filestream);
-                filestream.Close();
-                webstream.Close();
+                using FileStream fileStream = File.OpenWrite(fileName);
+                webStream.CopyTo(fileStream);
+                fileStream.Close();
+                webStream.Close();
             }
             catch (Exception e)
             {
