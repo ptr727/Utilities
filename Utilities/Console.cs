@@ -9,10 +9,10 @@ namespace InsaneGenius.Utilities
         {
             lock (WriteLineLock)
             {
-                ConsoleColor oldcolor = Console.ForegroundColor;
+                ConsoleColor oldColor = Console.ForegroundColor;
                 Console.ForegroundColor = color;
                 Console.WriteLine(string.IsNullOrEmpty(value) ? $"{value}" : $"{DateTime.Now.ToString(CultureInfo.CurrentCulture)} : {value}");
-                Console.ForegroundColor = oldcolor;
+                Console.ForegroundColor = oldColor;
             }
         }
 

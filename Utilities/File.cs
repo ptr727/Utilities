@@ -29,14 +29,14 @@ namespace InsaneGenius.Utilities
         public static readonly FileExOptions Options = new FileExOptions();
 
         // Delete file, and retry in case of failure
-        public static bool DeleteFile(string filename)
+        public static bool DeleteFile(string fileName)
         {
             // Test
             if (Options.TestNoModify)
                 return true;
 
             bool result = false;
-            for (int retrycount = 0; retrycount < Options.FileRetryCount; retrycount ++)
+            for (int retryCount = 0; retryCount < Options.FileRetryCount; retryCount ++)
             {
                 // Break on cancel
                 if (Options.Cancel.State)
@@ -45,9 +45,9 @@ namespace InsaneGenius.Utilities
                 // Try to delete the file
                 try
                 {
-                    ConsoleEx.WriteLine($"Deleting ({retrycount + 1} / {Options.FileRetryCount}) : \"{filename}\"");
-                    if (File.Exists(filename))
-                        File.Delete(filename);
+                    ConsoleEx.WriteLine($"Deleting ({retryCount + 1} / {Options.FileRetryCount}) : \"{fileName}\"");
+                    if (File.Exists(fileName))
+                        File.Delete(fileName);
                     result = true;
                     break;
                 }
@@ -75,7 +75,7 @@ namespace InsaneGenius.Utilities
                 return true;
 
             bool result = false;
-            for (int retrycount = 0; retrycount < Options.FileRetryCount; retrycount++)
+            for (int retryCount = 0; retryCount < Options.FileRetryCount; retryCount ++)
             {
                 // Break on cancel
                 if (Options.Cancel.State)
@@ -84,7 +84,7 @@ namespace InsaneGenius.Utilities
                 // Try to delete the directory
                 try
                 {
-                    ConsoleEx.WriteLine($"Deleting ({retrycount + 1} / {Options.FileRetryCount}) : \"{directory}\"");
+                    ConsoleEx.WriteLine($"Deleting ({retryCount + 1} / {Options.FileRetryCount}) : \"{directory}\"");
                     if (Directory.Exists(directory))
                         Directory.Delete(directory);
                     result = true;
@@ -120,20 +120,20 @@ namespace InsaneGenius.Utilities
         }
 
         // Rename file, and retry in case of failure
-        public static bool RenameFile(string originalname, string newname)
+        public static bool RenameFile(string originalName, string newName)
         {
             // Test
             if (Options.TestNoModify)
                 return true;
 
             // Split path components so we can use them for pretty printing
-            string originaldirectory = Path.GetDirectoryName(originalname);
-            string originalfile = Path.GetFileName(originalname);
-            string newdirectory = Path.GetDirectoryName(newname);
-            string newfile = Path.GetFileName(newname);
+            string originalDirectory = Path.GetDirectoryName(originalName);
+            string originalFile = Path.GetFileName(originalName);
+            string newDirectory = Path.GetDirectoryName(newName);
+            string newFile = Path.GetFileName(newName);
 
             bool result = false;
-            for (int retrycount = 0; retrycount < Options.FileRetryCount; retrycount++)
+            for (int retrycount = 0; retrycount < Options.FileRetryCount; retrycount ++)
             {
                 // Break on cancel
                 if (Options.Cancel.State)
@@ -143,12 +143,12 @@ namespace InsaneGenius.Utilities
                 // Delete the destination if it exists
                 try
                 {
-                    ConsoleEx.WriteLine(originaldirectory.Equals(newdirectory, StringComparison.OrdinalIgnoreCase)
-                        ? $"Renaming ({retrycount + 1} / {Options.FileRetryCount}) : \"{originaldirectory}\" : \"{originalfile}\" to \"{newfile}\""
-                        : $"Renaming ({retrycount + 1} / {Options.FileRetryCount}) : \"{originalname}\" to \"{newname}\"");
-                    if (File.Exists(newname))
-                        File.Delete(newname);
-                    File.Move(originalname, newname);
+                    ConsoleEx.WriteLine(originalDirectory.Equals(newDirectory, StringComparison.OrdinalIgnoreCase)
+                        ? $"Renaming ({retrycount + 1} / {Options.FileRetryCount}) : \"{originalDirectory}\" : \"{originalFile}\" to \"{newFile}\""
+                        : $"Renaming ({retrycount + 1} / {Options.FileRetryCount}) : \"{originalName}\" to \"{newName}\"");
+                    if (File.Exists(newName))
+                        File.Delete(newName);
+                    File.Move(originalName, newName);
                     result = true;
                     break;
                 }
@@ -175,14 +175,14 @@ namespace InsaneGenius.Utilities
         }
 
         // Rename or move the folder, and retry in case of failure
-        public static bool RenameFolder(string originalname, string newname)
+        public static bool RenameFolder(string originalName, string newName)
         {
             // Test
             if (Options.TestNoModify)
                 return true;
 
             bool result = false;
-            for (int retrycount = 0; retrycount < Options.FileRetryCount; retrycount++)
+            for (int retryCount = 0; retryCount < Options.FileRetryCount; retryCount ++)
             {
                 // Break on cancel
                 if (Options.Cancel.State)
@@ -191,10 +191,10 @@ namespace InsaneGenius.Utilities
                 // Try to move the folder
                 try
                 {
-                    ConsoleEx.WriteLine($"Renaming ({retrycount + 1} / {Options.FileRetryCount}) : \"{originalname}\" to \"{newname}\"");
-                    if (Directory.Exists(newname))
-                        DeleteDirectory(newname, true);
-                    Directory.Move(originalname, newname);
+                    ConsoleEx.WriteLine($"Renaming ({retryCount + 1} / {Options.FileRetryCount}) : \"{originalName}\" to \"{newName}\"");
+                    if (Directory.Exists(newName))
+                        DeleteDirectory(newName, true);
+                    Directory.Move(originalName, newName);
                     result = true;
                     break;
                 }
@@ -224,18 +224,18 @@ namespace InsaneGenius.Utilities
         public static bool DeleteEmptyDirectories(string directory, ref int deleted)
         {
             // Find all directories in this directory, not all subdirectories, we will call recursively
-            DirectoryInfo parentinfo = new DirectoryInfo(directory);
-            foreach (DirectoryInfo dirinfo in parentinfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
+            DirectoryInfo parentInfo = new DirectoryInfo(directory);
+            foreach (DirectoryInfo dirInfo in parentInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
             {
                 // Call recursively for this directory
-                if (!DeleteEmptyDirectories(dirinfo.FullName, ref deleted))
+                if (!DeleteEmptyDirectories(dirInfo.FullName, ref deleted))
                     return false;
 
                 // Test for files and directories, if none, delete this directory
-                if (dirinfo.GetFiles().Length != 0 || dirinfo.GetDirectories().Length != 0)
+                if (dirInfo.GetFiles().Length != 0 || dirInfo.GetDirectories().Length != 0)
                     continue;
 
-                if (!DeleteDirectory(dirinfo.FullName))
+                if (!DeleteDirectory(dirInfo.FullName))
                     return false;
                 deleted++;
             }
@@ -251,21 +251,21 @@ namespace InsaneGenius.Utilities
                 return true;
 
             // Delete all files in this directory
-            DirectoryInfo parentinfo = new DirectoryInfo(directory);
-            if (parentinfo.GetFiles().Any(fileinfo => !DeleteFile(fileinfo.FullName)))
+            DirectoryInfo parentInfo = new DirectoryInfo(directory);
+            if (parentInfo.GetFiles().Any(fileInfo => !DeleteFile(fileInfo.FullName)))
             {
                 return false;
             }
 
             // Find all directories in this directory, not all subdirectories, we will call recursively
-            foreach (DirectoryInfo dirinfo in parentinfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
+            foreach (DirectoryInfo dirInfo in parentInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
             {
                 // Call recursively for this directory
-                if (!DeleteInsideDirectory(dirinfo.FullName))
+                if (!DeleteInsideDirectory(dirInfo.FullName))
                     return false;
 
                 // Delete this directory
-                if (!DeleteDirectory(dirinfo.FullName))
+                if (!DeleteDirectory(dirInfo.FullName))
                     return false;
             }
 
@@ -273,12 +273,12 @@ namespace InsaneGenius.Utilities
         }
 
         // Try to open the file for read access
-        public static bool IsFileReadable(string filename)
+        public static bool IsFileReadable(string fileName)
         {
             try
             {
-                FileInfo fileinfo = new FileInfo(filename);
-                return IsFileReadable(fileinfo);
+                FileInfo fileInfo = new FileInfo(fileName);
+                return IsFileReadable(fileInfo);
             }
             catch (Exception)
             {
@@ -287,10 +287,10 @@ namespace InsaneGenius.Utilities
         }
 
         // Wait for the file to become readable
-        public static bool WaitFileReadAble(string filename)
+        public static bool WaitFileReadAble(string fileName)
         {
             bool result = false;
-            for (int retrycount = 0; retrycount < Options.FileRetryCount; retrycount++)
+            for (int retryCount = 0; retryCount < Options.FileRetryCount; retryCount ++)
             {
                 // Break on cancel
                 if (Options.Cancel.State)
@@ -299,8 +299,8 @@ namespace InsaneGenius.Utilities
                 // Try to access the file
                 try
                 {
-                    ConsoleEx.WriteLine($"Waiting for file to become readable ({retrycount + 1} / {Options.FileRetryCount}) : \"{filename}\"");
-                    FileInfo fileinfo = new FileInfo(filename);
+                    ConsoleEx.WriteLine($"Waiting for file to become readable ({retryCount + 1} / {Options.FileRetryCount}) : \"{fileName}\"");
+                    FileInfo fileinfo = new FileInfo(fileName);
                     FileStream stream = fileinfo.Open(FileMode.Open, FileAccess.Read, FileShare.None);
                     stream.Close();
                     result = true;
@@ -323,11 +323,11 @@ namespace InsaneGenius.Utilities
         }
 
         // Try to open the file for read access
-        public static bool IsFileReadable(FileInfo fileinfo)
+        public static bool IsFileReadable(FileInfo fileInfo)
         {
             try
             {
-                FileStream stream = fileinfo.Open(FileMode.Open, FileAccess.Read, FileShare.None);
+                FileStream stream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.None);
                 stream.Close();
             }
             catch (Exception)
@@ -341,8 +341,8 @@ namespace InsaneGenius.Utilities
         public static bool AreFilesInDirectoryReadable(string directory)
         {
             // Test each file in directory for readability
-            DirectoryInfo dirinfo = new DirectoryInfo(directory);
-            return dirinfo.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly).All(IsFileReadable);
+            DirectoryInfo dirInfo = new DirectoryInfo(directory);
+            return dirInfo.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly).All(IsFileReadable);
         }
 
         // Create directory if it does not already exists
@@ -389,18 +389,18 @@ namespace InsaneGenius.Utilities
                 foreach (string folder in sourceList)
                 {
                     // Add this folder to the directory list
-                    DirectoryInfo dirinfo = new DirectoryInfo(folder);
-                    directoryList.Add(dirinfo);
+                    DirectoryInfo dirInfo = new DirectoryInfo(folder);
+                    directoryList.Add(dirInfo);
 
                     // Recursively add all child folders
-                    directoryList.AddRange(dirinfo.EnumerateDirectories("*", SearchOption.AllDirectories));
+                    directoryList.AddRange(dirInfo.EnumerateDirectories("*", SearchOption.AllDirectories));
                 }
 
                 // Add all files from all the directories to the file list
-                foreach (DirectoryInfo dirinfo in directoryList)
+                foreach (DirectoryInfo dirInfo in directoryList)
                 {
                     // Add all files in this folder
-                    fileList.AddRange(dirinfo.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly));
+                    fileList.AddRange(dirInfo.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly));
                 }
             }
             catch (Exception e)
@@ -431,12 +431,12 @@ namespace InsaneGenius.Utilities
             try
             {
                 // Grant everyone full control
-                DirectoryInfo di = new DirectoryInfo(directory);
+                DirectoryInfo directoryInfo = new DirectoryInfo(directory);
                 SecurityIdentifier everyone = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
-                FileSystemAccessRule fsar = new FileSystemAccessRule(everyone, FileSystemRights.FullControl, AccessControlType.Allow);
-                DirectorySecurity ds = di.GetAccessControl();
-                ds.AddAccessRule(fsar);
-                di.SetAccessControl(ds);
+                FileSystemAccessRule accessRule = new FileSystemAccessRule(everyone, FileSystemRights.FullControl, AccessControlType.Allow);
+                DirectorySecurity directorySecurity = directoryInfo.GetAccessControl();
+                directorySecurity.AddAccessRule(accessRule);
+                directoryInfo.SetAccessControl(directorySecurity);
             }
             catch (Exception e)
             {

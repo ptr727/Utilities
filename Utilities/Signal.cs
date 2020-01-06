@@ -6,19 +6,19 @@ namespace InsaneGenius.Utilities
     {
         public Signal()
         {
-            _event = new ManualResetEvent(false);
+            WaitEvent = new ManualResetEvent(false);
         }
 
         public bool State
         {
-            get => _event.WaitOne(0);
+            get => WaitEvent.WaitOne(0);
             set
             {
                 // Signal or reset the event
                 if (value)
-                    _event.Set();
+                    WaitEvent.Set();
                 else
-                    _event.Reset();
+                    WaitEvent.Reset();
             }
         }
 
@@ -35,9 +35,9 @@ namespace InsaneGenius.Utilities
         public bool WaitForSet(int milliseconds)
         {
             // Wait for event to be signaled
-            return _event.WaitOne(milliseconds);
+            return WaitEvent.WaitOne(milliseconds);
         }
 
-        private readonly ManualResetEvent _event;
+        private readonly ManualResetEvent WaitEvent;
     }
 }
