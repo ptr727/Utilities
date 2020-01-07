@@ -95,23 +95,13 @@ namespace InsaneGenius.Utilities
 
         public static int Execute(string executable, string parameters)
         {
-            // Change default output console color to green
-            Console.ForegroundColor = ConsoleEx.ToolColor;
-
             // Create new process
             ProcessEx process = new ProcessEx();
-            int exitCode = process.ExecuteEx(executable, parameters);
-
-            // Restore console color
-            Console.ForegroundColor = OriginalColor;
-            return exitCode;
+            return process.ExecuteEx(executable, parameters);
         }
 
         public static int Execute(string executable, string parameters, out string output)
         {
-            // Change default output console color to green
-            Console.ForegroundColor = ConsoleEx.ToolColor;
-
             // Create new process
             ProcessEx process = new ProcessEx
             {
@@ -121,16 +111,11 @@ namespace InsaneGenius.Utilities
             int exitcode = process.ExecuteEx(executable, parameters);
             output = process.OutputText;
 
-            // Restore console color
-            Console.ForegroundColor = OriginalColor;
             return exitcode;
         }
 
         public static int Execute(string executable, string parameters, out string output, out string error)
         {
-            // Change default output console color to green
-            Console.ForegroundColor = ConsoleEx.ToolColor;
-
             // Create new process
             ProcessEx process = new ProcessEx
             {
@@ -143,14 +128,11 @@ namespace InsaneGenius.Utilities
             output = process.OutputText;
             error = process.ErrorText;
 
-            // Restore console color
-            Console.ForegroundColor = OriginalColor;
             return exitCode;
         }
 
         private readonly StringBuilder OutputString;
         private readonly StringBuilder ErrorString;
         private string ProcessName;
-        private static readonly ConsoleColor OriginalColor = Console.ForegroundColor;
     }
 }

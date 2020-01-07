@@ -15,62 +15,47 @@ namespace InsaneGenius.Utilities
                 Console.ForegroundColor = oldColor;
             }
         }
-
-        /*
-                public static void WriteLineColor(ConsoleColor color, Object value)
-                {
-                    WriteLineColor(color, value.ToString());
-                }
-        */
+        public static void WriteLineColor(ConsoleColor color, object value)
+        {
+            WriteLineColor(color, value.ToString());
+        }
 
         public static void WriteLineError(string value)
         {
             WriteLineColor(ErrorColor, value);
         }
-
         public static void WriteLineError(object value)
         {
-            WriteLineColor(ErrorColor, value.ToString());
+            WriteLineError(value.ToString());
         }
 
-        /*
-                public static void WriteLineEvent(string value)
-                {
-                    WriteLineColor(EventColor, value);
-                }
-        */
-
-        /*
-                public static void WriteLineEvent(object value)
-                {
-                    WriteLineColor(EventColor, value.ToString());
-                }
-        */
+        public static void WriteLineEvent(string value)
+        {
+            WriteLineColor(EventColor, value);
+        }
+        public static void WriteLineEvent(object value)
+        {
+            WriteLineEvent(value.ToString());
+        }
 
         public static void WriteLineTool(string value)
         {
             WriteLineColor(ToolColor, value);
         }
-
-        /*
-                public static void WriteLineTool(object value)
-                {
-                    WriteLineColor(ToolColor, value.ToString());
-                }
-        */
+        public static void WriteLineTool(object value)
+        {
+            WriteLineTool(value.ToString());
+        }
 
         public static void WriteLine(string value)
         {
             // Good looking console colors; Green, Cyan, Red, Magenta, Yellow, White
             WriteLineColor(OutputColor, value);
         }
-
-        /*
-                public static void WriteLine(Object value)
-                {
-                    WriteLineColor(OutputColor, value);
-                }
-        */
+        public static void WriteLine(object value)
+        {
+            WriteLine(value.ToString());
+        }
 
         private static readonly object WriteLineLock = new object();
 
