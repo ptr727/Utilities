@@ -8,7 +8,7 @@ General useful utility classes.
 
 ## Usage
 
-Classes are published as InsaneGenius.Utilities on NuGet.
+Classes are published on [NuGet](https://www.nuget.org/packages/InsaneGenius.Utilities/).
 
 ## Project Location
 
