@@ -7,7 +7,7 @@ variables:
   MajorVersion: 1
   MinorVersion: 1
 
-name: ​​​$(MajorVersion).$(MinorVersion).$(Date:yyyyMMdd)$(Rev:.r)
+name: ​​​$(MajorVersion).$(MinorVersion).$(Date:yyyyMMdd).$(Rev:r)
 
 steps:
 - task: UseDotNet@2
@@ -24,9 +24,9 @@ steps:
   displayName: Version
   inputs:
     VersionNumber: $(MajorVersion).$(MinorVersion).0.0
-    FileVersionNumber: $(MajorVersion).$(MinorVersion).*.*
-    InformationalVersion: $(MajorVersion).$(MinorVersion).*.*
-    PackageVersion: $(MajorVersion).$(MinorVersion).*.*
+    FileVersionNumber: $(Build.BuildNumber)
+    InformationalVersion: $(Build.BuildNumber)
+    PackageVersion: $(Build.BuildNumber)
 
 - task: DotNetCoreCLI@2
   displayName: Build
