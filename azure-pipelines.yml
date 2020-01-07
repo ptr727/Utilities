@@ -1,13 +1,11 @@
 pool:
-  name: Hosted VS2017
+  name: 'Hosted VS2017'
   demands: vstest
 
 variables:
   BuildConfiguration: Debug
   MajorVersion: 1
   MinorVersion: 1
-  Parameters.RestoreBuildProjects: MyProjectDir/**/*.csproj
-  Parameters.TestProjects: MyProjectDir/**/*[Tt]ests/*.csproj
 
 steps:
 - task: UseDotNet@2
@@ -23,15 +21,15 @@ steps:
 - task: bleddynrichards.Assembly-Info-Task.Assembly-Info-NetCore.Assembly-Info-NetCore@2
   displayName: Version
   inputs:
-    VersionNumber: '$(MajorVersion).$(MinorVersion).0.0'
-    FileVersionNumber: '$(MajorVersion).$(MinorVersion).*.*'
-    InformationalVersion: '$(MajorVersion).$(MinorVersion).*.*'
-    PackageVersion: '$(MajorVersion).$(MinorVersion).*.*'
+    VersionNumber: $(MajorVersion).$(MinorVersion).0.0
+    FileVersionNumber: $(MajorVersion).$(MinorVersion).*.*
+    InformationalVersion: $(MajorVersion).$(MinorVersion).*.*
+    PackageVersion: $(MajorVersion).$(MinorVersion).*.*
 
 - task: DotNetCoreCLI@2
   displayName: Build
   inputs:
-    projects: '$(Parameters.RestoreBuildProjects)'
+    projects: **/*.csproj
     arguments: '--configuration $(BuildConfiguration)'
 
 - task: VSTest@2
@@ -53,6 +51,6 @@ steps:
   displayName: 'NuGet Push'
   inputs:
     command: push
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
+    packagesToPush: $(Build.ArtifactStagingDirectory)/**/*.nupkg
     nuGetFeedType: external
     publishFeedCredentials: NuGet
