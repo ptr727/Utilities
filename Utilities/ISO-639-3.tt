@@ -108,7 +108,6 @@ namespace InsaneGenius.Utilities
 	// int maxRows = 10;
 	const int maxRows = int.MaxValue;
 	int rowCount = 0;
-	string term = "";
     while (!tfp.EndOfData && rowCount < maxRows)
     {
         // Read row of data from the file
@@ -116,7 +115,7 @@ namespace InsaneGenius.Utilities
 		rowCount ++;
 
 		// Add "," on all but last line
-		term = tfp.EndOfData || rowCount >= maxRows ? "" : ",";
+		string term = tfp.EndOfData || rowCount >= maxRows ? "" : ",";
 
         // Add new item from row data
 #>
