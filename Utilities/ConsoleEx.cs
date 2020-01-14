@@ -7,6 +7,8 @@ namespace InsaneGenius.Utilities
     {
         public static void WriteLineColor(ConsoleColor color, string value)
         {
+            // Locking only works when using this function
+            // Mixing any other console output may still result in mismatched color output
             lock (WriteLineLock)
             {
                 ConsoleColor oldColor = Console.ForegroundColor;
