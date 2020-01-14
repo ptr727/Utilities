@@ -21,7 +21,7 @@ namespace InsaneGenius.Utilities
         public int ExecuteEx(string executable, string parameters)
         {
             // Create new process
-            Process process = new Process
+            using Process process = new Process
             {
                 StartInfo =
                 {
