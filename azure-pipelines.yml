@@ -1,5 +1,5 @@
 pool:
-  name: 'Hosted VS2017'
+  vmImage: windows-2019
 
 variables:
   BuildConfiguration: Debug
@@ -9,6 +9,9 @@ variables:
 name: ​​​$(MajorVersion).$(MinorVersion).$(DayOfYear).$(Rev:r)
 
 steps:
+
+- script: echo Build : $(MajorVersion).$(MinorVersion).$(DayOfYear).$(Rev:r)
+
 - task: UseDotNet@2
   displayName: 'Use .NET Core SDK 3.1.x'
   inputs:
