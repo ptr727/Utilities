@@ -30,7 +30,6 @@ namespace InsaneGenius.Utilities
                 // Try to delete the file
                 try
                 {
-                    Trace.WriteLine($"Deleting ({retryCount + 1} / {Options.FileRetryCount}) : \"{fileName}\"");
                     if (File.Exists(fileName))
                         File.Delete(fileName);
                     result = true;
@@ -40,6 +39,7 @@ namespace InsaneGenius.Utilities
                 {
                     // Retry
                     Trace.WriteLine(e);
+                    Trace.WriteLine($"Deleting ({retryCount + 1} / {Options.FileRetryCount}) : \"{fileName}\"");
                     Options.WaitForCancelFileRetry();
                 }
                 catch (Exception e)
@@ -69,7 +69,6 @@ namespace InsaneGenius.Utilities
                 // Try to delete the directory
                 try
                 {
-                    Trace.WriteLine($"Deleting ({retryCount + 1} / {Options.FileRetryCount}) : \"{directory}\"");
                     if (Directory.Exists(directory))
                         Directory.Delete(directory);
                     result = true;
@@ -81,6 +80,7 @@ namespace InsaneGenius.Utilities
 
                     // Retry
                     Trace.WriteLine(e);
+                    Trace.WriteLine($"Deleting ({retryCount + 1} / {Options.FileRetryCount}) : \"{directory}\"");
                     Options.WaitForCancelFileRetry();
                 }
                 catch (Exception e)
@@ -128,9 +128,6 @@ namespace InsaneGenius.Utilities
                 // Delete the destination if it exists
                 try
                 {
-                    Trace.WriteLine(originalDirectory.Equals(newDirectory, StringComparison.OrdinalIgnoreCase)
-                        ? $"Renaming ({retrycount + 1} / {Options.FileRetryCount}) : \"{originalDirectory}\" : \"{originalFile}\" to \"{newFile}\""
-                        : $"Renaming ({retrycount + 1} / {Options.FileRetryCount}) : \"{originalName}\" to \"{newName}\"");
                     if (File.Exists(newName))
                         File.Delete(newName);
                     File.Move(originalName, newName);
@@ -147,6 +144,9 @@ namespace InsaneGenius.Utilities
                 {
                     // Retry
                     Trace.WriteLine(e);
+                    Trace.WriteLine(originalDirectory.Equals(newDirectory, StringComparison.OrdinalIgnoreCase)
+                        ? $"Renaming ({retrycount + 1} / {Options.FileRetryCount}) : \"{originalDirectory}\" : \"{originalFile}\" to \"{newFile}\""
+                        : $"Renaming ({retrycount + 1} / {Options.FileRetryCount}) : \"{originalName}\" to \"{newName}\"");
                     Options.WaitForCancelFileRetry();
                 }
                 catch (Exception e)
@@ -176,7 +176,6 @@ namespace InsaneGenius.Utilities
                 // Try to move the folder
                 try
                 {
-                    Trace.WriteLine($"Renaming ({retryCount + 1} / {Options.FileRetryCount}) : \"{originalName}\" to \"{newName}\"");
                     if (Directory.Exists(newName))
                         DeleteDirectory(newName, true);
                     Directory.Move(originalName, newName);
@@ -193,6 +192,7 @@ namespace InsaneGenius.Utilities
                 {
                     // Retry
                     Trace.WriteLine(e);
+                    Trace.WriteLine($"Renaming ({retryCount + 1} / {Options.FileRetryCount}) : \"{originalName}\" to \"{newName}\"");
                     Options.WaitForCancelFileRetry();
                 }
                 catch (Exception e)
@@ -284,9 +284,8 @@ namespace InsaneGenius.Utilities
                 // Try to access the file
                 try
                 {
-                    Trace.WriteLine($"Waiting for file to become readable ({retryCount + 1} / {Options.FileRetryCount}) : \"{fileName}\"");
                     FileInfo fileinfo = new FileInfo(fileName);
-                    FileStream stream = fileinfo.Open(FileMode.Open, FileAccess.Read, FileShare.None);
+                    using FileStream stream = fileinfo.Open(FileMode.Open, FileAccess.Read, FileShare.None);
                     stream.Close();
                     result = true;
                     break;
@@ -295,6 +294,7 @@ namespace InsaneGenius.Utilities
                 {
                     // Retry
                     Trace.WriteLine(e);
+                    Trace.WriteLine($"Waiting for file to become readable ({retryCount + 1} / {Options.FileRetryCount}) : \"{fileName}\"");
                     Options.WaitForCancelFileRetry();
                 }
                 catch (Exception e)
@@ -312,7 +312,7 @@ namespace InsaneGenius.Utilities
         {
             try
             {
-                FileStream stream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.None);
+                using FileStream stream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.None);
                 stream.Close();
             }
             catch (Exception)
