@@ -5,8 +5,10 @@ variables:
   BuildConfiguration: Debug
   MajorVersion: 1
   MinorVersion: 2
+  SubMinorVersion: $(DayOfYear)
+  BuildNumberVersion: $(Rev:r)
 
-name: ​​​$(MajorVersion).$(MinorVersion).$(DayOfYear).$(Rev:r)
+name: ​​​$(MajorVersion).$(MinorVersion).$(SubMinorVersion).$(BuildNumberVersion)
 
 steps:
 
