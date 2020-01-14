@@ -23,3 +23,4 @@ Classes are published on [NuGet](https://www.nuget.org/packages/InsaneGenius.Uti
 - Add more unit tests.
 - Build the TT file in the build pipeline, currently only visual Studio will run the TT generator.
 - Add file and directory permission recovery logic when delete fails.
+- Figure out why the `ConsoleEx.WriteLine()` output sometimes ignores the newline.

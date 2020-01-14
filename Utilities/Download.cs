@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 
@@ -25,7 +26,7 @@ namespace InsaneGenius.Utilities
             }
             catch (Exception e)
             {
-                ConsoleEx.WriteLineError(e);
+                Trace.WriteLine(e);
                 return false;
             }
             return true;
@@ -66,7 +67,7 @@ namespace InsaneGenius.Utilities
             }
             catch (Exception e)
             {
-                ConsoleEx.WriteLineError(e);
+                Trace.WriteLine(e);
                 return false;
             }
             return true;

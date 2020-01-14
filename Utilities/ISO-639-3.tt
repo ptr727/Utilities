@@ -2,9 +2,6 @@
 <#@ output extension=".cs" #>
 <#@ assembly name="System.Core" #>
 <#@ assembly name="Microsoft.VisualBasic.dll" #> 
-<#@ import namespace="System.Linq" #>
-<#@ import namespace="System.Text" #>
-<#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Microsoft.VisualBasic.FileIO" #>
 
 // Generated code

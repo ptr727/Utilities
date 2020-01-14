@@ -1,12 +1,27 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 
 namespace InsaneGenius.Utilities
 {
-    public class Signal
+    public class Signal : IDisposable
     {
         public Signal()
         {
             WaitEvent = new ManualResetEvent(false);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                WaitEvent.Close();
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public bool State
