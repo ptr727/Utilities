@@ -10,7 +10,7 @@ name: ​​​$(MajorVersion).$(MinorVersion).$(DayOfYear).$(Rev:r)
 
 steps:
 
-- script: echo Build : $(MajorVersion).$(MinorVersion).$(DayOfYear).$(Rev:r)
+- bash: echo Name : $(MajorVersion).$(MinorVersion).$(DayOfYear).$(Rev:r)
 
 - task: UseDotNet@2
   displayName: 'Use .NET Core SDK 3.1.x'
