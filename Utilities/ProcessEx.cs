@@ -60,7 +60,7 @@ namespace InsaneGenius.Utilities
             }
             catch (Exception e)
             {
-                ConsoleEx.WriteLineError(e);
+                Trace.WriteLine(e);
                 return -1;
             }
             return process.ExitCode;

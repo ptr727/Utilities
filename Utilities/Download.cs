@@ -7,14 +7,14 @@ namespace InsaneGenius.Utilities
 {
     public static class Download
     {
-        public static bool GetContentInfo(string url, out long size, out DateTime modifiedTime)
+        public static bool GetContentInfo(Uri uri, out long size, out DateTime modifiedTime)
         {
             size = 0;
             modifiedTime = DateTime.MinValue;
             try
             {
                 // Get the file details
-                WebRequest request = WebRequest.Create(url);
+                WebRequest request = WebRequest.Create(uri);
                 request.Method = "HEAD";
                 WebResponse response = request.GetResponse();
                 size = response.ContentLength;
@@ -32,17 +32,17 @@ namespace InsaneGenius.Utilities
             return true;
         }
 
-        public static bool DownloadFile(string url, string fileName)
+        public static bool DownloadFile(Uri uri, string fileName)
         {
-            return DownloadFile(url, null, null, fileName);
+            return DownloadFile(uri, null, null, fileName);
         }
 
-        public static bool DownloadFile(string url, string userName, string password, string fileName)
+        public static bool DownloadFile(Uri uri, string userName, string password, string fileName)
         {
             try
             {
                 // Open request with timeout and credentials
-                WebRequest request = WebRequest.Create(url);
+                WebRequest request = WebRequest.Create(uri);
                 request.Timeout = Timeout;
                 if (request.GetType() == typeof(HttpWebRequest))
                 {
@@ -57,7 +57,6 @@ namespace InsaneGenius.Utilities
                 // Get the response
                 WebResponse response = request.GetResponse();
                 Stream webStream = response.GetResponseStream();
-                if (webStream == null) throw new ArgumentNullException(nameof(webStream));
 
                 // Write response to file
                 using FileStream fileStream = File.OpenWrite(fileName);
