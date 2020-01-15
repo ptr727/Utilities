@@ -10,10 +10,10 @@ name: ​​​$(MajorVersion).$(MinorVersion).$(DayOfYear:r).$(Rev:r)
 
 steps:
 
-- script: echo 'Build.BuildNumber : $(Build.BuildNumber)'
-- script: echo 'Build.BuildId : $(Build.BuildId)'
-- script: echo 'Build.DefinitionName : $(Build.DefinitionName)'
-- script: echo 'Build.SourceBranchName : $(Build.SourceBranchName)'
+- script: echo $(Build.BuildNumber)
+- script: echo $(Build.BuildId)
+- script: echo $(Build.DefinitionName)
+- script: echo $(Build.SourceBranchName)
 
 - task: UseDotNet@2
   displayName: 'Use .NET Core SDK 3.1.x'
