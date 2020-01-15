@@ -6,14 +6,14 @@ variables:
   MajorVersion: 1
   MinorVersion: 2
 
-name: ​​​$(MajorVersion).$(MinorVersion).$(DayOfYear).$(Rev)
+name: ​​​$(MajorVersion).$(MinorVersion).$(DayOfYear).$(Rev:r)
 
 steps:
 
-- script: echo $(Build.BuildNumber)
-- script: echo $(Build.BuildId)
-- script: echo $(Build.DefinitionName)
-- script: echo $(Build.SourceBranchName)
+#- script: echo $(Build.BuildNumber)
+#- script: echo $(Build.BuildId)
+#- script: echo $(Build.DefinitionName)
+#- script: echo $(Build.SourceBranchName)
 
 - task: UseDotNet@2
   displayName: 'Use .NET Core SDK 3.1.x'
