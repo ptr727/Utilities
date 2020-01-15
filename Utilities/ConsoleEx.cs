@@ -19,6 +19,9 @@ namespace InsaneGenius.Utilities
         }
         public static void WriteLineColor(ConsoleColor color, object value)
         {
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
+
             WriteLineColor(color, value.ToString());
         }
 
@@ -28,6 +31,9 @@ namespace InsaneGenius.Utilities
         }
         public static void WriteLineError(object value)
         {
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
+
             WriteLineError(value.ToString());
         }
 
@@ -37,6 +43,9 @@ namespace InsaneGenius.Utilities
         }
         public static void WriteLineEvent(object value)
         {
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
+
             WriteLineEvent(value.ToString());
         }
 
@@ -46,6 +55,9 @@ namespace InsaneGenius.Utilities
         }
         public static void WriteLineTool(object value)
         {
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
+
             WriteLineTool(value.ToString());
         }
 
@@ -56,6 +68,9 @@ namespace InsaneGenius.Utilities
         }
         public static void WriteLine(object value)
         {
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
+
             WriteLine(value.ToString());
         }
 

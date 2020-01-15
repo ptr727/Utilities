@@ -32,6 +32,9 @@ namespace InsaneGenius.Utilities
 
         public static Iso6393 FromString(string language, List<Iso6393> iso6393List)
         {
+            if (language == null)
+                throw new ArgumentNullException(nameof(language));
+
             // Match the input string type
             Iso6393 lang;
             if (language.Length > 3 && language.ElementAt(2) == '-')
