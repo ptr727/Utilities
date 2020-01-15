@@ -1,15 +1,15 @@
 # Utilities
 
-Generally useful utility classes.
+Generally useful and not so useful C# .NET utility classes.
 
 ## License
 
-TOFO : Fix URL when code makes it to GitHub  
-[![GitHub](https://img.shields.io/github/license/ptr727/DiskSpeedTest)](https://github.com/ptr727/DiskSpeedTest/blob/master/LICENSE)
+[![GitHub](https://img.shields.io/github/license/ptr727/Utilities)](https://github.com/ptr727/Utilities/blob/master/LICENSE)
 
 ## Project
 
-Code and CI is on [Azure DevOps](https://dev.azure.com/pieterv/Utilities)
+Code is on [GitHub](https://github.com/ptr727/Utilities).   
+CI is on [Azure DevOps](https://dev.azure.com/pieterv/Utilities).
 
 ## Build Status
 
