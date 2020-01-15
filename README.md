@@ -1,18 +1,27 @@
 # Utilities
 
-General useful utility classes.
+Generally useful utility classes.
+
+## License
+
+TOFO : Fix URL when code makes it to GitHub  
+[![GitHub](https://img.shields.io/github/license/ptr727/DiskSpeedTest)](https://github.com/ptr727/DiskSpeedTest/blob/master/LICENSE)
+
+## Project
+
+Code and CI is on [Azure DevOps](https://dev.azure.com/pieterv/Utilities)
 
 ## Build Status
 
 [![Build Status](https://dev.azure.com/pieterv/Utilities/_apis/build/status/Utilities-YAML-CI?branchName=master)](https://dev.azure.com/pieterv/Utilities/_build/latest?definitionId=25&branchName=master)
 
+## NuGet Package
+
+[![NuGet](https://img.shields.io/nuget/v/InsaneGenius.Utilities?logo=nuget)](https://www.nuget.org/packages/InsaneGenius.Utilities/)
+
 ## Usage
 
-Classes are published on [NuGet](https://www.nuget.org/packages/InsaneGenius.Utilities/).
-
-## Project Location
-
-[Azure DevOps](https://dev.azure.com/pieterv/Utilities)
+Packages are on [NuGet](https://www.nuget.org/packages/InsaneGenius.Utilities/).
 
 ## Notes
 
@@ -21,6 +30,8 @@ Classes are published on [NuGet](https://www.nuget.org/packages/InsaneGenius.Uti
 ## TODO
 
 - Add more unit tests.
+- Add ability to conditionally output to the console, e.g. file retry operations.
 - Build the TT file in the build pipeline, currently only visual Studio will run the TT generator.
 - Add file and directory permission recovery logic when delete fails.
 - Figure out why the `ConsoleEx.WriteLine()` output sometimes ignores the newline.
+- Figure out how to use the same version number for the build and the NuGet package.

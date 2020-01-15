@@ -310,6 +310,9 @@ namespace InsaneGenius.Utilities
         // Try to open the file for read access
         public static bool IsFileReadable(FileInfo fileInfo)
         {
+            if (fileInfo == null)
+                throw new ArgumentNullException(nameof(fileInfo));
+
             try
             {
                 using FileStream stream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.None);
@@ -350,6 +353,11 @@ namespace InsaneGenius.Utilities
         // Default Path.Combine() logic will treat rooted paths as only path
         public static string CombinePath(string path1, string path2)
         {
+            if (path1 == null)
+                throw new ArgumentNullException(nameof(path1));
+            if (path2 == null)
+                throw new ArgumentNullException(nameof(path2));
+
             // Trim roots from second path
             if (Path.IsPathRooted(path2))
             {
@@ -365,6 +373,9 @@ namespace InsaneGenius.Utilities
         // The source directories will be added to the directory list
         public static bool EnumerateDirectories(List<string> sourceList, out List<FileInfo> fileList, out List<DirectoryInfo> directoryList)
         {
+            if (sourceList == null)
+                throw new ArgumentNullException(nameof(sourceList));
+
             directoryList = new List<DirectoryInfo>();
             fileList = new List<FileInfo>();
 
@@ -430,6 +441,18 @@ namespace InsaneGenius.Utilities
             }
 
             return true;
+        }
+
+        // Prefix the filename with a timestamp
+        public static string TimeStampFileName(string filePath)
+        {
+            return TimeStampFileName(filePath, DateTime.UtcNow);
+        }
+        public static string TimeStampFileName(string filePath, DateTime timeStamp)
+        {
+            string directory = Path.GetDirectoryName(filePath);
+            string fileName = $"{timeStamp:yyyyMMddTHHmmss}_{Path.GetFileName(filePath)}";
+            return Path.Combine(directory, fileName);
         }
     }
 }
