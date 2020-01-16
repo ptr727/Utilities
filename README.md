@@ -13,7 +13,7 @@ CI is on [Azure DevOps](https://dev.azure.com/pieterv/Utilities).
 
 ## Build Status
 
-[![Build Status](https://dev.azure.com/pieterv/Utilities/_apis/build/status/Utilities-YAML-CI?branchName=master)](https://dev.azure.com/pieterv/Utilities/_build/latest?definitionId=25&branchName=master)
+[![Build Status](https://dev.azure.com/pieterv/Utilities/_apis/build/status/ptr727.Utilities?branchName=master)](https://dev.azure.com/pieterv/Utilities/_build/latest?definitionId=29&branchName=master)
 
 ## NuGet Package
 
