@@ -2,9 +2,9 @@ pool:
   vmImage: windows-2019
 
 variables:
-  BuildConfiguration: Debug
-  MajorVersion: 1
-  MinorVersion: 2
+#  BuildConfiguration: Debug
+#  MajorVersion: 1
+#  MinorVersion: 2
 
 name: $(MajorVersion).$(MinorVersion).$(Date:yyyyMMdd).$(Rev:r)
 
