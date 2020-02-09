@@ -40,10 +40,10 @@ steps:
   displayName: 'Set Version Information'
   inputs:
     FileNames: 'UtilitiesTests/UtilitiesTests.csproj'
-    VersionNumber: GitVersion.AssemblySemVer
-    FileVersionNumber: GitVersion.AssemblySemFileVer
-    InformationalVersion: GitVersion.InformationalVersion
-    PackageVersion: GitVersion.InformationalVersion
+    VersionNumber: $(GitVersion.AssemblySemVer)
+    FileVersionNumber: $(GitVersion.AssemblySemFileVer)
+    InformationalVersion: $(GitVersion.InformationalVersion)
+    PackageVersion: $(GitVersion.InformationalVersion)
     LogLevel: verbose
 
 # Test
