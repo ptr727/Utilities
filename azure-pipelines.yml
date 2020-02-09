@@ -1,10 +1,9 @@
 pool:
   vmImage: windows-2019
 
+# Variables must be defined in pipeline configuration
 #variables:
 #  BuildConfiguration: Debug
-#  MajorVersion: 1
-#  MinorVersion: 2
 
 name: $(MajorVersion).$(MinorVersion).$(Date:yyyyMMdd).$(Rev:r)
 
@@ -15,49 +14,54 @@ steps:
 #- script: echo $(Build.DefinitionName)
 #- script: echo $(Build.SourceBranchName)
 
+# DotNet Core 2.x runtime is required by GitVersion tool
 - task: UseDotNet@2
-  displayName: 'Use .NET Core SDK 3.1.x'
   inputs:
+    packageType: runtime
+    version: 2.x
+
+- task: UseDotNet@2
+  inputs:
+    packageType: sdk
     version: 3.1.x
 
 - task: NuGetToolInstaller@1
-  displayName: 'Use NuGet 4.9.x'
   inputs:
     versionSpec: 4.9.x
 
-- task: bleddynrichards.Assembly-Info-Task.Assembly-Info-NetCore.Assembly-Info-NetCore@2
-  displayName: Version
+# https://cloudblogs.microsoft.com/industry-blog/en-gb/technetuk/2019/06/18/perfecting-continuous-delivery-of-nuget-packages-for-azure-artifacts/
+# https://gitversion.net/docs/build-server-support/build-server/azure-devops
+- task: GitVersion@5
   inputs:
-    VersionNumber: $(MajorVersion).$(MinorVersion).0.0
-    FileVersionNumber: $(MajorVersion).$(MinorVersion).*.*
-    InformationalVersion: $(MajorVersion).$(MinorVersion).*.*
-    PackageVersion: $(MajorVersion).$(MinorVersion).*.*
+    runtime: core
+    configFilePath: gitversion.yml
 
 - task: DotNetCoreCLI@2
-  displayName: Build
   inputs:
+    command: build
     projects: '**/*.csproj'
-    arguments: '--configuration $(BuildConfiguration)'
+    arguments: '--configuration $(BuildConfiguration) /p:Version=$(GitVersion.NuGetVersion)'
+    versioningScheme: byBuildNumber
 
 - task: VSTest@2
   displayName: Test
   inputs:
     codeCoverageEnabled: true
-    diagnosticsEnabled: True
+    diagnosticsEnabled: true
 
 - task: DotNetCoreCLI@2
-  displayName: Pack
   inputs:
     command: pack
     nobuild: true
     includesymbols: true
     includesource: true
-    versioningScheme: byBuildNumber
+    versioningScheme: byEnvVar 
+    versionEnvVar: GitVersion.NuGetVersion
 
+# Use NuGet command task instead of dotnet push for .snupkg symbol support
 - task: NuGetCommand@2
-  displayName: 'NuGet Push'
   inputs:
     command: push
-    packagesToPush: $(Build.ArtifactStagingDirectory)/**/*.nupkg
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
     nuGetFeedType: external
     publishFeedCredentials: NuGet
