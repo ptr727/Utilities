@@ -39,7 +39,7 @@ steps:
 - task: Assembly-Info-NetCore@2
   displayName: 'Set Version Information'
   inputs:
-    FileNames: 'UtilitiesTests/UtilitiesTests.csproj'
+    FileNames: 'Utilities/Utilities.csproj'
     VersionNumber: $(GitVersion.AssemblySemVer)
     FileVersionNumber: $(GitVersion.AssemblySemFileVer)
     InformationalVersion: $(GitVersion.InformationalVersion)
