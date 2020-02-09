@@ -1,54 +1,82 @@
+# Set triggers in the pipeline configuration
+#trigger:
+#  batch: true
+#  branches:
+#    include:
+#    - master
+#    - develop
+
+#pr:
+#  branches:
+#    include:
+#    - master
+
 pool:
   vmImage: windows-2019
 
-# Variables must be defined in pipeline configuration
+# Set variables in the pipeline configuration
 #variables:
 #  BuildConfiguration: Debug
 
-name: $(MajorVersion).$(MinorVersion).$(Date:yyyyMMdd).$(Rev:r)
+# Build name
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/process/run-number?view=azure-devops&tabs=yaml
+#name: $(MajorVersion).$(MinorVersion).$(Date:yyyyMMdd).$(Rev:r)
 
 steps:
 
+# Debug environment variables
 #- script: echo $(Build.BuildNumber)
 #- script: echo $(Build.BuildId)
 #- script: echo $(Build.DefinitionName)
 #- script: echo $(Build.SourceBranchName)
 
-# DotNet Core 2.x runtime is required by GitVersion tool
+# DotNet Core 2.x
+# Required by GitVersion tool
 - task: UseDotNet@2
   inputs:
     packageType: runtime
     version: 2.x
 
+# DotNet Core 3.1
 - task: UseDotNet@2
   inputs:
     packageType: sdk
     version: 3.1.x
 
+# NuGet 4.9
+# We need .snupkg symbol support
 - task: NuGetToolInstaller@1
   inputs:
     versionSpec: 4.9.x
 
-# https://cloudblogs.microsoft.com/industry-blog/en-gb/technetuk/2019/06/18/perfecting-continuous-delivery-of-nuget-packages-for-azure-artifacts/
+# Version
 # https://gitversion.net/docs/build-server-support/build-server/azure-devops
 - task: GitVersion@5
   inputs:
     runtime: core
     configFilePath: gitversion.yml
 
+# Build
 - task: DotNetCoreCLI@2
   inputs:
     command: build
     projects: '**/*.csproj'
-    arguments: '--configuration $(BuildConfiguration) /p:Version=$(GitVersion.NuGetVersion)'
-    versioningScheme: byBuildNumber
+    configuration: $(BuildConfiguration)
+    versioningScheme: byEnvVar
+    versionEnvVar: GitVersion.SemVer
 
+# Test
 - task: VSTest@2
-  displayName: Test
   inputs:
+    testSelector: testAssemblies
+    testAssemblyVer2: |
+      **\*test*.dll
+      !**\*TestAdapter.dll
+      !**\obj\**
+    searchFolder: $(System.DefaultWorkingDirectory)
     codeCoverageEnabled: true
-    diagnosticsEnabled: true
 
+# Pack
 - task: DotNetCoreCLI@2
   inputs:
     command: pack
@@ -58,7 +86,8 @@ steps:
     versioningScheme: byEnvVar 
     versionEnvVar: GitVersion.NuGetVersion
 
-# Use NuGet command task instead of dotnet push for .snupkg symbol support
+# Push
+# Use NuGet command task instead of dotnet push so we can get .snupkg symbol support
 - task: NuGetCommand@2
   inputs:
     command: push
