@@ -33,12 +33,14 @@ steps:
 # DotNet Core 2.x
 # Required by GitVersion tool
 - task: UseDotNet@2
+  displayName: 'Install DotNet Core 2.x'
   inputs:
     packageType: runtime
     version: 2.x
 
 # DotNet Core 3.1
 - task: UseDotNet@2
+  displayName: 'Install DotNet Core SDK 3.1.x'
   inputs:
     packageType: sdk
     version: 3.1.x
@@ -46,35 +48,40 @@ steps:
 # NuGet 4.9
 # We need .snupkg symbol support
 - task: NuGetToolInstaller@1
+  displayName: 'Install NuGet 4.9.x'
   inputs:
     versionSpec: 4.9.x
 
 # Version
 # https://gitversion.net/docs/build-server-support/build-server/azure-devops
 - task: GitVersion@5
+  displayName: 'Run GitVersion Tool'
   inputs:
     runtime: core
     configFilePath: gitversion.yml
 
+# Test
+- task: DotNetCoreCLI@2
+  displayName: 'Run DotNet Core Tests'
+  inputs:
+    command: test
+    projects: 'UtilitiesTests/UtilititesTest.csproj'
+    configuration: $(BuildConfiguration)
+    publishTestResults: true
+
 # Build
 - task: DotNetCoreCLI@2
+  displayName: 'Build DotNet Core'
   inputs:
     command: build
-    projects: '**/*.csproj'
+    projects: '/Utilitites/Utilities.csproj'
     configuration: $(BuildConfiguration)
     versioningScheme: byEnvVar
     versionEnvVar: GitVersion.SemVer
 
-# Test
-- task: DotNetCoreCLI@2
-  inputs:
-    command: test
-    projects: '**/*Test/*.csproj'
-    configuration: $(BuildConfiguration)
-    publishTestResults: true
-
 # Pack
 - task: DotNetCoreCLI@2
+  displayName: 'Pack DotNet Core'
   inputs:
     command: pack
     nobuild: true
@@ -86,6 +93,7 @@ steps:
 # Push
 # Use NuGet command task instead of dotnet push so we can get .snupkg symbol support
 - task: NuGetCommand@2
+  displayName: 'Push NuGet'
   inputs:
     command: push
     packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
