@@ -52,7 +52,9 @@ steps:
   inputs:
     command: test
     projects: 'UtilitiesTests/UtilitiesTests.csproj'
-    configuration: $(BuildConfiguration)
+    #configuration appears to be ignored, use commandline instead
+    arguments: '--configuration $(BuildConfiguration)'
+    #configuration: $(BuildConfiguration)
     publishTestResults: true
 
 # Build
@@ -61,7 +63,9 @@ steps:
   inputs:
     command: build
     projects: 'Utilities/Utilities.csproj'
-    configuration: $(BuildConfiguration)
+    #configuration appears to be ignored, use commandline instead
+    arguments: '--configuration $(BuildConfiguration)'
+    #configuration: $(BuildConfiguration)
 
 # Pack
 - task: DotNetCoreCLI@2
