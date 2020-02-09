@@ -14,7 +14,7 @@
     <AssemblyName>InsaneGenius.Utilities</AssemblyName>
     <RootNamespace>InsaneGenius.Utilities</RootNamespace>
     <NeutralLanguage>en</NeutralLanguage>
-    <PackageProjectUrl>https://dev.azure.com/pieterv/utilities/</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/ptr727/utilities</PackageProjectUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
