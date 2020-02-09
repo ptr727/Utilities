@@ -65,7 +65,7 @@ steps:
   displayName: 'Run DotNet Core Tests'
   inputs:
     command: test
-    projects: 'UtilitiesTests/UtilititesTest.csproj'
+    projects: 'UtilitiesTests/UtilitiesTests.csproj'
     configuration: $(BuildConfiguration)
     publishTestResults: true
 
@@ -74,7 +74,7 @@ steps:
   displayName: 'Build DotNet Core'
   inputs:
     command: build
-    projects: '/Utilitites/Utilities.csproj'
+    projects: 'Utilitites/Utilities.csproj'
     configuration: $(BuildConfiguration)
     versioningScheme: byEnvVar
     versionEnvVar: GitVersion.SemVer
