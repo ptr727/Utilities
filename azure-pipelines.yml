@@ -74,7 +74,7 @@ steps:
   displayName: 'Build DotNet Core'
   inputs:
     command: build
-    projects: 'Utilitites/Utilities.csproj'
+    projects: 'Utilities/Utilities.csproj'
     configuration: $(BuildConfiguration)
     versioningScheme: byEnvVar
     versionEnvVar: GitVersion.SemVer
