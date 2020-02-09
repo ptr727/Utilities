@@ -1,36 +1,9 @@
-# Set triggers in the pipeline configuration
-#trigger:
-#  batch: true
-#  branches:
-#    include:
-#    - master
-#    - develop
-
-#pr:
-#  branches:
-#    include:
-#    - master
-
 pool:
   vmImage: windows-2019
 
-# Set variables in the pipeline configuration
-#variables:
-#  BuildConfiguration: Debug
-
-# Build name
-# https://docs.microsoft.com/en-us/azure/devops/pipelines/process/run-number?view=azure-devops&tabs=yaml
-#name: $(MajorVersion).$(MinorVersion).$(Date:yyyyMMdd).$(Rev:r)
-
 steps:
 
-# Debug environment variables
-#- script: echo $(Build.BuildNumber)
-#- script: echo $(Build.BuildId)
-#- script: echo $(Build.DefinitionName)
-#- script: echo $(Build.SourceBranchName)
-
-# DotNet Core 2.x
+# Install DotNet Core 2.x
 # Required by GitVersion tool
 - task: UseDotNet@2
   displayName: 'Install DotNet Core 2.x'
@@ -38,27 +11,40 @@ steps:
     packageType: runtime
     version: 2.x
 
-# DotNet Core 3.1
+# Install DotNet Core 3.1.x
 - task: UseDotNet@2
   displayName: 'Install DotNet Core SDK 3.1.x'
   inputs:
     packageType: sdk
     version: 3.1.x
 
-# NuGet 4.9
-# We need .snupkg symbol support
+# Install NuGet 4.9.x
+# We need to use NuGet and not dotnet so we can get .snupkg symbol support
 - task: NuGetToolInstaller@1
   displayName: 'Install NuGet 4.9.x'
   inputs:
     versionSpec: 4.9.x
 
-# Version
+# Calculate the GitFlow version numbers
 # https://gitversion.net/docs/build-server-support/build-server/azure-devops
 - task: GitVersion@5
   displayName: 'Run GitVersion Tool'
   inputs:
     runtime: core
     configFilePath: gitversion.yml
+
+# Set the manifest versions
+# Modify the csproj file directly and use values valculated but GitVersion tool
+# https://github.com/BMuuN/vsts-assemblyinfo-task/wiki/Attributes
+- task: Assembly-Info-NetCore@2
+  displayName: 'Set Version Information'
+  inputs:
+    FileNames: 'UtilitiesTests/UtilitiesTests.csproj'
+    VersionNumber: GitVersion.AssemblySemVer
+    FileVersionNumber: GitVersion.AssemblySemFileVer
+    InformationalVersion: GitVersion.InformationalVersion
+    PackageVersion: GitVersion.InformationalVersion
+    LogLevel: verbose
 
 # Test
 - task: DotNetCoreCLI@2
@@ -76,8 +62,6 @@ steps:
     command: build
     projects: 'Utilities/Utilities.csproj'
     configuration: $(BuildConfiguration)
-    versioningScheme: byEnvVar
-    versionEnvVar: GitVersion.SemVer
 
 # Pack
 - task: DotNetCoreCLI@2
