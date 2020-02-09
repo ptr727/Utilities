@@ -66,15 +66,12 @@ steps:
     versionEnvVar: GitVersion.SemVer
 
 # Test
-- task: VSTest@2
+- task: DotNetCoreCLI@2
   inputs:
-    testSelector: testAssemblies
-    testAssemblyVer2: |
-      **\*test*.dll
-      !**\*TestAdapter.dll
-      !**\obj\**
-    searchFolder: $(System.DefaultWorkingDirectory)
-    codeCoverageEnabled: true
+    command: test
+    projects: '**/*Test/*.csproj'
+    configuration: $(BuildConfiguration)
+    publishTestResults: true
 
 # Pack
 - task: DotNetCoreCLI@2
