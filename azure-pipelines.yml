@@ -34,7 +34,7 @@ steps:
     configFilePath: gitversion.yml
 
 # Set the manifest versions
-# Modify the csproj file directly and use values valculated but GitVersion tool
+# Modify the csproj file directly and use values calculated by the GitVersion tool
 # https://github.com/BMuuN/vsts-assemblyinfo-task/wiki/Attributes
 - task: Assembly-Info-NetCore@2
   displayName: 'Set Version Information'
