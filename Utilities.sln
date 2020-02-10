@@ -8,7 +8,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C02ADEE0-B2CB-465B-912B-41D102239980}"
 	ProjectSection(SolutionItems) = preProject
 		azure-pipelines.yml = azure-pipelines.yml
+		gitversion.yml = gitversion.yml
 		Utilities\ISO-639-3.tab = Utilities\ISO-639-3.tab
+		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
 EndProject
