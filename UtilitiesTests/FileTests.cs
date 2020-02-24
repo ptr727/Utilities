@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using System.Diagnostics;
+using Xunit;
 
 namespace InsaneGenius.Utilities.Tests
 {
@@ -8,11 +9,25 @@ namespace InsaneGenius.Utilities.Tests
         [InlineData(@"C:\Path One", @"Path Two", @"C:\Path One\Path Two")]
         [InlineData(@"C:\Path One\", @"\Path Two", @"C:\Path One\Path Two")]
         [InlineData(@"C:\Path One\", @"/Path Two", @"C:\Path One\Path Two")]
-        [InlineData(@"\\Server\Path One\", @"\Path Two", @"\\Server\Path One\Path Two")]
-        public void CombinePath_RemoveRoots(string path1, string path2, string output)
+        [InlineData(@"C:\Path One\Path Two\", @"..\Path Three\", @"C:\Path One\Path Three")]
+        [InlineData(@"\\server\Path One\", @"\Path Two", @"\\server\Path One\Path Two")]
+        [InlineData(@"\\server\Path One\Path Two\", @"..\Path Three", @"\\server\Path One\Path Three")]
+        public void CombineAbsolutePath2(string path1, string path2, string output)
         {
-            // Combine the path
             string path = FileEx.CombinePath(path1, path2);
+            Assert.Equal(path, output);
+        }
+
+        [Theory]
+        [InlineData(@"C:\Path One", @"Path Two", @"foo.txt", @"C:\Path One\Path Two\foo.txt")]
+        [InlineData(@"C:\Path One\", @"\Path Two", @"foo.txt", @"C:\Path One\Path Two\foo.txt")]
+        [InlineData(@"C:\Path One\", @"/Path Two", @"foo.txt", @"C:\Path One\Path Two\foo.txt")]
+        [InlineData(@"C:\Path One\Path Two\", @"..\Path Three\", @"foo.txt", @"C:\Path One\Path Three\foo.txt")]
+        [InlineData(@"\\server\Path One\", @"\Path Two", @"foo.txt", @"\\server\Path One\Path Two\foo.txt")]
+        [InlineData(@"\\server\Path One\Path Two\", @"..\Path Three", @"foo.txt", @"\\server\Path One\Path Three\foo.txt")]
+        public void CombineAbsolutePath3(string path1, string path2, string path3, string output)
+        {
+            string path = FileEx.CombinePath(path1, path2, path3);
             Assert.Equal(path, output);
         }
     }

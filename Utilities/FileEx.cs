@@ -349,8 +349,40 @@ namespace InsaneGenius.Utilities
             return true;
         }
 
-        // Combine paths and remove any extra root separators
-        // Default Path.Combine() logic will treat rooted paths as only path
+        // Combine paths and convert relative to absolute
+        public static string CombinePath(string path1, string path2, string path3)
+        {
+            if (path1 == null)
+                throw new ArgumentNullException(nameof(path1));
+            if (path2 == null)
+                throw new ArgumentNullException(nameof(path2));
+            if (path3 == null)
+                throw new ArgumentNullException(nameof(path3));
+
+            // Trim roots from second and third path
+            if (Path.IsPathRooted(path2))
+            {
+                path2 = path2.TrimStart(Path.DirectorySeparatorChar);
+                path2 = path2.TrimStart(Path.AltDirectorySeparatorChar);
+            }
+            if (Path.IsPathRooted(path3))
+            {
+                path3 = path3.TrimStart(Path.DirectorySeparatorChar);
+                path3 = path3.TrimStart(Path.AltDirectorySeparatorChar);
+            }
+
+            // Combine and convert relative paths to absolute local paths
+            // Uri.LocalPath will add slashes at the end of directories
+            // Uri.LocalPath will lowercase UNC server names
+            string path = new Uri(Path.Combine(path1, path2, path3)).LocalPath;
+
+            // Remove directory separator from path end
+            path = path.TrimEnd(Path.DirectorySeparatorChar);
+            path = path.TrimEnd(Path.AltDirectorySeparatorChar);
+
+            return path;
+        }
+
         public static string CombinePath(string path1, string path2)
         {
             if (path1 == null)
@@ -358,15 +390,7 @@ namespace InsaneGenius.Utilities
             if (path2 == null)
                 throw new ArgumentNullException(nameof(path2));
 
-            // Trim roots from second path
-            if (Path.IsPathRooted(path2))
-            {
-                path2 = path2.TrimStart(Path.DirectorySeparatorChar);
-                path2 = path2.TrimStart(Path.AltDirectorySeparatorChar);
-            }
-            
-            // Combine using normal logic, after stripping roots
-            return Path.Combine(path1, path2);
+            return CombinePath(path1, path2, "");
         }
 
         // Enumerate all files and directories in the list of source directories
