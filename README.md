@@ -4,10 +4,12 @@ Generally useful and not so useful C# .NET utility classes.
 
 ## License
 
-[![GitHub](https://img.shields.io/github/license/ptr727/Utilities)](https://github.com/ptr727/Utilities/blob/master/LICENSE)
+[![GitHub](https://img.shields.io/github/license/ptr727/Utilities)](./LICENSE)  
+Licensed under the [MIT License](./LICENSE)
 
 ## Project
 
+![GitHub last commit](https://img.shields.io/github/last-commit/ptr727/utilities?logo=github)  
 Code is on [GitHub](https://github.com/ptr727/Utilities).   
 CI is on [Azure DevOps](https://dev.azure.com/pieterv/Utilities).
 
