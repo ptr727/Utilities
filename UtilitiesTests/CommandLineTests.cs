@@ -5,7 +5,7 @@ namespace InsaneGenius.Utilities.Tests
     public class CommandLineTests
     {
         [Fact]
-        public void ParseArguments_Split()
+        public void ParseArguments()
         {
             const string input = @"/src:""C:\tmp\Some Folder\Sub Folder"" /users:""abcdefg@hijkl.com"" tasks:""SomeTask,Some Other Task"" -someParam foo D:\";
             string[] expected =  
@@ -23,7 +23,7 @@ namespace InsaneGenius.Utilities.Tests
         }
 
         [Fact]
-        public void GetCommandlineArgs_Split()
+        public void GetCommandlineArgs()
         {
             string[] commandlineArgs = CommandLineEx.GetCommandlineArgs();
             Assert.True(commandlineArgs.Length > 0);

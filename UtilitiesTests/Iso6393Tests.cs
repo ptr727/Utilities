@@ -6,7 +6,7 @@ namespace InsaneGenius.Utilities.Tests
     public class Iso6393Tests
     {
         [Fact]
-        public void Create_CreateIso6393List()
+        public void Create()
         {
             // Create full list of languages
             List<Iso6393> iso6393List = Iso6393.Create();
@@ -16,7 +16,7 @@ namespace InsaneGenius.Utilities.Tests
         [Theory]
         [InlineData("afr", "Afrikaans")]
         [InlineData("af", "Afrikaans")]
-        public void FromString_GetLanguageFromString(string input, string output)
+        public void FromString(string input, string output)
         {
             // Create full list of languages
             List<Iso6393> iso6393List = Iso6393.Create();
