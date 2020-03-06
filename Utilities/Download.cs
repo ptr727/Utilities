@@ -34,24 +34,15 @@ namespace InsaneGenius.Utilities
 
         public static bool DownloadFile(Uri uri, string fileName)
         {
-            return DownloadFile(uri, null, null, fileName);
-        }
-
-        public static bool DownloadFile(Uri uri, string userName, string password, string fileName)
-        {
             try
             {
-                // Open request with timeout and credentials
+                // Open request with timeout and credentials set in Uri
                 WebRequest request = WebRequest.Create(uri);
                 request.Timeout = Timeout;
                 if (request.GetType() == typeof(HttpWebRequest))
                 {
                     HttpWebRequest httpRequest = (HttpWebRequest)request;
                     httpRequest.ReadWriteTimeout = request.Timeout;
-                }
-                if (string.IsNullOrEmpty(userName) == false || string.IsNullOrEmpty(password) == false)
-                {
-                    request.Credentials = new NetworkCredential(userName, password);
                 }
 
                 // Get the response
@@ -70,6 +61,27 @@ namespace InsaneGenius.Utilities
                 return false;
             }
             return true;
+        }
+
+        public static bool DownloadFile(string url, string userName, string password, string fileName)
+        {
+            Uri uri;
+            try
+            {
+                // Create Uri
+                UriBuilder uriBuilder = new UriBuilder(url);
+                if (!string.IsNullOrEmpty(userName))
+                    uriBuilder.UserName = userName;
+                if (!string.IsNullOrEmpty(password))
+                    uriBuilder.Password = password;
+                uri = uriBuilder.Uri;
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(e);
+                return false;
+            }
+            return DownloadFile(uri, fileName);
         }
 
         private const int Timeout = 30 * 1000;
