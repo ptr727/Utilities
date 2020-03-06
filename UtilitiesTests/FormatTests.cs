@@ -22,7 +22,7 @@ namespace InsaneGenius.Utilities.Tests
         [InlineData(int.MaxValue, "2GiB")]
         [InlineData(long.MinValue + 1, "-8EiB")]
         [InlineData(long.MaxValue, "8EiB")]
-        public void Format_BytestoKibi(long value, string output)
+        public void BytestoKibi(long value, string output)
         {
             string kibi = Format.BytesToKibi(value);
             Assert.Equal(kibi, output);
@@ -46,7 +46,7 @@ namespace InsaneGenius.Utilities.Tests
         [InlineData(int.MaxValue, "2.10GB")]
         [InlineData(long.MinValue + 1, "-9.20EB")]
         [InlineData(long.MaxValue, "9.20EB")]
-        public void Format_BytestoKilo(long value, string output)
+        public void BytestoKilo(long value, string output)
         {
             string kilo = Format.BytesToKilo(value);
             Assert.Equal(kilo, output);
