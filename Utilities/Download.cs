@@ -63,7 +63,9 @@ namespace InsaneGenius.Utilities
             return true;
         }
 
+#pragma warning disable CA1054 // Uri parameters should not be strings
         public static bool DownloadFile(string url, string userName, string password, string fileName)
+#pragma warning restore CA1054 // Uri parameters should not be strings
         {
             Uri uri;
             try
