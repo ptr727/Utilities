@@ -38,13 +38,13 @@ namespace InsaneGenius.Utilities
                 catch (IOException e)
                 {
                     // Retry
-                    Trace.WriteLine(e);
-                    Trace.WriteLine($"Deleting ({retryCount + 1} / {Options.FileRetryCount}) : \"{fileName}\"");
+                    TraceEx(e);
+                    TraceEx($"Deleting ({retryCount + 1} / {Options.FileRetryCount}) : \"{fileName}\"");
                     Options.WaitForCancelFileRetry();
                 }
                 catch (Exception e)
                 {
-                    Trace.WriteLine(e);
+                    TraceEx(e);
                     break;
                 }
             }
@@ -79,8 +79,8 @@ namespace InsaneGenius.Utilities
                     // TODO : Do not retry if folder is not empty, it will never succeed
 
                     // Retry
-                    Trace.WriteLine(e);
-                    Trace.WriteLine($"Deleting ({retryCount + 1} / {Options.FileRetryCount}) : \"{directory}\"");
+                    TraceEx(e);
+                    TraceEx($"Deleting ({retryCount + 1} / {Options.FileRetryCount}) : \"{directory}\"");
                     Options.WaitForCancelFileRetry();
                 }
                 catch (Exception e)
@@ -137,21 +137,21 @@ namespace InsaneGenius.Utilities
                 catch (FileNotFoundException e)
                 {
                     // File not found
-                    Trace.WriteLine(e);
+                    TraceEx(e);
                     break;
                 }
                 catch (IOException e)
                 {
                     // Retry
-                    Trace.WriteLine(e);
-                    Trace.WriteLine(originalDirectory.Equals(newDirectory, StringComparison.OrdinalIgnoreCase)
+                    TraceEx(e);
+                    TraceEx(originalDirectory.Equals(newDirectory, StringComparison.OrdinalIgnoreCase)
                         ? $"Renaming ({retrycount + 1} / {Options.FileRetryCount}) : \"{originalDirectory}\" : \"{originalFile}\" to \"{newFile}\""
                         : $"Renaming ({retrycount + 1} / {Options.FileRetryCount}) : \"{originalName}\" to \"{newName}\"");
                     Options.WaitForCancelFileRetry();
                 }
                 catch (Exception e)
                 {
-                    Trace.WriteLine(e);
+                    TraceEx(e);
                     break;
                 }
             }
@@ -185,19 +185,19 @@ namespace InsaneGenius.Utilities
                 catch (FileNotFoundException e)
                 {
                     // File not found
-                    Trace.WriteLine(e);
+                    TraceEx(e);
                     break;
                 }
                 catch (IOException e)
                 {
                     // Retry
-                    Trace.WriteLine(e);
-                    Trace.WriteLine($"Renaming ({retryCount + 1} / {Options.FileRetryCount}) : \"{originalName}\" to \"{newName}\"");
+                    TraceEx(e);
+                    TraceEx($"Renaming ({retryCount + 1} / {Options.FileRetryCount}) : \"{originalName}\" to \"{newName}\"");
                     Options.WaitForCancelFileRetry();
                 }
                 catch (Exception e)
                 {
-                    Trace.WriteLine(e);
+                    TraceEx(e);
                     break;
                 }
             }
@@ -293,13 +293,13 @@ namespace InsaneGenius.Utilities
                 catch (IOException e)
                 {
                     // Retry
-                    Trace.WriteLine(e);
-                    Trace.WriteLine($"Waiting for file to become readable ({retryCount + 1} / {Options.FileRetryCount}) : \"{fileName}\"");
+                    TraceEx(e);
+                    TraceEx($"Waiting for file to become readable ({retryCount + 1} / {Options.FileRetryCount}) : \"{fileName}\"");
                     Options.WaitForCancelFileRetry();
                 }
                 catch (Exception e)
                 {
-                    Trace.WriteLine(e);
+                    TraceEx(e);
                     break;
                 }
             }
@@ -343,7 +343,7 @@ namespace InsaneGenius.Utilities
             }
             catch (Exception e)
             {
-                Trace.WriteLine(e);
+                TraceEx(e);
                 return false;
             }
             return true;
@@ -425,7 +425,7 @@ namespace InsaneGenius.Utilities
             }
             catch (Exception e)
             {
-                Trace.WriteLine(e);
+                TraceEx(e);
                 return false;
             }
 
@@ -460,7 +460,7 @@ namespace InsaneGenius.Utilities
             }
             catch (Exception e)
             {
-                Trace.WriteLine(e);
+                TraceEx(e);
                 return false;
             }
 
@@ -477,6 +477,18 @@ namespace InsaneGenius.Utilities
             string directory = Path.GetDirectoryName(filePath);
             string fileName = $"{timeStamp:yyyyMMddTHHmmss}_{Path.GetFileName(filePath)}";
             return Path.Combine(directory, fileName);
+        }
+
+        private static void TraceEx(string value)
+        {
+            Trace.WriteLine(value);
+            if (Options.TraceToConsole)
+                ConsoleEx.WriteLineError(value);
+        }
+
+        private static void TraceEx(object value)
+        {
+            TraceEx(value.ToString());
         }
     }
 }
