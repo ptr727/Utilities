@@ -22,7 +22,7 @@ namespace InsaneGenius.Utilities
             return new string(parmChars).Split('\n');
         }
 
-        public static string[] GetCommandlineArgs()
+        public static string[] GetCommandLineArgs()
         {
             // Split the arguments
             string[] args = ParseArguments(Environment.CommandLine);

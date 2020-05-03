@@ -23,9 +23,9 @@ namespace InsaneGenius.Utilities.Tests
         }
 
         [Fact]
-        public void GetCommandlineArgs()
+        public void GetCommandLineArgs()
         {
-            string[] commandlineArgs = CommandLineEx.GetCommandlineArgs();
+            string[] commandlineArgs = CommandLineEx.GetCommandLineArgs();
             Assert.True(commandlineArgs.Length > 0);
         }
     }
