@@ -10,7 +10,7 @@ Licensed under the [MIT License](./LICENSE)
 ## Project
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/ptr727/utilities?logo=github)  
-Code is on [GitHub](https://github.com/ptr727/Utilities).   
+Code is on [GitHub](https://github.com/ptr727/Utilities).  
 CI is on [Azure DevOps](https://dev.azure.com/pieterv/Utilities).
 
 ## Build Status
