@@ -72,6 +72,7 @@ steps:
   displayName: 'Pack DotNet Core'
   inputs:
     command: pack
+    packagesToPack: 'Utilities/Utilities.csproj'
     nobuild: true
     includesymbols: true
     includesource: true
