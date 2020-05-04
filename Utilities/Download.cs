@@ -2,6 +2,11 @@
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Reflection;
+
+// TODO : Consider switching to HttpClient
+// https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=netcore-3.1
+// https://stackoverflow.com/questions/122853/how-to-get-the-file-size-from-http-headers
 
 namespace InsaneGenius.Utilities
 {
@@ -13,14 +18,13 @@ namespace InsaneGenius.Utilities
             modifiedTime = DateTime.MinValue;
             try
             {
-                // Get the file details
-                WebRequest request = WebRequest.Create(uri);
-                request.Method = "HEAD";
-                WebResponse response = request.GetResponse();
-                size = response.ContentLength;
-                if (response.GetType() == typeof(HttpWebResponse))
+                // Get response
+                WebRequest webRequest = CreateWebRequest(uri);
+                WebResponse webResponse = webRequest.GetResponse();
+                size = webResponse.ContentLength;
+                if (webResponse.GetType() == typeof(HttpWebResponse))
                 {
-                    HttpWebResponse httpResponse = (HttpWebResponse)response;
+                    HttpWebResponse httpResponse = (HttpWebResponse)webResponse;
                     modifiedTime = httpResponse.LastModified;
                 }
             }
@@ -36,20 +40,12 @@ namespace InsaneGenius.Utilities
         {
             try
             {
-                // Open request with timeout and credentials set in Uri
-                WebRequest request = WebRequest.Create(uri);
-                request.Timeout = Timeout;
-                if (request.GetType() == typeof(HttpWebRequest))
-                {
-                    HttpWebRequest httpRequest = (HttpWebRequest)request;
-                    httpRequest.ReadWriteTimeout = request.Timeout;
-                }
-
-                // Get the response
-                WebResponse response = request.GetResponse();
-                Stream webStream = response.GetResponseStream();
+                // Get response
+                WebRequest webRequest = CreateWebRequest(uri);
+                WebResponse webResponse = webRequest.GetResponse();
 
                 // Write response to file
+                Stream webStream = webResponse.GetResponseStream();
                 using FileStream fileStream = File.OpenWrite(fileName);
                 webStream.CopyTo(fileStream);
                 fileStream.Close();
@@ -63,27 +59,53 @@ namespace InsaneGenius.Utilities
             return true;
         }
 
-#pragma warning disable CA1054 // Uri parameters should not be strings
-        public static bool DownloadFile(string url, string userName, string password, string fileName)
-#pragma warning restore CA1054 // Uri parameters should not be strings
+        public static bool DownloadString(Uri uri, out string value)
         {
-            Uri uri;
+            value = null;
             try
             {
-                // Create Uri
-                UriBuilder uriBuilder = new UriBuilder(url);
-                if (!string.IsNullOrEmpty(userName))
-                    uriBuilder.UserName = userName;
-                if (!string.IsNullOrEmpty(password))
-                    uriBuilder.Password = password;
-                uri = uriBuilder.Uri;
+                // Get response
+                WebRequest webRequest = CreateWebRequest(uri);
+                WebResponse webResponse = webRequest.GetResponse();
+
+                // Write response to text
+                Stream webStream = webResponse.GetResponseStream();
+                using StreamReader textStream = new StreamReader(webStream);
+                value = textStream.ReadToEnd();
+                textStream.Close();
+                webStream.Close();
             }
             catch (Exception e)
             {
                 Trace.WriteLine(e);
                 return false;
             }
-            return DownloadFile(uri, fileName);
+            return true;
+        }
+
+        public static WebRequest CreateWebRequest(Uri uri)
+        {
+            // Open request
+            WebRequest webRequest = WebRequest.Create(uri);
+            webRequest.Timeout = Timeout;
+            webRequest.Headers.Add(HttpRequestHeader.UserAgent, Assembly.GetExecutingAssembly().GetName().Name);
+            if (webRequest.GetType() == typeof(HttpWebRequest))
+            {
+                HttpWebRequest httpRequest = (HttpWebRequest)webRequest;
+                httpRequest.ReadWriteTimeout = webRequest.Timeout;
+            }
+            return webRequest;
+        }
+
+        public static Uri CreateUri(string url, string userName, string password)
+        {
+            // Create Uri
+            UriBuilder uriBuilder = new UriBuilder(url);
+            if (!string.IsNullOrEmpty(userName))
+                uriBuilder.UserName = userName;
+            if (!string.IsNullOrEmpty(password))
+                uriBuilder.Password = password;
+            return uriBuilder.Uri;
         }
 
         private const int Timeout = 30 * 1000;

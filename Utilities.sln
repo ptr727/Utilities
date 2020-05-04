@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UtilitiesTests", "Utilities
 		{0C347342-311D-4EF8-839C-22D5E2B83345} = {0C347342-311D-4EF8-839C-22D5E2B83345}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox", "Sandbox\Sandbox.csproj", "{23F1E346-172C-4DD6-811E-2980C3022FD0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{02D62FA1-FB2D-49FD-AA04-96E2B459C9A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02D62FA1-FB2D-49FD-AA04-96E2B459C9A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02D62FA1-FB2D-49FD-AA04-96E2B459C9A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23F1E346-172C-4DD6-811E-2980C3022FD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23F1E346-172C-4DD6-811E-2980C3022FD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23F1E346-172C-4DD6-811E-2980C3022FD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23F1E346-172C-4DD6-811E-2980C3022FD0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
