@@ -1,4 +1,4 @@
-variables:
+# variables:
   # $(BuildConfiguration) must be set in the pipeline variables
   # NuGet credentials are integrated
 
