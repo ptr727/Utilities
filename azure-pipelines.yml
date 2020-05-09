@@ -1,3 +1,7 @@
+# variables:
+  # $(BuildConfiguration) must be set in the pipeline variables
+  # NuGet credentials are integrated
+
 pool:
   vmImage: windows-2019
 
@@ -5,13 +9,15 @@ steps:
 
 # Install DotNet Core 2.x
 # Required by GitVersion tool
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/tool/dotnet-core-tool-installer?view=azure-devops
 - task: UseDotNet@2
   displayName: 'Install DotNet Core 2.x'
   inputs:
     packageType: runtime
     version: 2.x
 
-# Install DotNet Core 3.1.x
+# Install DotNet Core SDK 3.1.x
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/tool/dotnet-core-tool-installer?view=azure-devops
 - task: UseDotNet@2
   displayName: 'Install DotNet Core SDK 3.1.x'
   inputs:
@@ -20,6 +26,7 @@ steps:
 
 # Install NuGet 4.9.x
 # We need to use NuGet and not dotnet so we can get .snupkg symbol support
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/tool/nuget?view=azure-devops
 - task: NuGetToolInstaller@1
   displayName: 'Install NuGet 4.9.x'
   inputs:
@@ -33,7 +40,7 @@ steps:
     runtime: core
     configFilePath: gitversion.yml
 
-# Set the manifest versions
+# Set the manifest version information
 # Modify the csproj file directly and use values calculated by the GitVersion tool
 # https://github.com/BMuuN/vsts-assemblyinfo-task/wiki/Attributes
 - task: Assembly-Info-NetCore@2
@@ -46,7 +53,8 @@ steps:
     PackageVersion: $(GitVersion.InformationalVersion)
     LogLevel: verbose
 
-# Test
+# DotNetCore Test
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/build/dotnet-core-cli?view=azure-devops
 - task: DotNetCoreCLI@2
   displayName: 'Run DotNet Core Tests'
   inputs:
@@ -57,7 +65,8 @@ steps:
     #configuration: $(BuildConfiguration)
     publishTestResults: true
 
-# Build
+# DotNetCore Build
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/build/dotnet-core-cli?view=azure-devops
 - task: DotNetCoreCLI@2
   displayName: 'Build DotNet Core'
   inputs:
@@ -67,7 +76,8 @@ steps:
     arguments: '--configuration $(BuildConfiguration)'
     #configuration: $(BuildConfiguration)
 
-# Pack
+# DotNetCore Pack
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/build/dotnet-core-cli?view=azure-devops
 - task: DotNetCoreCLI@2
   displayName: 'Pack DotNet Core'
   inputs:
@@ -79,10 +89,15 @@ steps:
     versioningScheme: byEnvVar 
     versionEnvVar: GitVersion.NuGetVersion
 
-# Push
+# NuGet Push
 # Use NuGet command task instead of dotnet push so we can get .snupkg symbol support
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/package/nuget?view=azure-devops
 - task: NuGetCommand@2
   displayName: 'Push NuGet'
+  # TODO : Do not publish pre-release builds else NuGet will fail with duplicate version numbers
+  # Consider using --skip-duplicate, or append a unique build number
+  #condition: and(succeeded(), in(variables['Build.SourceBranch'], 'refs/heads/master', 'refs/heads/develop'))
+  condition: and(succeeded(), in(variables['Build.SourceBranch'], 'refs/heads/master'))
   inputs:
     command: push
     packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
