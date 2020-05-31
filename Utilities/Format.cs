@@ -41,10 +41,7 @@ namespace InsaneGenius.Utilities
             int magnitude = Convert.ToInt32(Math.Floor(Math.Log(value, KiB)));
             double fraction = Math.Round(value / Math.Pow(KiB, magnitude), 1);
             double truncate = Math.Truncate(fraction);
-            if (fraction.Equals(truncate))
-                return $"{Convert.ToInt64(truncate):D}{KibiSuffix[magnitude]}";
-            else
-                return $"{fraction:F}{KibiSuffix[magnitude]}";
+            return fraction.Equals(truncate) ? $"{Convert.ToInt64(truncate):D}{KibiSuffix[magnitude]}" : $"{fraction:F}{KibiSuffix[magnitude]}";
         }
         private static readonly string[] KibiSuffix = { "B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB" };
 
@@ -58,10 +55,7 @@ namespace InsaneGenius.Utilities
             int magnitude = Convert.ToInt32(Math.Floor(Math.Log(value, KB)));
             double fraction = Math.Round(value / Math.Pow(KB, magnitude), 1);
             double truncate = Math.Truncate(fraction);
-            if (fraction.Equals(truncate))
-                return $"{Convert.ToInt64(truncate):D}{KiloSuffix[magnitude]}";
-            else
-                return $"{fraction:F}{KiloSuffix[magnitude]}";
+            return fraction.Equals(truncate) ? $"{Convert.ToInt64(truncate):D}{KiloSuffix[magnitude]}" : $"{fraction:F}{KiloSuffix[magnitude]}";
         }
         private static readonly string[] KiloSuffix = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
     }

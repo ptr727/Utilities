@@ -307,7 +307,6 @@ namespace InsaneGenius.Utilities
             return result;
         }
 
-        // Try to open the file for read access
         public static bool IsFileReadable(FileInfo fileInfo)
         {
             if (fileInfo == null)
@@ -315,7 +314,44 @@ namespace InsaneGenius.Utilities
 
             try
             {
-                using FileStream stream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.None);
+                // Try to open the file for read access
+                using FileStream stream = fileInfo.Open(FileMode.Open, FileAccess.Read);
+                stream.Close();
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public static bool IsFileWriteable(FileInfo fileInfo)
+        {
+            if (fileInfo == null)
+                throw new ArgumentNullException(nameof(fileInfo));
+
+            try
+            {
+                // Try to open the file for write access
+                using FileStream stream = fileInfo.Open(FileMode.Open, FileAccess.Write);
+                stream.Close();
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public static bool IsFileReadWriteable(FileInfo fileInfo)
+        {
+            if (fileInfo == null)
+                throw new ArgumentNullException(nameof(fileInfo));
+
+            try
+            {
+                // Try to open the file for read-write access
+                using FileStream stream = fileInfo.Open(FileMode.Open, FileAccess.ReadWrite);
                 stream.Close();
             }
             catch (Exception)
@@ -477,6 +513,67 @@ namespace InsaneGenius.Utilities
             string directory = Path.GetDirectoryName(filePath);
             string fileName = $"{timeStamp:yyyyMMddTHHmmss}_{Path.GetFileName(filePath)}";
             return Path.Combine(directory, fileName);
+        }
+
+        public static bool CreateRandomFilledFile(string name, long size)
+        {
+            try
+            {
+                // Create the file
+                using FileStream stream = File.Open(name, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+
+                // Set the file length, this has no real impact on COW filesystems
+                stream.SetLength(size);
+                stream.Seek(0, SeekOrigin.Begin);
+
+                // Buffer with random data
+                const int buffersize = 2 * Format.MiB;
+                byte[] buffer = new byte[buffersize];
+                Random rand = new Random();
+
+                // Write in buffer chunks
+                long remaining = size;
+                while (remaining > 0)
+                {
+                    // Fill buffer with random data
+                    rand.NextBytes(buffer);
+                    // Write
+                    long writesize = Math.Min(remaining, Convert.ToInt64(buffer.Length));
+                    stream.Write(buffer, 0, Convert.ToInt32(writesize));
+                    // Remaining
+                    remaining -= writesize;
+                }
+
+                // Close
+                stream.Close();
+            }
+            catch (Exception e)
+            {
+                TraceEx(e);
+                return false;
+            }
+            return true;
+        }
+
+        public static bool CreateSparseFile(string name, long size)
+        {
+            try
+            {
+                // Create the file
+                using FileStream stream = File.Open(name, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+
+                // Set length
+                stream.SetLength(size);
+
+                // Close
+                stream.Close();
+            }
+            catch (Exception e)
+            {
+                TraceEx(e);
+                return false;
+            }
+            return true;
         }
 
         private static void TraceEx(string value)
