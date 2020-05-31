@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Xunit;
+﻿using Xunit;
 
 namespace InsaneGenius.Utilities.Tests
 {
