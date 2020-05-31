@@ -21,10 +21,6 @@ CI is on [Azure DevOps](https://dev.azure.com/pieterv/Utilities).
 
 [![NuGet](https://img.shields.io/nuget/v/InsaneGenius.Utilities?logo=nuget)](https://www.nuget.org/packages/InsaneGenius.Utilities/)
 
-## Usage
-
-Packages are on [NuGet](https://www.nuget.org/packages/InsaneGenius.Utilities/).
-
 ## Notes
 
 - ISO 639-3 language data is sourced from the [ISO 639-3 Registration Authority](https://iso639-3.sil.org/code_tables/download_tables).
