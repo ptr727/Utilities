@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using Xunit;
 
 namespace InsaneGenius.Utilities.Tests
