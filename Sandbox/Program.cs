@@ -264,7 +264,7 @@ namespace Sandbox
                     return;
                 }
 
-                JsonBuffer.Append(e.Data);
+                JsonBuffer.AppendLine(e.Data);
                 // TODO: Not very efficient
                 string json = JsonBuffer.ToString().Trim();
                 if (json.StartsWith("{") && 
