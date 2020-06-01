@@ -307,6 +307,7 @@ namespace InsaneGenius.Utilities
             return result;
         }
 
+        // Try to open the file for read access
         public static bool IsFileReadable(FileInfo fileInfo)
         {
             if (fileInfo == null)
@@ -325,6 +326,7 @@ namespace InsaneGenius.Utilities
             return true;
         }
 
+        // Try to open the file for write access
         public static bool IsFileWriteable(FileInfo fileInfo)
         {
             if (fileInfo == null)
@@ -343,6 +345,7 @@ namespace InsaneGenius.Utilities
             return true;
         }
 
+        // Try to open the file for read and write access
         public static bool IsFileReadWriteable(FileInfo fileInfo)
         {
             if (fileInfo == null)
