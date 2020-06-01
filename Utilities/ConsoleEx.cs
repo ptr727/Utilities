@@ -63,7 +63,6 @@ namespace InsaneGenius.Utilities
 
         public static void WriteLine(string value)
         {
-            // Good looking console colors; Green, Cyan, Red, Magenta, Yellow, White
             WriteLineColor(OutputColor, value);
         }
         public static void WriteLine(object value)
@@ -76,6 +75,7 @@ namespace InsaneGenius.Utilities
 
         private static readonly object WriteLineLock = new object();
 
+        // Good looking console colors; Green, Cyan, Red, Magenta, Yellow, White
         public const ConsoleColor ToolColor = ConsoleColor.Green;
         public const ConsoleColor ErrorColor = ConsoleColor.Red;
         public const ConsoleColor OutputColor = ConsoleColor.Cyan;

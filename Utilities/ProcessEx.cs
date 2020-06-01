@@ -51,12 +51,22 @@ namespace InsaneGenius.Utilities
             EnableRaisingEvents = true;
             Exited += ExitHandlerEx;
 
-            // Start process
+            // Process name and parameters
             StartInfo.FileName = executable;
             StartInfo.Arguments = parameters;
             StartInfo.UseShellExecute = false;
-            if (!Start())
+
+            try 
+            { 
+                // Start process
+                if (!Start())
+                    return false;
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(e);
                 return false;
+            }
 
             // Read output and error
             if (RedirectOutput)
@@ -69,8 +79,16 @@ namespace InsaneGenius.Utilities
 
         public async Task<int> WaitForExitAsync()
         {
-            // Wait for exit
+            // Wait for exit handler to be signalled
             await ProcessExitComplete.Task.ConfigureAwait(true);
+
+            // Wait for the process to exit to make sure all output has been written
+            WaitForExit();
+
+            // Flush streams
+            OutputStream?.Flush();
+            ErrorStream?.Flush();
+
             return ExitCode;
         }
 
@@ -84,7 +102,7 @@ namespace InsaneGenius.Utilities
 
             // Stream output or text output
             if (OutputStream != null)
-                OutputStream.Write(e.Data);
+                OutputStream.WriteLine(e.Data);
             else
                 OutputString.AppendLine(e.Data);
 
@@ -103,7 +121,7 @@ namespace InsaneGenius.Utilities
 
             // Stream output or text output
             if (ErrorStream != null)
-                ErrorStream.Write(e.Data);
+                ErrorStream.WriteLine(e.Data);
             else
                 ErrorString.AppendLine(e.Data);
 
@@ -114,9 +132,6 @@ namespace InsaneGenius.Utilities
 
         protected virtual void ExitHandler(EventArgs e)
         {
-            // Flush stream
-            OutputStream?.Flush();
-
             // Signal exit
             ProcessExitComplete.TrySetResult(true);
         }
