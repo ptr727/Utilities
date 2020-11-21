@@ -40,6 +40,11 @@ jobs:
         with:
           versionSpec: '5.x'
 
+      # Test project
+      # https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-test
+      - name: 'Test Project'
+        run: dotnet test ./UtilitiesTests/UtilitiesTests.csproj
+
       # Run GitVersion
       - name: 'Run GitVersion Tool'
         id: gitversion
@@ -50,14 +55,9 @@ jobs:
       - name: 'Build Project'
         run: dotnet build ./Utilities/Utilities.csproj --output ./Utilities/Artifacts -property:Version=${{ steps.gitversion.outputs.assemblySemVer }} -property:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} -property:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} -property:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }} -property:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }}
 
-      # Test project
-      # https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-test
-      - name: 'Test Project'
-        run: dotnet test ./UtilitiesTests/UtilitiesTests.csproj
-
       # Publish to NuGet repository
       # Only push for main branch updates
       # https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-nuget-push
       - name: 'Publish to NuGet Repository'
-        if: ${{ github.ref == 'refs/heads/main' }}
+        # if: ${{ github.ref == 'refs/heads/main' }}
         run: dotnet nuget push ${{ env.GITHUB_WORKSPACE }}/Utilities/Artifacts/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY}}
