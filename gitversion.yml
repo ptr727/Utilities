@@ -1,4 +1,2 @@
-# https://gitversion.net/docs/configuration
-
-mode: Mainline 
-next-version: 1.4.0 
+mode: ContinuousDeployment
+next-version: 1.4.0
