@@ -4,22 +4,19 @@ Generally useful and not so useful C# .NET utility classes.
 
 ## License
 
-[![GitHub](https://img.shields.io/github/license/ptr727/Utilities)](./LICENSE)  
-Licensed under the [MIT License](./LICENSE)
-
-## Project
-
-![GitHub last commit](https://img.shields.io/github/last-commit/ptr727/utilities?logo=github)  
-Code is on [GitHub](https://github.com/ptr727/Utilities).  
-CI is on [Azure DevOps](https://dev.azure.com/pieterv/Utilities).
+Licensed under the [MIT License](./LICENSE)  
+![GitHub](https://img.shields.io/github/license/ptr727/Utilities)
 
 ## Build Status
 
-[![Build Status](https://dev.azure.com/pieterv/Utilities/_apis/build/status/Utilities-YAML-CI?branchName=master)](https://dev.azure.com/pieterv/Utilities/_build/latest?definitionId=29&branchName=master)
+Code and Pipeline is on [GitHub](https://github.com/ptr727/Utilities)  
+![GitHub Last Commit](https://img.shields.io/github/last-commit/ptr727/Utilities?logo=github)  
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ptr727/Utilities/Build%20and%20Publish%20Pipeline?logo=github)
 
 ## NuGet Package
 
-[![NuGet](https://img.shields.io/nuget/v/InsaneGenius.Utilities?logo=nuget)](https://www.nuget.org/packages/InsaneGenius.Utilities/)
+Packages published on [NuGet](https://www.nuget.org/packages/InsaneGenius.Utilities/)  
+![NuGet](https://img.shields.io/nuget/v/InsaneGenius.Utilities?logo=nuget)
 
 ## Notes
 
