@@ -64,3 +64,4 @@ jobs:
         # Use build platform specific path convention, relative paths do not work
         # --skip-duplicate skips binaries but creates duplicate symbols with no matching binary content, https://github.com/NuGet/Home/issues/9647
         run: dotnet nuget push ${{ github.workspace }}\Utilities\Artifacts\*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY}}
+
