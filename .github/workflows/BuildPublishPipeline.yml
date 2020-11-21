@@ -60,4 +60,4 @@ jobs:
       # https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-nuget-push
       - name: 'Publish to NuGet Repository'
         # if: ${{ github.ref == 'refs/heads/main' }}
-        run: dotnet nuget push ${{ github.workspace }}/Utilities/Artifacts/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY}}
+        run: dotnet nuget push ${{ github.workspace }}\Utilities\Artifacts\*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY}}
