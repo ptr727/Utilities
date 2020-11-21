@@ -15,6 +15,7 @@
     <RootNamespace>InsaneGenius.Utilities</RootNamespace>
     <NeutralLanguage>en</NeutralLanguage>
     <PackageProjectUrl>https://github.com/ptr727/utilities</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
