@@ -59,7 +59,7 @@ jobs:
       # Publish to NuGet repository
       # https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-nuget-push
       - name: 'Publish to NuGet Repository'
-        # Do not push pullrequests
-        if: ${{ !contains(github.ref, 'pullrequest') }}
+        # Do not push pull requests
+        if: ${{ github.event_name != 'pull_request' }}
         # Use build platform specific path convention, relative paths do not work
-        run: dotnet nuget push ${{ github.workspace }}\Utilities\Artifacts\*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY}}
+        run: dotnet nuget push ${{ github.workspace }}\Utilities\Artifacts\*.nupkg --skip-duplicate --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY}}
