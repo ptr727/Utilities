@@ -50,7 +50,8 @@ jobs:
         id: gitversion
         uses: gittools/actions/gitversion/execute@v0.9.6
 
-      # Build project
+      # Build project, build will also create nuget packages, no need for pack
+      # Replace version information with GitVersion attributes
       # https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-build
       - name: 'Build Project'
         run: dotnet build ./Utilities/Utilities.csproj --output ./Utilities/Artifacts -property:Version=${{ steps.gitversion.outputs.assemblySemVer }} -property:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} -property:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemVer }} -property:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }} -property:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }}
@@ -60,6 +61,5 @@ jobs:
       - name: 'Publish to NuGet Repository'
         # Only push for main branch updates
         # if: ${{ github.ref == 'refs/heads/main' }}
-        # Use Windows path convention
-        #run: dotnet nuget push ${{ github.workspace }}\Utilities\Artifacts\*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY}}
-        run: dotnet nuget push ./Utilities/Artifacts/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY}}
+        # Use build platform specific path convention, relative paths do not work
+        run: dotnet nuget push ${{ github.workspace }}\Utilities\Artifacts\*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY}}
