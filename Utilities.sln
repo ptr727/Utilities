@@ -10,10 +10,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		azure-pipelines.yml = azure-pipelines.yml
-		gitversion.yml = gitversion.yml
+		.github\workflows\BuildPublishPipeline.yml = .github\workflows\BuildPublishPipeline.yml
+		GitVersion.yml = GitVersion.yml
 		Utilities\ISO-639-3.tab = Utilities\ISO-639-3.tab
 		LICENSE = LICENSE
-		.github\workflows\pipeline.yml = .github\workflows\pipeline.yml
 		README.md = README.md
 	EndProjectSection
 EndProject
