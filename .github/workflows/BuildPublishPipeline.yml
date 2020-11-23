@@ -34,11 +34,14 @@ jobs:
       
       # Install GitVersion
       # Requires .NET Core 3.1
+      # 5.5.1 does not work as expected, use 5.3.x
+      # https://github.com/GitTools/GitVersion/issues/2461
+      # master vs. main branch: regex: ^master$|^main$
       # https://github.com/marketplace/actions/use-actions
       - name: 'Install GitVersion'
         uses: gittools/actions/gitversion/setup@v0.9.6
         with:
-          versionSpec: '5.x'
+          versionSpec: '5.3.x'
 
       # Test project
       # https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-test
