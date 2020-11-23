@@ -37,9 +37,9 @@ jobs:
       # 5.5.1 does not work as expected, use 5.3.x
       # https://github.com/GitTools/GitVersion/issues/2461
       # master vs. main branch: regex: ^master$|^main$
-      # https://github.com/marketplace/actions/use-actions
+      # https://github.com/marketplace/actions/gittools
       - name: 'Install GitVersion'
-        uses: gittools/actions/gitversion/setup@v0.9.6
+        uses: gittools/actions/gitversion/setup@v0
         with:
           versionSpec: '5.3.x'
 
@@ -51,7 +51,7 @@ jobs:
       # Run GitVersion
       - name: 'Run GitVersion Tool'
         id: gitversion
-        uses: gittools/actions/gitversion/execute@v0.9.6
+        uses: gittools/actions/gitversion/execute@v0
         with:
           additionalArguments: '/diag'
 
