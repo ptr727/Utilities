@@ -340,11 +340,12 @@ namespace Sandbox
             // https://www.nexmo.com/legacy-blog/2020/02/10/adaptive-library-logging-with-microsoft-extensions-logging-dr
 
             // Default : "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
+            // "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level} {SourceContext} | {Message:lj}{NewLine}{Exception}"
 
             // Serilog logger
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .WriteTo.Console(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level} {SourceContext} | {Message:lj}{NewLine}{Exception}", 
+                .WriteTo.Console(outputTemplate: "{Timestamp:O} {Level} {SourceContext} | {Message}{NewLine}{Exception}", 
                                  theme: AnsiConsoleTheme.Code)
                 .CreateLogger();
 

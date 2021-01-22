@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -62,7 +63,7 @@ namespace InsaneGenius.Utilities
                 if (!Start())
                     return false;
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "StartEx()"))
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
             {
                 return false;
             }
