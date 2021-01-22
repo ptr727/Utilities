@@ -28,7 +28,7 @@ namespace InsaneGenius.Utilities
                     modifiedTime = httpResponse.LastModified;
                 }
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "GetContentInfo()"))
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
             {
                 return false;
             }
@@ -51,7 +51,7 @@ namespace InsaneGenius.Utilities
                 fileStream.Close();
                 webStream.Close();
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "DownloadFile()"))
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
             {
                 return false;
             }
@@ -75,7 +75,7 @@ namespace InsaneGenius.Utilities
                 textStream.Close();
                 webStream.Close();
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "DownloadString()"))
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
             {
                 return false;
             }
