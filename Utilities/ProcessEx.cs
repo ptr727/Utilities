@@ -86,8 +86,10 @@ namespace InsaneGenius.Utilities
             WaitForExit();
 
             // Flush streams
-            await OutputStream?.FlushAsync();
-            await ErrorStream?.FlushAsync();
+            if (OutputStream != null)
+                await OutputStream.FlushAsync();
+            if (ErrorStream != null)
+                await ErrorStream.FlushAsync();
 
             return ExitCode;
         }
