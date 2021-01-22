@@ -13,7 +13,7 @@ namespace InsaneGenius.Utilities.Tests
             int length = random.Next(64 * 1024);
             byte[] buffer = new byte[length];
             random.NextBytes(buffer);
-            string text = System.Convert.ToBase64String(buffer);
+            string text = Convert.ToBase64String(buffer);
 
             // Compress the string
             string compressed = text.Compress();

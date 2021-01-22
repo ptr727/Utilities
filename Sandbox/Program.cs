@@ -23,7 +23,7 @@ using Serilog.Sinks.SystemConsole.Themes;
 
 namespace Sandbox
 {
-    class Program
+    internal class Program
     {
         // https://github.com/reactiveui/refit
         // https://github.com/loresoft/FluentRest
@@ -41,7 +41,7 @@ namespace Sandbox
 
         private static readonly HttpClient GlobalHttpClient = new HttpClient();
 
-        static async Task<int> Main(string[] args)
+        private static async Task<int> Main(string[] args)
         {
             //Uri uri = new Uri(@"https://api.github.com/repos/handbrake/handbrake/releases/latest");
             //Download.DownloadString(uri, out string value);
@@ -69,7 +69,7 @@ namespace Sandbox
             return 0;
         }
 
-        public static async Task<IEnumerable<NuGetVersion>> GetNuGetPackageVersionsAsync(string packageId)
+        private static async Task<IEnumerable<NuGetVersion>> GetNuGetPackageVersionsAsync(string packageId)
         {
             SourceCacheContext cache = new SourceCacheContext();
             SourceRepository repository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
@@ -298,7 +298,7 @@ namespace Sandbox
             private bool JsonFooterFound = false;
         }
 
-        static void TestSerilog()
+        private static void TestSerilog()
         {
             // How to create a "Microsoft.Extensions.Logging.ILogger" from a "Serilog.ILogger"?
             Microsoft.Extensions.Logging.ILogger logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
@@ -335,7 +335,7 @@ namespace Sandbox
             logger.LogInformation("Testing testing");
         }
 
-        static void TestSerilog1()
+        private static void TestSerilog1()
         {
             // https://www.nexmo.com/legacy-blog/2020/02/10/adaptive-library-logging-with-microsoft-extensions-logging-dr
 
