@@ -86,8 +86,8 @@ namespace InsaneGenius.Utilities
             WaitForExit();
 
             // Flush streams
-            OutputStream?.Flush();
-            ErrorStream?.Flush();
+            await OutputStream?.FlushAsync();
+            await ErrorStream?.FlushAsync();
 
             return ExitCode;
         }
@@ -171,12 +171,12 @@ namespace InsaneGenius.Utilities
             return exitCode;
         }
 
-        public bool RedirectOutput { get; set; } = false;
-        public bool PrintOutput { get; set; } = false;
+        public bool RedirectOutput { get; set; }
+        public bool PrintOutput { get; set; }
         public string OutputText => OutputString.ToString();
         public StreamWriter OutputStream { get; set; } = null;
-        public bool RedirectError { get; set; } = false;
-        public bool PrintError { get; set; } = false;
+        public bool RedirectError { get; set; }
+        public bool PrintError { get; set; }
         public string ErrorText => ErrorString.ToString();
         public StreamWriter ErrorStream { get; set; } = null;
 
