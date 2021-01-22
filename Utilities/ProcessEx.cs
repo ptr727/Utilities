@@ -62,9 +62,8 @@ namespace InsaneGenius.Utilities
                 if (!Start())
                     return false;
             }
-            catch (Exception e)
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "StartEx()"))
             {
-                Trace.WriteLine(e);
                 return false;
             }
 
