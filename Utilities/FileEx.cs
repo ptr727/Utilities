@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.AccessControl;
 using System.Security.Principal;
 
@@ -35,13 +36,13 @@ namespace InsaneGenius.Utilities
                     result = true;
                     break;
                 }
-                catch (IOException e) when (LogOptions.Logger.LogAndHandle(e, "DeleteFile()"))
+                catch (IOException e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
                 {
                     // Retry
-                    LogOptions.Logger.LogInformation("Deleting ({retryCount} / {Options.RetryCount}) : \"{fileName}\"", retryCount, Options.RetryCount, fileName);
+                    LogOptions.Logger.LogInformation("Deleting ({RetryCount} / {OptionsRetryCount}) : {FileName}", retryCount, Options.RetryCount, fileName);
                     Options.RetryWaitForCancel();
                 }
-                catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "DeleteFile()"))
+                catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
                 {
                     break;
                 }
@@ -72,15 +73,15 @@ namespace InsaneGenius.Utilities
                     result = true;
                     break;
                 }
-                catch (IOException e) when (LogOptions.Logger.LogAndHandle(e, "DeleteDirectory()"))
+                catch (IOException e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
                 {
                     // TODO : Do not retry if folder is not empty, it will never succeed
 
                     // Retry
-                    LogOptions.Logger.LogInformation("Deleting ({retryCount} / {Options.RetryCount}) : \"{directory}\"", retryCount, Options.RetryCount, directory);
+                    LogOptions.Logger.LogInformation("Deleting ({RetryCount} / {OptionsRetryCount}) : {Directory}", retryCount, Options.RetryCount, directory);
                     Options.RetryWaitForCancel();
                 }
-                catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "DeleteDirectory()"))
+                catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
                 {
                     break;
                 }
@@ -130,21 +131,21 @@ namespace InsaneGenius.Utilities
                     result = true;
                     break;
                 }
-                catch (FileNotFoundException e) when (LogOptions.Logger.LogAndHandle(e, "RenameFile()"))
+                catch (FileNotFoundException e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
                 {
                     // File not found
                     break;
                 }
-                catch (IOException e) when (LogOptions.Logger.LogAndHandle(e, "RenameFile()"))
+                catch (IOException e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
                 {
                     // Retry
                     if (originalDirectory.Equals(newDirectory, StringComparison.OrdinalIgnoreCase))
-                        LogOptions.Logger.LogInformation("Renaming ({retrycount} / {Options.RetryCount}) : \"{originalDirectory}\" : \"{originalFile}\" to \"{newFile}\"", retrycount, Options.RetryCount, originalDirectory, originalFile, newFile);
+                        LogOptions.Logger.LogInformation("Renaming ({Retrycount} / {OptionsRetryCount}) : {OriginalDirectory} : {OriginalFile} to {NewFile}", retrycount, Options.RetryCount, originalDirectory, originalFile, newFile);
                     else 
-                        LogOptions.Logger.LogInformation("Renaming ({retrycount} / {Options.RetryCount}) : \"{originalName}\" to \"{newName}\"", retrycount, Options.RetryCount, originalName, newName);
+                        LogOptions.Logger.LogInformation("Renaming ({Retrycount} / {OptionsRetryCount}) : {OriginalName} to {NewName}", retrycount, Options.RetryCount, originalName, newName);
                     Options.RetryWaitForCancel();
                 }
-                catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "RenameFile()"))
+                catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
                 {
                     break;
                 }
@@ -176,18 +177,18 @@ namespace InsaneGenius.Utilities
                     result = true;
                     break;
                 }
-                catch (FileNotFoundException e) when (LogOptions.Logger.LogAndHandle(e, "RenameFolder()"))
+                catch (FileNotFoundException e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
                 {
                     // File not found
                     break;
                 }
-                catch (IOException e) when (LogOptions.Logger.LogAndHandle(e, "RenameFolder()"))
+                catch (IOException e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
                 {
                     // Retry
-                    LogOptions.Logger.LogInformation("Renaming ({retryCount} / {Options.RetryCount}) : \"{originalName}\" to \"{newName}\"", retryCount, Options.RetryCount, originalName, newName);
+                    LogOptions.Logger.LogInformation("Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalName} to {NewName}", retryCount, Options.RetryCount, originalName, newName);
                     Options.RetryWaitForCancel();
                 }
-                catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "RenameFolder()"))
+                catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
                 {
                     break;
                 }
@@ -256,7 +257,7 @@ namespace InsaneGenius.Utilities
                 FileInfo fileInfo = new FileInfo(fileName);
                 return IsFileReadable(fileInfo);
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "IsFileReadable()"))
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
             {
                 return false;
             }
@@ -281,13 +282,13 @@ namespace InsaneGenius.Utilities
                     result = true;
                     break;
                 }
-                catch (IOException e) when (LogOptions.Logger.LogAndHandle(e, "WaitFileReadAble()"))
+                catch (IOException e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
                 {
                     // Retry
-                    LogOptions.Logger.LogInformation("Waiting for file to become readable ({retryCount} / {Options.RetryCount}) : \"{fileName}\"", retryCount, Options.RetryCount, fileName);
+                    LogOptions.Logger.LogInformation("Waiting for file to become readable ({RetryCount} / {OptionsRetryCount}) : {Name}", retryCount, Options.RetryCount, fileName);
                     Options.RetryWaitForCancel();
                 }
-                catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "WaitFileReadAble()"))
+                catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
                 {
                     break;
                 }
@@ -308,7 +309,7 @@ namespace InsaneGenius.Utilities
                 using FileStream stream = fileInfo.Open(FileMode.Open, FileAccess.Read);
                 stream.Close();
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "IsFileReadable()"))
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
             {
                 return false;
             }
@@ -328,7 +329,7 @@ namespace InsaneGenius.Utilities
                 using FileStream stream = fileInfo.Open(FileMode.Open, FileAccess.Write);
                 stream.Close();
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "IsFileWriteable()"))
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
             {
                 return false;
             }
@@ -348,7 +349,7 @@ namespace InsaneGenius.Utilities
                 using FileStream stream = fileInfo.Open(FileMode.Open, FileAccess.ReadWrite);
                 stream.Close();
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "IsFileReadWriteable()"))
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
             {
                 return false;
             }
@@ -372,7 +373,7 @@ namespace InsaneGenius.Utilities
                 if (!Directory.Exists(directory))
                     Directory.CreateDirectory(directory);
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "CreateDirectory()"))
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
             {
                 return false;
             }
@@ -454,7 +455,7 @@ namespace InsaneGenius.Utilities
                     fileList.AddRange(dirInfo.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly));
                 }
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "EnumerateDirectories()"))
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
             {
                 return false;
             }
@@ -488,7 +489,7 @@ namespace InsaneGenius.Utilities
                 directorySecurity.AddAccessRule(accessRule);
                 directoryInfo.SetAccessControl(directorySecurity);
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "ResetDirectoryPermissions()"))
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
             {
                 return false;
             }
@@ -541,7 +542,7 @@ namespace InsaneGenius.Utilities
                 // Close
                 stream.Close();
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "CreateRandomFilledFile()"))
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
             {
                 return false;
             }
@@ -562,7 +563,7 @@ namespace InsaneGenius.Utilities
                 // Close
                 stream.Close();
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "CreateSparseFile()"))
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
             {
                 return false;
             }
