@@ -28,11 +28,11 @@ namespace InsaneGenius.Utilities
                     modifiedTime = httpResponse.LastModified;
                 }
             }
-            catch (Exception e)
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "GetContentInfo()"))
             {
-                Trace.WriteLine(e);
                 return false;
             }
+
             return true;
         }
 
@@ -51,11 +51,11 @@ namespace InsaneGenius.Utilities
                 fileStream.Close();
                 webStream.Close();
             }
-            catch (Exception e)
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "DownloadFile()"))
             {
-                Trace.WriteLine(e);
                 return false;
             }
+
             return true;
         }
 
@@ -75,11 +75,11 @@ namespace InsaneGenius.Utilities
                 textStream.Close();
                 webStream.Close();
             }
-            catch (Exception e)
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, "DownloadString()"))
             {
-                Trace.WriteLine(e);
                 return false;
             }
+
             return true;
         }
 
