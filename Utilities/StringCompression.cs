@@ -45,16 +45,3 @@ namespace InsaneGenius.Utilities
         }
     }
 }
-
-public static class Extensions
-{
-    public static string Compress(this string uncompressedString)
-    {
-        return InsaneGenius.Utilities.StringCompression.Compress(uncompressedString);
-    }
-
-    public static string Decompress(this string compressedString)
-    {
-        return InsaneGenius.Utilities.StringCompression.Decompress(compressedString);
-    }
-}
