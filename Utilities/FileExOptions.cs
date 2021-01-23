@@ -1,19 +1,24 @@
-﻿namespace InsaneGenius.Utilities
+﻿using System.Threading;
+
+namespace InsaneGenius.Utilities
 {
     public class FileExOptions
     {
-        public FileExOptions()
-        {
-            Cancel = new Signal();
-        }
+        // Test only, do not execute changes
         public bool TestNoModify { get; set; }
-        public Signal Cancel { get; }
-        public int FileRetryCount { get; set; } = 1;
-        public int FileRetryWaitTime { get; set; } = 5;
-        public bool TraceToConsole { get; set; } = false;
-        public bool WaitForCancelFileRetry()
+
+        // Cancel waiting operations
+        public CancellationToken Cancel { get; set; } = CancellationToken.None;
+
+        // Number of retries
+        public int RetryCount { get; set; } = 1;
+
+        // Wait time between retries in seconds
+        public int RetryWaitTime { get; set; } = 5;
+
+        public bool RetryWaitForCancel()
         {
-            return Cancel.WaitForSet(FileRetryWaitTime * 1000);
+            return Cancel.WaitHandle.WaitOne(RetryWaitTime * 1000);
         }
     }
 }

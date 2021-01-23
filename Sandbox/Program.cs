@@ -15,10 +15,15 @@ using System.IO.Pipelines;
 using System.Diagnostics;
 using System.Text;
 using System.Buffers;
+using Serilog;
+using Serilog.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Serilog.Sinks.SystemConsole.Themes;
 
 namespace Sandbox
 {
-    class Program
+    internal class Program
     {
         // https://github.com/reactiveui/refit
         // https://github.com/loresoft/FluentRest
@@ -36,7 +41,7 @@ namespace Sandbox
 
         private static readonly HttpClient GlobalHttpClient = new HttpClient();
 
-        static async Task<int> Main(string[] args)
+        private static async Task<int> Main(string[] args)
         {
             //Uri uri = new Uri(@"https://api.github.com/repos/handbrake/handbrake/releases/latest");
             //Download.DownloadString(uri, out string value);
@@ -52,21 +57,25 @@ namespace Sandbox
 
             // Start FfProbe process
             //using FfProbePipeProcess ffprobeProcess = new FfProbePipeProcess();
-            using FfProbeProcess ffprobeProcess = new FfProbeProcess();
-            ffprobeProcess.Run();
+            //using FfProbeProcess ffprobeProcess = new FfProbeProcess();
+            //ffprobeProcess.Run();
+
+            FileEx.DeleteFile("foo");
+            FileEx.Options.RetryWaitForCancel();
+
+            //TestSerilog();
+            TestSerilog1();
 
             return 0;
         }
 
-        public static async Task<IEnumerable<NuGetVersion>> GetNuGetPackageVersionsAsync(string packageId)
+        private static async Task<IEnumerable<NuGetVersion>> GetNuGetPackageVersionsAsync(string packageId)
         {
-            ILogger logger = NullLogger.Instance;
-            CancellationToken cancellationToken = CancellationToken.None;
             SourceCacheContext cache = new SourceCacheContext();
             SourceRepository repository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
 
             FindPackageByIdResource resource = await repository.GetResourceAsync<FindPackageByIdResource>();
-            return await resource.GetAllVersionsAsync(packageId, cache, logger, cancellationToken);
+            return await resource.GetAllVersionsAsync(packageId, cache, NullLogger.Instance, CancellationToken.None);
         }
 
         private static async Task<IEnumerable<object>> GetGitHubRepositoriesAsync(string userId)
@@ -284,9 +293,75 @@ namespace Sandbox
                 }
             }
 
-            private StringBuilder JsonBuffer = new StringBuilder();
+            private readonly StringBuilder JsonBuffer = new StringBuilder();
             private bool JsonHeaderFound = false;
             private bool JsonFooterFound = false;
+        }
+
+        private static void TestSerilog()
+        {
+            // How to create a "Microsoft.Extensions.Logging.ILogger" from a "Serilog.ILogger"?
+            Microsoft.Extensions.Logging.ILogger logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
+
+            // https://github.com/serilog/serilog-extensions-logging/blob/dev/samples/Sample/Program.cs
+            LoggerProviderCollection providerCollection = new LoggerProviderCollection();
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
+                .WriteTo.Providers(providerCollection)
+                .CreateLogger();
+
+            ServiceCollection serviceCollection = new ServiceCollection();
+            serviceCollection.AddSingleton(providerCollection);
+            serviceCollection.AddSingleton<ILoggerFactory>(sc =>
+            {
+                LoggerProviderCollection loggerProviderCollection = sc.GetService<LoggerProviderCollection>();
+                SerilogLoggerFactory serilogLoggerFactory = new SerilogLoggerFactory(null, true, loggerProviderCollection);
+
+                foreach (ILoggerProvider loggerProvider in sc.GetServices<ILoggerProvider>())
+                    serilogLoggerFactory.AddProvider(loggerProvider);
+
+                return serilogLoggerFactory;
+            });
+
+            serviceCollection.AddLogging(logging => logging.AddConsole());
+
+            ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+            ILogger<Program> programLogger = serviceProvider.GetRequiredService<ILogger<Program>>();
+
+            logger = programLogger;
+            logger.LogInformation("Testing testing");
+        }
+
+        private static void TestSerilog1()
+        {
+            // https://www.nexmo.com/legacy-blog/2020/02/10/adaptive-library-logging-with-microsoft-extensions-logging-dr
+
+            // Default : "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
+            // "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level} {SourceContext} | {Message:lj}{NewLine}{Exception}"
+
+            // Serilog logger
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.Console(outputTemplate: "{Timestamp:O} {Level} {SourceContext} | {Message}{NewLine}{Exception}", 
+                                 theme: AnsiConsoleTheme.Code)
+                .CreateLogger();
+
+            // MEL logger factory
+            LoggerFactory loggerFactory = new LoggerFactory();
+            loggerFactory.AddSerilog(Log.Logger);
+
+            // MEL logger
+            Microsoft.Extensions.Logging.ILogger logger = loggerFactory.CreateLogger("Foo");
+            logger.LogInformation("Testing testing");
+
+            // IG logger
+            LogOptions.CreateLogger(loggerFactory);
+            LogOptions.Logger.LogInformation("Testing testing");
+            LogOptions.Logger.LogWarning("Testing testing");
+            LogOptions.Logger.LogError("Testing testing");
         }
     }
 }

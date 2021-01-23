@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Reflection;
@@ -28,11 +27,11 @@ namespace InsaneGenius.Utilities
                     modifiedTime = httpResponse.LastModified;
                 }
             }
-            catch (Exception e)
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
             {
-                Trace.WriteLine(e);
                 return false;
             }
+
             return true;
         }
 
@@ -51,11 +50,11 @@ namespace InsaneGenius.Utilities
                 fileStream.Close();
                 webStream.Close();
             }
-            catch (Exception e)
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
             {
-                Trace.WriteLine(e);
                 return false;
             }
+
             return true;
         }
 
@@ -75,11 +74,11 @@ namespace InsaneGenius.Utilities
                 textStream.Close();
                 webStream.Close();
             }
-            catch (Exception e)
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
             {
-                Trace.WriteLine(e);
                 return false;
             }
+
             return true;
         }
 
