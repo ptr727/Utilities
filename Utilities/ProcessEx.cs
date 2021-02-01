@@ -26,11 +26,7 @@ namespace InsaneGenius.Utilities
 
         public bool StartEx(string executable, string parameters)
         {
-            // Init
-            OutputString.Clear();
-            ErrorString.Clear();
-
-            // Output and error handlers
+            // Event handlers
             void OutputHandlerEx(object s, DataReceivedEventArgs e)
             {
                 OutputHandler(e);
@@ -39,16 +35,18 @@ namespace InsaneGenius.Utilities
             {
                 ErrorHandler(e);
             }
+            void ExitHandlerEx(object s, EventArgs e)
+            {
+                ExitHandler(e);
+            }
+
+            // Output and error handlers
             StartInfo.RedirectStandardOutput = RedirectOutput;
             OutputDataReceived += OutputHandlerEx;
             StartInfo.RedirectStandardError = RedirectError;
             ErrorDataReceived += ErrorHandlerEx;
 
             // Exit handler
-            void ExitHandlerEx(object s, EventArgs e)
-            {
-                ExitHandler(e);
-            }
             EnableRaisingEvents = true;
             Exited += ExitHandlerEx;
 
@@ -102,15 +100,17 @@ namespace InsaneGenius.Utilities
             if (string.IsNullOrEmpty(e.Data))
                 return;
 
-            // Stream output or text output
+            // Stream output
             if (OutputStream != null)
                 OutputStream.WriteLine(e.Data);
-            else
+            
+            // String output
+            if (OutputString != null)
                 OutputString.AppendLine(e.Data);
 
             // Console output
-            if (PrintOutput)
-                ConsoleEx.WriteLineTool($"{ProcessName} : {e.Data}");
+            if (ConsoleOutput)
+                Console.Out.WriteLine(e.Data);
         }
 
         protected virtual void ErrorHandler(DataReceivedEventArgs e)
@@ -121,15 +121,17 @@ namespace InsaneGenius.Utilities
             if (string.IsNullOrEmpty(e.Data))
                 return;
 
-            // Stream output or text output
+            // Stream output
             if (ErrorStream != null)
                 ErrorStream.WriteLine(e.Data);
-            else
+            
+            // String output
+            if (ErrorString != null)
                 ErrorString.AppendLine(e.Data);
 
             // Console output
-            if (PrintError)
-                ConsoleEx.WriteLineError($"{ProcessName} : {e.Data}");
+            if (ConsoleError)
+                Console.Error.WriteLine(e.Data);
         }
 
         protected virtual void ExitHandler(EventArgs e)
@@ -145,45 +147,51 @@ namespace InsaneGenius.Utilities
             return process.ExecuteEx(executable, parameters);
         }
 
-        public static int Execute(string executable, string parameters, out string output)
+        public static int Execute(string executable, string parameters, bool console, out string output)
         {
             // Create new process
+            // Redirect output
             using ProcessEx process = new ProcessEx
             {
-                RedirectOutput = true
+                RedirectOutput = true,
+                ConsoleOutput = console,
+                OutputString = new StringBuilder(),
             };
             int exitcode = process.ExecuteEx(executable, parameters);
-            output = process.OutputText;
+            output = process.OutputString.ToString();
 
             return exitcode;
         }
 
-        public static int Execute(string executable, string parameters, out string output, out string error)
+        public static int Execute(string executable, string parameters, bool console, out string output, out string error)
         {
             // Create new process
+            // Redirect output and error
             using ProcessEx process = new ProcessEx
             {
                 RedirectOutput = true,
-                RedirectError = true
+                ConsoleOutput = console,
+                OutputString = new StringBuilder(),
+                RedirectError = true,
+                ConsoleError = console,
+                ErrorString = new StringBuilder()
             };
             int exitCode = process.ExecuteEx(executable, parameters);
-            output = process.OutputText;
-            error = process.ErrorText;
+            output = process.OutputString.ToString();
+            error = process.ErrorString.ToString();
 
             return exitCode;
         }
 
         public bool RedirectOutput { get; set; }
-        public bool PrintOutput { get; set; }
-        public string OutputText => OutputString.ToString();
-        public StreamWriter OutputStream { get; set; } = null;
+        public bool ConsoleOutput { get; set; }
+        public StreamWriter OutputStream { get; set; }
+        public StringBuilder OutputString { get; set; }
         public bool RedirectError { get; set; }
-        public bool PrintError { get; set; }
-        public string ErrorText => ErrorString.ToString();
-        public StreamWriter ErrorStream { get; set; } = null;
+        public bool ConsoleError { get; set; }
+        public StreamWriter ErrorStream { get; set; }
+        public StringBuilder ErrorString { get; set; }
 
-        private readonly StringBuilder OutputString = new StringBuilder();
-        private readonly StringBuilder ErrorString = new StringBuilder();
         private readonly TaskCompletionSource<bool> ProcessExitComplete = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
     }
 }
