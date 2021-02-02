@@ -131,8 +131,7 @@ namespace InsaneGenius.Utilities
 
             // Console output
             if (ConsoleError)
-                //Console.Error.WriteLine(e.Data);
-                Console.Error.Write(e.Data);
+                Console.Error.WriteLine(e.Data);
         }
 
         protected virtual void ExitHandler(EventArgs e)
