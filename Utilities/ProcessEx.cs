@@ -155,7 +155,7 @@ namespace InsaneGenius.Utilities
             {
                 RedirectOutput = true,
                 ConsoleOutput = console,
-                OutputString = new StringBuilder(),
+                OutputString = new StringBuilder()
             };
             int exitcode = process.ExecuteEx(executable, parameters);
             output = process.OutputString.ToString();
