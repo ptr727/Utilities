@@ -60,11 +60,13 @@ namespace Sandbox
             //using FfProbeProcess ffprobeProcess = new FfProbeProcess();
             //ffprobeProcess.Run();
 
-            FileEx.DeleteFile("foo");
-            FileEx.Options.RetryWaitForCancel();
+            //FileEx.DeleteFile("foo");
+            //FileEx.Options.RetryWaitForCancel();
 
             //TestSerilog();
-            TestSerilog1();
+            //TestSerilog1();
+
+            ProcessEx.Execute("cmd.exe", "", true, 5, out string output, out string error);
 
             return 0;
         }
