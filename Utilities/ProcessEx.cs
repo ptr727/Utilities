@@ -147,7 +147,7 @@ namespace InsaneGenius.Utilities
             return process.ExecuteEx(executable, parameters);
         }
 
-        public static int Execute(string executable, string parameters, bool console, out string output)
+        public static int Execute(string executable, string parameters, bool console, int lines, out string output)
         {
             // Create new process
             // Redirect output
@@ -155,7 +155,7 @@ namespace InsaneGenius.Utilities
             {
                 RedirectOutput = true,
                 ConsoleOutput = console,
-                OutputString = new StringBuilder(),
+                OutputString = new StringHistory(lines, lines)
             };
             int exitcode = process.ExecuteEx(executable, parameters);
             output = process.OutputString.ToString();
@@ -163,7 +163,7 @@ namespace InsaneGenius.Utilities
             return exitcode;
         }
 
-        public static int Execute(string executable, string parameters, bool console, out string output, out string error)
+        public static int Execute(string executable, string parameters, bool console, int lines, out string output, out string error)
         {
             // Create new process
             // Redirect output and error
@@ -171,10 +171,10 @@ namespace InsaneGenius.Utilities
             {
                 RedirectOutput = true,
                 ConsoleOutput = console,
-                OutputString = new StringBuilder(),
+                OutputString = new StringHistory(lines, lines),
                 RedirectError = true,
                 ConsoleError = console,
-                ErrorString = new StringBuilder()
+                ErrorString = new StringHistory(lines, lines)
             };
             int exitCode = process.ExecuteEx(executable, parameters);
             output = process.OutputString.ToString();
@@ -186,11 +186,11 @@ namespace InsaneGenius.Utilities
         public bool RedirectOutput { get; set; }
         public bool ConsoleOutput { get; set; }
         public StreamWriter OutputStream { get; set; }
-        public StringBuilder OutputString { get; set; }
+        public StringHistory OutputString { get; set; }
         public bool RedirectError { get; set; }
         public bool ConsoleError { get; set; }
         public StreamWriter ErrorStream { get; set; }
-        public StringBuilder ErrorString { get; set; }
+        public StringHistory ErrorString { get; set; }
 
         private readonly TaskCompletionSource<bool> ProcessExitComplete = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
     }
