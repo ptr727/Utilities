@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace InsaneGenius.Utilities
@@ -101,12 +100,10 @@ namespace InsaneGenius.Utilities
                 return;
 
             // Stream output
-            if (OutputStream != null)
-                OutputStream.WriteLine(e.Data);
-            
+            OutputStream?.WriteLine(e.Data);
+
             // String output
-            if (OutputString != null)
-                OutputString.AppendLine(e.Data);
+            OutputString?.AppendLine(e.Data);
 
             // Console output
             if (ConsoleOutput)
@@ -122,12 +119,10 @@ namespace InsaneGenius.Utilities
                 return;
 
             // Stream output
-            if (ErrorStream != null)
-                ErrorStream.WriteLine(e.Data);
+            ErrorStream?.WriteLine(e.Data);
             
             // String output
-            if (ErrorString != null)
-                ErrorString.AppendLine(e.Data);
+            ErrorString?.AppendLine(e.Data);
 
             // Console output
             if (ConsoleError)

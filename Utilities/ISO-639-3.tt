@@ -92,7 +92,7 @@ namespace InsaneGenius.Utilities
 <# 
     // Setup text parser
 	string filename = Host.ResolvePath("iso-639-3.tab"); 
-    TextFieldParser tfp = new TextFieldParser(filename)
+    TextFieldParser tfp = new(filename)
     {
         TextFieldType = FieldType.Delimited,
         Delimiters = new[] { ",", "\t" },
