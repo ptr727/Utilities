@@ -6,7 +6,7 @@
     <Authors>Pieter Viljoen</Authors>
     <Company>Pieter Viljoen</Company>
     <Copyright>Pieter Viljoen</Copyright>
-    <Description>Generally useful utility classes</Description>
+    <Description>Generally useful and not so useful C# .NET utility classes</Description>
     <Version>1.1.1.1</Version>
     <FileVersion>1.1.1.1</FileVersion>
     <AssemblyVersion>1.1.1.0</AssemblyVersion>
@@ -16,6 +16,7 @@
     <NeutralLanguage>en</NeutralLanguage>
     <PackageProjectUrl>https://github.com/ptr727/Utilities</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
@@ -33,6 +34,10 @@
   
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
   <ItemGroup>
