@@ -41,7 +41,9 @@ namespace Sandbox
 
         private static readonly HttpClient GlobalHttpClient = new HttpClient();
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         private static async Task<int> Main(string[] args)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             //Uri uri = new Uri(@"https://api.github.com/repos/handbrake/handbrake/releases/latest");
             //Download.DownloadString(uri, out string value);
