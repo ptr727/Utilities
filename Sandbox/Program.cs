@@ -39,9 +39,11 @@ namespace Sandbox
         // https://jeremylindsayni.wordpress.com/2019/01/01/using-polly-and-flurl-to-improve-your-website/
 
 
-        private static readonly HttpClient GlobalHttpClient = new HttpClient();
+        private static readonly HttpClient GlobalHttpClient = new();
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         private static async Task<int> Main(string[] args)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             //Uri uri = new Uri(@"https://api.github.com/repos/handbrake/handbrake/releases/latest");
             //Download.DownloadString(uri, out string value);
@@ -73,7 +75,7 @@ namespace Sandbox
 
         private static async Task<IEnumerable<NuGetVersion>> GetNuGetPackageVersionsAsync(string packageId)
         {
-            SourceCacheContext cache = new SourceCacheContext();
+            SourceCacheContext cache = new();
             SourceRepository repository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
 
             FindPackageByIdResource resource = await repository.GetResourceAsync<FindPackageByIdResource>();
@@ -159,13 +161,13 @@ namespace Sandbox
                 Pipe.Writer.WriteAsync(Encoding.UTF8.GetBytes(e.Data));
             }
 
-            protected override void ExitHandler(EventArgs e)
+            protected override void ExitHandler()
             {
                 // Signal writer pipe that we are done
                 Pipe.Writer.Complete();
 
                 // Call base
-                base.ExitHandler(e);
+                base.ExitHandler();
             }
 
             private async Task ReadAsync()
@@ -208,7 +210,7 @@ namespace Sandbox
                 Pipe.Reader.Complete();
             }
 
-            private Pipe Pipe = new Pipe();
+            private Pipe Pipe = new();
         }
 
         public class FfProbeProcess : ProcessEx
@@ -291,11 +293,10 @@ namespace Sandbox
                     string footer = e.Data.Trim();
                     if (footer.Equals("]"))
                         JsonFooterFound = true;
-                    return;
                 }
             }
 
-            private readonly StringBuilder JsonBuffer = new StringBuilder();
+            private readonly StringBuilder JsonBuffer = new();
             private bool JsonHeaderFound = false;
             private bool JsonFooterFound = false;
         }
@@ -306,7 +307,7 @@ namespace Sandbox
             Microsoft.Extensions.Logging.ILogger logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 
             // https://github.com/serilog/serilog-extensions-logging/blob/dev/samples/Sample/Program.cs
-            LoggerProviderCollection providerCollection = new LoggerProviderCollection();
+            LoggerProviderCollection providerCollection = new();
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
@@ -315,12 +316,12 @@ namespace Sandbox
                 .WriteTo.Providers(providerCollection)
                 .CreateLogger();
 
-            ServiceCollection serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new();
             serviceCollection.AddSingleton(providerCollection);
             serviceCollection.AddSingleton<ILoggerFactory>(sc =>
             {
                 LoggerProviderCollection loggerProviderCollection = sc.GetService<LoggerProviderCollection>();
-                SerilogLoggerFactory serilogLoggerFactory = new SerilogLoggerFactory(null, true, loggerProviderCollection);
+                SerilogLoggerFactory serilogLoggerFactory = new(null, true, loggerProviderCollection);
 
                 foreach (ILoggerProvider loggerProvider in sc.GetServices<ILoggerProvider>())
                     serilogLoggerFactory.AddProvider(loggerProvider);
@@ -352,7 +353,7 @@ namespace Sandbox
                 .CreateLogger();
 
             // MEL logger factory
-            LoggerFactory loggerFactory = new LoggerFactory();
+            LoggerFactory loggerFactory = new();
             loggerFactory.AddSerilog(Log.Logger);
 
             // MEL logger

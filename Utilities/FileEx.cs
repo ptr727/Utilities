@@ -115,7 +115,7 @@ namespace InsaneGenius.Utilities
             string newFile = Path.GetFileName(newName);
 
             bool result = false;
-            for (int retrycount = 0; retrycount < Options.RetryCount; retrycount ++)
+            for (int retryCount = 0; retryCount < Options.RetryCount; retryCount ++)
             {
                 // Break on cancel
                 if (Options.Cancel.IsCancellationRequested)
@@ -140,9 +140,9 @@ namespace InsaneGenius.Utilities
                 {
                     // Retry
                     if (originalDirectory.Equals(newDirectory, StringComparison.OrdinalIgnoreCase))
-                        LogOptions.Logger.LogInformation("Renaming ({Retrycount} / {OptionsRetryCount}) : {OriginalDirectory} : {OriginalFile} to {NewFile}", retrycount, Options.RetryCount, originalDirectory, originalFile, newFile);
+                        LogOptions.Logger.LogInformation("Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalDirectory} : {OriginalFile} to {NewFile}", retryCount, Options.RetryCount, originalDirectory, originalFile, newFile);
                     else 
-                        LogOptions.Logger.LogInformation("Renaming ({Retrycount} / {OptionsRetryCount}) : {OriginalName} to {NewName}", retrycount, Options.RetryCount, originalName, newName);
+                        LogOptions.Logger.LogInformation("Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalName} to {NewName}", retryCount, Options.RetryCount, originalName, newName);
                     Options.RetryWaitForCancel();
                 }
                 catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
@@ -276,8 +276,8 @@ namespace InsaneGenius.Utilities
                 // Try to access the file
                 try
                 {
-                    FileInfo fileinfo = new FileInfo(fileName);
-                    using FileStream stream = fileinfo.Open(FileMode.Open, FileAccess.Read, FileShare.None);
+                    FileInfo fileInfo = new FileInfo(fileName);
+                    using FileStream stream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.None);
                     stream.Close();
                     result = true;
                     break;
@@ -522,8 +522,8 @@ namespace InsaneGenius.Utilities
                 stream.Seek(0, SeekOrigin.Begin);
 
                 // Buffer with random data
-                const int buffersize = 2 * Format.MiB;
-                byte[] buffer = new byte[buffersize];
+                const int bufferSize = 2 * Format.MiB;
+                byte[] buffer = new byte[bufferSize];
                 Random rand = new Random();
 
                 // Write in buffer chunks
@@ -533,10 +533,10 @@ namespace InsaneGenius.Utilities
                     // Fill buffer with random data
                     rand.NextBytes(buffer);
                     // Write
-                    long writesize = Math.Min(remaining, Convert.ToInt64(buffer.Length));
-                    stream.Write(buffer, 0, Convert.ToInt32(writesize));
+                    long writeSize = Math.Min(remaining, Convert.ToInt64(buffer.Length));
+                    stream.Write(buffer, 0, Convert.ToInt32(writeSize));
                     // Remaining
-                    remaining -= writesize;
+                    remaining -= writeSize;
                 }
 
                 // Close

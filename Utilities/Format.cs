@@ -25,7 +25,7 @@ namespace InsaneGenius.Utilities
         // https://en.wikipedia.org/wiki/Kilobyte
         // https://stackoverflow.com/questions/281640/how-do-i-get-a-human-readable-file-size-in-bytes-abbreviation-using-net
         // https://stackoverflow.com/questions/14488796/does-net-provide-an-easy-way-convert-bytes-to-kb-mb-gb-etc
-        public static string BytesToKibi(long value, string units)
+        public static string BytesToKibi(long value, string units = "B")
         {
             if (value < 0)
                 return "-" + BytesToKibi(Math.Abs(value));
@@ -39,12 +39,7 @@ namespace InsaneGenius.Utilities
         }
         private static readonly string[] KibiSuffix = { "", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei" };
 
-        public static string BytesToKibi(long value)
-        {
-            return BytesToKibi(value, "B");
-        }
-
-        public static string BytesToKilo(long value, string units)
+        public static string BytesToKilo(long value, string units = "B")
         {
             if (value < 0)
                 return "-" + BytesToKilo(Math.Abs(value));
@@ -57,10 +52,5 @@ namespace InsaneGenius.Utilities
             return fraction.Equals(truncate) ? $"{Convert.ToInt64(truncate):D}{KiloSuffix[magnitude]}{units}" : $"{fraction:F}{KiloSuffix[magnitude]}{units}";
         }
         private static readonly string[] KiloSuffix = { "", "K", "M", "G", "T", "P", "E" };
-
-        public static string BytesToKilo(long value)
-        {
-            return BytesToKilo(value, "B");
-        }
     }
 }

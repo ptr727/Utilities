@@ -10,16 +10,16 @@ namespace InsaneGenius.Utilities
             if (commandLine == null)
                 throw new ArgumentNullException(nameof(commandLine));
 
-            char[] parmChars = commandLine.ToCharArray();
+            char[] paramChars = commandLine.ToCharArray();
             bool inQuote = false;
-            for (int index = 0; index < parmChars.Length; index++)
+            for (int index = 0; index < paramChars.Length; index++)
             {
-                if (parmChars[index] == '"')
+                if (paramChars[index] == '"')
                     inQuote = !inQuote;
-                if (!inQuote && parmChars[index] == ' ')
-                    parmChars[index] = '\n';
+                if (!inQuote && paramChars[index] == ' ')
+                    paramChars[index] = '\n';
             }
-            return new string(parmChars).Split('\n');
+            return new string(paramChars).Split('\n');
         }
 
         public static string[] GetCommandLineArgs()
@@ -28,9 +28,9 @@ namespace InsaneGenius.Utilities
             string[] args = ParseArguments(Environment.CommandLine);
 
             // Strip the process path from the list of arguments
-            string[] argsex = new string[args.Length - 1];
-            Array.Copy(args, 1, argsex, 0, argsex.Length);
-            return argsex;
+            string[] argsEx = new string[args.Length - 1];
+            Array.Copy(args, 1, argsEx, 0, argsEx.Length);
+            return argsEx;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace InsaneGenius.Utilities.Tests
         public void CompressDecompress()
         {
             // Create random string
-            Random random = new Random();
+            Random random = new();
             int length = random.Next(64 * 1024);
             byte[] buffer = new byte[length];
             random.NextBytes(buffer);
