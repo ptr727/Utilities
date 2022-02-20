@@ -55,9 +55,9 @@ jobs:
             -property:InformationalVersion=${{ steps.nbgv.outputs.AssemblyInformationalVersion }}
             -property:PackageVersion=${{ steps.nbgv.outputs.SemVer2 }}
 
-      # Publish to NuGet repository
+      # Publish to NuGet.org Registry
       # https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-nuget-push
-      - name: 'Publish to NuGet Repository'
+      - name: 'Publish to NuGet.org Registry'
         # Do not push pull requests
         if: ${{ github.event_name != 'pull_request' }}
         # Use build platform specific path convention, relative paths do not work
@@ -65,4 +65,16 @@ jobs:
             dotnet nuget push ${{ github.workspace }}/Utilities/Artifacts/*.nupkg
             --source https://api.nuget.org/v3/index.json
             --api-key ${{ secrets.NUGET_API_KEY}}
+            --skip-duplicate
+
+      # Publish to GitHub NuGet Registry
+      # https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-nuget-registry
+      - name: 'Publish to GitHub NuGet Registry'
+        # Do not push pull requests
+        if: ${{ github.event_name != 'pull_request' }}
+        # Use build platform specific path convention, relative paths do not work
+        run: >-
+            dotnet nuget push ${{ github.workspace }}/Utilities/Artifacts/*.nupkg
+            --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+            --api-key ${{ secrets.GITHUB_TOKEN }}
             --skip-duplicate
