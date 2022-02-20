@@ -5,7 +5,13 @@
 <#@ import namespace="Microsoft.VisualBasic.FileIO" #>
 
 // Generated code
-// https://msdn.microsoft.com/en-us/library/dd820620.aspx
+// https://docs.microsoft.com/en-us/visualstudio/modeling/code-generation-and-t4-text-templates
+// https://github.com/mono/t4
+// http://www-01.sil.org/iso639-3/download.asp
+// wget -O ISO-639-3.tab https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab
+// dotnet tool install -g dotnet-t4
+// t4 --out=ISO-639-3.cs .\ISO-639-3.tt
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -14,7 +20,6 @@ using System.Linq;
 namespace InsaneGenius.Utilities
 {
     // ISO 639-3
-    // http://www-01.sil.org/iso639-3/download.asp
     public class Iso6393
     {
         // The three-letter 639-3 identifier
