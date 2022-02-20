@@ -36,7 +36,7 @@ namespace InsaneGenius.Utilities
             }
             void ExitHandlerEx(object s, EventArgs e)
             {
-                ExitHandler(e);
+                ExitHandler();
             }
 
             // Output and error handlers
@@ -129,7 +129,7 @@ namespace InsaneGenius.Utilities
                 Console.Error.WriteLine(e.Data);
         }
 
-        protected virtual void ExitHandler(EventArgs e)
+        protected virtual void ExitHandler()
         {
             // Signal exit
             ProcessExitComplete.TrySetResult(true);
@@ -152,10 +152,10 @@ namespace InsaneGenius.Utilities
                 ConsoleOutput = console,
                 OutputString = new StringHistory(lines, lines)
             };
-            int exitcode = process.ExecuteEx(executable, parameters);
+            int exitCode = process.ExecuteEx(executable, parameters);
             output = process.OutputString.ToString();
 
-            return exitcode;
+            return exitCode;
         }
 
         public static int Execute(string executable, string parameters, bool console, int lines, out string output, out string error)
