@@ -158,7 +158,7 @@ namespace InsaneGenius.Utilities
                 RedirectOutput = true,
                 ConsoleOutput = false,
                 RedirectError = true,
-                ConsoleError = false,
+                ConsoleError = false
             };
             int exitCode = process.ExecuteEx(executable, parameters);
 

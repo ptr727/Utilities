@@ -1,13 +1,12 @@
 ﻿using Xunit;
 
-namespace InsaneGenius.Utilities.Tests
+namespace InsaneGenius.Utilities.Tests;
+
+public class ConsoleTests
 {
-    public class ConsoleTests
+    [Fact]
+    public void Null()
     {
-        [Fact]
-        public void Null()
-        {
-            Assert.False(false);
-        }
+        Assert.False(false);
     }
 }
