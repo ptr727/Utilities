@@ -142,15 +142,41 @@ namespace InsaneGenius.Utilities
             return process.ExecuteEx(executable, parameters);
         }
 
+        public static int Execute(string executable, string parameters, bool console)
+        {
+            // Console output is ok
+            if (console)
+            {
+                return Execute(executable, parameters);
+            }
+
+            // Create new process
+            // Suppress output and error
+            using ProcessEx process = new ProcessEx
+            {
+                // Redirect and do not output anything
+                RedirectOutput = true,
+                ConsoleOutput = false,
+                RedirectError = true,
+                ConsoleError = false
+            };
+            int exitCode = process.ExecuteEx(executable, parameters);
+
+            return exitCode;
+        }
+
         public static int Execute(string executable, string parameters, bool console, int lines, out string output)
         {
             // Create new process
             // Redirect output
             using ProcessEx process = new ProcessEx
             {
+                // Capture output
                 RedirectOutput = true,
                 ConsoleOutput = console,
-                OutputString = new StringHistory(lines, lines)
+                OutputString = new StringHistory(lines, lines),
+                // If console is false then redirect error but do not output anything
+                RedirectError = !console
             };
             int exitCode = process.ExecuteEx(executable, parameters);
             output = process.OutputString.ToString();
@@ -164,6 +190,7 @@ namespace InsaneGenius.Utilities
             // Redirect output and error
             using ProcessEx process = new ProcessEx
             {
+                // Capture output and error
                 RedirectOutput = true,
                 ConsoleOutput = console,
                 OutputString = new StringHistory(lines, lines),
