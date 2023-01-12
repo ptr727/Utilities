@@ -11,7 +11,7 @@ Licensed under the [MIT License](./LICENSE)
 
 Code and Pipeline is on [GitHub](https://github.com/ptr727/Utilities)  
 ![GitHub Last Commit](https://img.shields.io/github/last-commit/ptr727/Utilities?logo=github)  
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ptr727/Utilities/Build%20and%20Publish%20Pipeline?logo=github)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ptr727/Utilities/BuildPublishPipeline.yml?logo=github)
 
 ## NuGet Package
 
