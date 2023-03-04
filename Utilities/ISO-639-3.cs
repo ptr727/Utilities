@@ -1,9 +1,14 @@
 ﻿ 
 
+// Language data sources
+// http://www-01.sil.org/iso639-3
+// https://www.rfc-editor.org/info/bcp47
+// https://www.iana.org/assignments/language-tags/language-tags.xml
+
 // Generated code
 // https://docs.microsoft.com/en-us/visualstudio/modeling/code-generation-and-t4-text-templates
+// Visual Studio: Right click on .tt file and run custom tool
 // https://github.com/mono/t4
-// http://www-01.sil.org/iso639-3/download.asp
 // wget -O ISO-639-3.tab https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab
 // dotnet tool install -g dotnet-t4
 // t4 --out=ISO-639-3.cs .\ISO-639-3.tt
@@ -42,22 +47,13 @@ namespace InsaneGenius.Utilities
 
             // Match the input string type
             Iso6393 lang;
-            if (language.Length > 3 && language.ElementAt(2) == '-')
-            {
-                // Treat the language as a culture form, e.g. en-us
-                CultureInfo cix = new CultureInfo(language);
 
-                // Recursively call using the ISO 639-2 code
-                return FromString(cix.ThreeLetterISOLanguageName, iso6393List);
-            }
-            if (language.Length > 3)
-            {
-                // Try long form
-                lang = iso6393List.FirstOrDefault(item => item.RefName.Equals(language, StringComparison.OrdinalIgnoreCase));
-                if (lang != null)
-                    return lang;
-            }
-            if (language.Length == 3)
+            // Look for dash
+            int dash = language.IndexOf('-');
+            
+            // 693 3 letter form
+            // E.g. zho, chi, afr
+            if (language.Length == 3 && dash == -1)
             {
                 // Try 639-3
                 lang = iso6393List.FirstOrDefault(item => item.Id.Equals(language, StringComparison.OrdinalIgnoreCase));
@@ -74,12 +70,51 @@ namespace InsaneGenius.Utilities
                 if (lang != null)
                     return lang;
             }
-            if (language.Length == 2)
+
+            // 693 2 letter
+            // E.g. zh, af
+            if (language.Length == 2 && dash == -1)
             {
                 // Try 639-1
                 lang = iso6393List.FirstOrDefault(item => item.Part1.Equals(language, StringComparison.OrdinalIgnoreCase));
                 if (lang != null)
                     return lang;
+            }
+
+            // Long form
+            // E.g. Zambian Sign Language, Zul
+            if (dash == -1)
+            {
+                // Try long form
+                lang = iso6393List.FirstOrDefault(item => item.RefName.Equals(language, StringComparison.OrdinalIgnoreCase));
+                if (lang != null)
+                    return lang;
+            }
+
+            // Try to lookup from CultureInfo
+            // E.g. en-us, zh-Hans
+            if (language.Length > 4 && dash != -1 && language.ElementAt(2) == '-')
+            {
+                try
+                {
+                    // Get culture info from OS
+                    CultureInfo cix = new CultureInfo(language);
+
+                    // Recursively call using the ISO 639-2 code
+                    return FromString(cix.ThreeLetterISOLanguageName, iso6393List);
+                }
+                catch (CultureNotFoundException)
+                {
+                    // Try something else
+                }
+            }
+
+            // Try the prefix part
+            // E.g. cmn-Hans, cmn-Hant, yue-Hant
+            if (dash != -1)
+            {
+                // Recursively call using the prefix part only
+                return FromString(language.Substring(0, dash), iso6393List);
             }
 
             // Not found
