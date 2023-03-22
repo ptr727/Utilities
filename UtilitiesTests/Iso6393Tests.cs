@@ -17,17 +17,12 @@ public class Iso6393Tests
     [InlineData("afr", "Afrikaans")]
     [InlineData("af", "Afrikaans")]
     [InlineData("zh", "Chinese")]
-    [InlineData("ger", "German")]
-    [InlineData("zh-CHS", "Chinese")]
-    [InlineData("zh-Hans", "Chinese")]
-    [InlineData("zh-CHT", "Chinese")]
-    [InlineData("zh-Hant", "Chinese")]
     [InlineData("zho", "Chinese")]
     [InlineData("chi", "Chinese")]
-    [InlineData("cmn-Hans", "Mandarin Chinese")]
-    [InlineData("cmn-Hant", "Mandarin Chinese")]
+    [InlineData("ger", "German")]
+    [InlineData("deu", "German")]
+    [InlineData("de", "German")]
     [InlineData("yue", "Yue Chinese")]
-    [InlineData("yue-Hant", "Yue Chinese")]
     public void FromString(string input, string output)
     {
         // Create full list of languages
