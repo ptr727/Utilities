@@ -17,6 +17,7 @@ public class Iso6393Tests
     [InlineData("afr", "Afrikaans")]
     [InlineData("af", "Afrikaans")]
     [InlineData("zh", "Chinese")]
+    [InlineData("ger", "German")]
     [InlineData("zh-CHS", "Chinese")]
     [InlineData("zh-Hans", "Chinese")]
     [InlineData("zh-CHT", "Chinese")]
@@ -35,6 +36,7 @@ public class Iso6393Tests
 
         // Find matching language
         Iso6393 language = Iso6393.FromString(input, iso6393List);
+        Assert.NotNull(language);
         Assert.Equal(language.RefName, output);
     }
 }
