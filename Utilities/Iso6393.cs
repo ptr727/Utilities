@@ -107,7 +107,7 @@ public partial class Iso6393
             CultureInfo cultureInfo = CultureInfo.GetCultureInfoByIetfLanguageTag(language);
 
             // Make sure the culture was not dynamically created
-            if (cultureInfo != null ||
+            if (cultureInfo != null &&
                 !cultureInfo.ThreeLetterWindowsLanguageName.Equals("ZZZ", StringComparison.OrdinalIgnoreCase) &&
                 (cultureInfo.CultureTypes & CultureTypes.UserCustomCulture) != CultureTypes.UserCustomCulture) 
             {
