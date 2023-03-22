@@ -3,135 +3,20 @@
 <#@ assembly name="System.Core" #>
 <#@ assembly name="Microsoft.VisualBasic.dll" #> 
 <#@ import namespace="Microsoft.VisualBasic.FileIO" #>
-
-// Language data sources
-// http://www-01.sil.org/iso639-3
-// https://www.rfc-editor.org/info/bcp47
-// https://www.iana.org/assignments/language-tags/language-tags.xml
-
-// Generated code
-// https://docs.microsoft.com/en-us/visualstudio/modeling/code-generation-and-t4-text-templates
-// Visual Studio: Right click on .tt file and run custom tool
-// https://github.com/mono/t4
-// wget -O ISO-639-3.tab https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab
-// dotnet tool install -g dotnet-t4
-// t4 --out=ISO-639-3.cs .\ISO-639-3.tt
-
-using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 
-namespace InsaneGenius.Utilities
+namespace InsaneGenius.Utilities;
+
+// ISO 639-3 Generated Code
+public partial class Iso6393
 {
-    // ISO 639-3
-    public class Iso6393
-    {
-        // The three-letter 639-3 identifier
-        public string Id { get; set; }
-        // Equivalent 639-2 identifier of the bibliographic applications code set, if there is one
-        public string Part2B { get; set; }
-        // Equivalent 639-2 identifier of the terminology applications code set, if there is one
-        public string Part2T { get; set; }
-        // Equivalent 639-1 identifier, if there is one
-        public string Part1 { get; set; }
-        // I(ndividual), M(acrolanguage), S(pecial)
-        public string Scope { get; set; }
-        // A(ncient), C(onstructed), E(xtinct), H(istorical), L(iving), S(pecial)
-        public string LanguageType { get; set; }
-        // Reference language name
-        public string RefName { get; set; }
-        // Comment relating to one or more of the columns
-        public string Comment { get; set; }
-
-        public static Iso6393 FromString(string language, List<Iso6393> iso6393List)
-        {
-            if (language == null)
-                throw new ArgumentNullException(nameof(language));
-
-            // Match the input string type
-            Iso6393 lang;
-
-            // Look for dash
-            int dash = language.IndexOf('-');
-            
-            // 693 3 letter form
-            // E.g. zho, chi, afr
-            if (language.Length == 3 && dash == -1)
-            {
-                // Try 639-3
-                lang = iso6393List.FirstOrDefault(item => item.Id.Equals(language, StringComparison.OrdinalIgnoreCase));
-                if (lang != null)
-                    return lang;
-
-                // Try the 639-2/B
-                lang = iso6393List.FirstOrDefault(item => item.Part2B.Equals(language, StringComparison.OrdinalIgnoreCase));
-                if (lang != null)
-                    return lang;
-
-                // Try the 639-2/T
-                lang = iso6393List.FirstOrDefault(item => item.Part2T.Equals(language, StringComparison.OrdinalIgnoreCase));
-                if (lang != null)
-                    return lang;
-            }
-
-            // 693 2 letter
-            // E.g. zh, af
-            if (language.Length == 2 && dash == -1)
-            {
-                // Try 639-1
-                lang = iso6393List.FirstOrDefault(item => item.Part1.Equals(language, StringComparison.OrdinalIgnoreCase));
-                if (lang != null)
-                    return lang;
-            }
-
-            // Long form
-            // E.g. Zambian Sign Language, Zul
-            if (dash == -1)
-            {
-                // Try long form
-                lang = iso6393List.FirstOrDefault(item => item.RefName.Equals(language, StringComparison.OrdinalIgnoreCase));
-                if (lang != null)
-                    return lang;
-            }
-
-            // Try to lookup from CultureInfo
-            // E.g. en-us, zh-Hans
-            if (language.Length > 4 && dash != -1 && language.ElementAt(2) == '-')
-            {
-                try
-                {
-                    // Get culture info from OS
-                    CultureInfo cix = new CultureInfo(language);
-
-                    // Recursively call using the ISO 639-2 code
-                    return FromString(cix.ThreeLetterISOLanguageName, iso6393List);
-                }
-                catch (CultureNotFoundException)
-                {
-                    // Try something else
-                }
-            }
-
-            // Try the prefix part
-            // E.g. cmn-Hans, cmn-Hant, yue-Hant
-            if (dash != -1)
-            {
-                // Recursively call using the prefix part only
-                return FromString(language.Substring(0, dash), iso6393List);
-            }
-
-            // Not found
-            return null;
-        }
-
-		// Create a list of all known codes
-		public static List<Iso6393> Create()
-		{
-			List<Iso6393> list = new List<Iso6393> {
+	// Create a list of all known codes
+	public static List<Iso6393> Create()
+	{
+		List<Iso6393> list = new List<Iso6393> {
 <# 
     // Setup text parser
-	string filename = Host.ResolvePath("iso-639-3.tab"); 
+	string filename = Host.ResolvePath("ISO-639-3.tab"); 
     TextFieldParser tfp = new(filename)
     {
         TextFieldType = FieldType.Delimited,
@@ -141,7 +26,7 @@ namespace InsaneGenius.Utilities
     };
 
     // Read first row as header
-    string[] header = tfp.ReadFields();
+    tfp.ReadFields();
 
     // Read rows from file
 	// For debugging limit the row count
@@ -159,14 +44,11 @@ namespace InsaneGenius.Utilities
 
         // Add new item from row data
 #>
-				new Iso6393 { Id = "<#=row[0]#>", Part2B = "<#=row[1]#>", Part2T = "<#=row[2]#>", Part1 = "<#=row[3]#>", Scope = "<#=row[4]#>", LanguageType = "<#=row[5]#>", RefName = "<#=row[6]#>", Comment = "<#=row[7]#>" }<#=term#>
+		new Iso6393 { Id = "<#=row[0]#>", Part2B = "<#=row[1]#>", Part2T = "<#=row[2]#>", Part1 = "<#=row[3]#>", Scope = "<#=row[4]#>", LanguageType = "<#=row[5]#>", RefName = "<#=row[6]#>", Comment = "<#=row[7]#>" }<#=term#>
 <# 
 	} 
 #>  
-			};
-			return list;
-		}
-
+		};
+		return list;
 	}
-
 }
