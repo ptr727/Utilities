@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using PlexCleaner.Utilities;
+using System.Collections.Generic;
 using Xunit;
 
 namespace InsaneGenius.Utilities.Tests;
 
-public class Iso6393Tests
+public class Iso6393Tests : IClassFixture<UtilitiesTests>
 {
     [Fact]
     public void Create()
     {
         // Create full list of languages
-        List<Iso6393> iso6393List = Iso6393.Create();
-        Assert.NotNull(iso6393List);
+        Iso6393 iso6393 = new();
+        Assert.True(iso6393.Create());
     }
 
     [Theory]
@@ -26,24 +27,25 @@ public class Iso6393Tests
     public void Succeed_From_String(string input, string output)
     {
         // Create full list of languages
-        List<Iso6393> iso6393List = Iso6393.Create();
-        Assert.NotNull(iso6393List);
+        Iso6393 iso6393 = new();
+        Assert.True(iso6393.Create());
 
         // Find matching language
-        Iso6393 language = Iso6393.FromString(input, iso6393List);
-        Assert.NotNull(language);
-        Assert.Equal(language.RefName, output);
+        var record = iso6393.FromString(input);
+        Assert.NotNull(record);
+        Assert.Equal(record.RefName, output);
     }
 
+    [Theory]
     [InlineData("xxx")]
-    public void Failed_From_String(string input, string output) 
+    public void Failed_From_String(string input) 
     {
         // Create full list of languages
-        List<Iso6393> iso6393List = Iso6393.Create();
-        Assert.NotNull(iso6393List);
+        Iso6393 iso6393 = new();
+        Assert.True(iso6393.Create());
 
         // Fail to find matching language
-        Iso6393 language = Iso6393.FromString(input, iso6393List);
-        Assert.Null(language);
+        var record = iso6393.FromString(input);
+        Assert.Null(record);
     }
 }

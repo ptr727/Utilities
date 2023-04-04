@@ -1,9 +1,10 @@
-﻿using System.Runtime.InteropServices;
+﻿using PlexCleaner.Utilities;
+using System.Runtime.InteropServices;
 using Xunit;
 
 namespace InsaneGenius.Utilities.Tests;
 
-public class FileTests
+public class FileTests : IClassFixture<UtilitiesTests>
 {
     [Theory]
     [InlineData(@"C:\Path One", @"Path Two", @"C:\Path One\Path Two")]

@@ -1,0 +1,84 @@
+<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.Runtime" #>
+<#@ assembly name="InsaneGenius.Utilities.dll" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="InsaneGenius.Utilities" #>
+
+<#
+var fileName = Host.ResolvePath("../Data/language-subtag-registry");
+var rfc5646 = new Rfc5646();
+rfc5646.Load(fileName);
+#>
+
+using System;
+using System.Text;
+using System.Globalization;
+
+namespace InsaneGenius.Utilities;
+
+// Generated from Rfc5646Gen.tt
+public partial class Rfc5646
+{
+	public bool Create()
+	{
+		// Init
+		RecordList.Clear();
+		Record record = null;
+
+<#
+rfc5646.RecordList.ForEach(record =>
+{
+#>
+		record = new()
+		{
+			Type = RecordType.<#=record.Type.ToString()#>,
+			SubTag = "<#=record.SubTag#>",
+			Added = DateTime.ParseExact("<#=record.Added.ToString("yyyy-MM-dd")#>", "yyyy-MM-dd", CultureInfo.InvariantCulture),
+			SuppressScript = "<#=record.SuppressScript#>",
+			Scope = "<#=record.Scope#>",
+			MacroLanguage = "<#=record.MacroLanguage#>",
+			Deprecated = DateTime.ParseExact("<#=record.Deprecated.ToString("yyyy-MM-dd")#>", "yyyy-MM-dd", CultureInfo.InvariantCulture),
+			PreferredValue = "<#=record.PreferredValue#>",
+			Tag = "<#=record.Tag#>"
+		};
+
+<#
+        record.Description.ForEach(description =>
+		{
+#>
+		// <#=description#>
+        record.Description.Add(Encoding.UTF8.GetString(Convert.FromBase64String("<#=Convert.ToBase64String(Encoding.UTF8.GetBytes(description))#>")));
+<#
+        });
+#>
+
+<#
+        record.Comments.ForEach(comments =>
+		{
+#>
+		// <#=comments#>
+        record.Comments.Add(Encoding.UTF8.GetString(Convert.FromBase64String("<#=Convert.ToBase64String(Encoding.UTF8.GetBytes(comments))#>")));
+<#
+        });
+#>
+
+<#
+        record.Prefix.ForEach(prefix =>
+		{
+#>
+        record.Prefix.Add("<#=prefix#>");
+<#
+        });
+#>
+
+        RecordList.Add(record);
+
+<#
+});
+#>
+
+		return true;
+	}
+}

@@ -1,8 +1,9 @@
-﻿using Xunit;
+﻿using PlexCleaner.Utilities;
+using Xunit;
 
 namespace InsaneGenius.Utilities.Tests;
 
-public class FormatTests
+public class FormatTests : IClassFixture<UtilitiesTests>
 {
     [Theory]
     [InlineData(0, "0B")]
