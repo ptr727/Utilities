@@ -46,7 +46,7 @@ public class Iso6393Tests : IClassFixture<UtilitiesTests>
         Assert.True(iso6393.Create());
 
         // Find matching language
-        var record = iso6393.Find(input);
+        var record = iso6393.Find(input, false);
         Assert.NotNull(record);
         Assert.Equal(record.RefName, output);
     }
@@ -60,7 +60,7 @@ public class Iso6393Tests : IClassFixture<UtilitiesTests>
         Assert.True(iso6393.Create());
 
         // Fail to find matching language
-        var record = iso6393.Find(input);
+        var record = iso6393.Find(input, false);
         Assert.Null(record);
     }
 }
