@@ -60,7 +60,7 @@ public class ProcessEx : Process
             if (!Start())
                 return false;
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }

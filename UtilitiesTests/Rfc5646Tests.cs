@@ -4,14 +4,14 @@ using Xunit;
 
 namespace InsaneGenius.Utilities.Tests;
 
-public class Iso6393Tests : IClassFixture<UtilitiesTests>
+public class Rfc5646Tests : IClassFixture<UtilitiesTests>
 {
     [Fact]
     public void Create()
     {
         // Create full list of languages
-        Iso6393 iso6393 = new();
-        Assert.True(iso6393.Create());
+        Rfc5646 rfc5646 = new();
+        Assert.True(rfc5646.Create());
     }
 
     [Theory]
@@ -38,7 +38,7 @@ public class Iso6393Tests : IClassFixture<UtilitiesTests>
 
     [Theory]
     [InlineData("xxx")]
-    public void Failed_From_String(string input) 
+    public void Failed_From_String(string input)
     {
         // Create full list of languages
         Iso6393 iso6393 = new();

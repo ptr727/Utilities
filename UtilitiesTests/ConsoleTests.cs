@@ -1,8 +1,11 @@
-﻿using Xunit;
+﻿using PlexCleaner.Utilities;
+using Xunit;
 
 namespace InsaneGenius.Utilities.Tests;
 
-public class ConsoleTests
+// TODO
+
+public class ConsoleTests : IClassFixture<UtilitiesTests>
 {
     [Fact]
     public void Null()
