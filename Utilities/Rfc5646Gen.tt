@@ -9,7 +9,8 @@
 <#
 var fileName = Host.ResolvePath("../Data/language-subtag-registry");
 var rfc5646 = new Rfc5646();
-rfc5646.Load(fileName);
+if (!rfc5646.Load(fileName) || rfc5646.RecordList.Count == 0)
+	throw new NotImplementedException();
 #>
 
 using System;
@@ -27,6 +28,8 @@ public partial class Rfc5646
 		RecordList.Clear();
 		Record record = null;
 
+		FileDate = DateFromString("<#=Rfc5646.StringFromDate(rfc5646.FileDate)#>");
+
 <#
 rfc5646.RecordList.ForEach(record =>
 {
@@ -35,11 +38,11 @@ rfc5646.RecordList.ForEach(record =>
 		{
 			Type = RecordType.<#=record.Type.ToString()#>,
 			SubTag = "<#=record.SubTag#>",
-			Added = DateTime.ParseExact("<#=record.Added.ToString("yyyy-MM-dd")#>", "yyyy-MM-dd", CultureInfo.InvariantCulture),
+			Added = DateFromString("<#=Rfc5646.StringFromDate(record.Added)#>"),
 			SuppressScript = "<#=record.SuppressScript#>",
 			Scope = "<#=record.Scope#>",
 			MacroLanguage = "<#=record.MacroLanguage#>",
-			Deprecated = DateTime.ParseExact("<#=record.Deprecated.ToString("yyyy-MM-dd")#>", "yyyy-MM-dd", CultureInfo.InvariantCulture),
+			Deprecated = DateFromString("<#=Rfc5646.StringFromDate(record.Deprecated)#>"),
 			PreferredValue = "<#=record.PreferredValue#>",
 			Tag = "<#=record.Tag#>"
 		};
@@ -49,7 +52,7 @@ rfc5646.RecordList.ForEach(record =>
 		{
 #>
 		// <#=description#>
-        record.Description.Add(Encoding.UTF8.GetString(Convert.FromBase64String("<#=Convert.ToBase64String(Encoding.UTF8.GetBytes(description))#>")));
+        record.Description.Add(FromEncodedString("<#=Rfc5646.ToEncodedString(description)#>"));
 <#
         });
 #>
@@ -59,7 +62,7 @@ rfc5646.RecordList.ForEach(record =>
 		{
 #>
 		// <#=comments#>
-        record.Comments.Add(Encoding.UTF8.GetString(Convert.FromBase64String("<#=Convert.ToBase64String(Encoding.UTF8.GetBytes(comments))#>")));
+        record.Comments.Add(FromEncodedString("<#=Rfc5646.ToEncodedString(comments)#>"));
 <#
         });
 #>

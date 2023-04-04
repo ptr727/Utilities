@@ -17,7 +17,7 @@ namespace InsaneGenius.Utilities;
 // https://github.com/mono/t4
 // wget -O iso-639-3.tab https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab
 // dotnet tool install -g dotnet-t4
-// t4 --out=Iso6393Gen.cs .\Iso6393Gen.tt
+// t4 -P="./bin/T4" --out=Iso6393Gen.cs .\Iso6393Gen.tt
 
 // ISO 639-3 class
 public partial class Iso6393
