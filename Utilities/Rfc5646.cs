@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Text;
 
 namespace InsaneGenius.Utilities;
 
@@ -50,24 +51,24 @@ public partial class Rfc5646
         public RecordType Type { get; set; } = RecordType.None;
         public string SubTag { get; set; } = "";
         public List<string> Description { get; set; } = new();
-        public DateTime Added { get; set; } = DateTime.MinValue;
+        public DateOnly Added { get; set; } = DateOnly.MinValue;
         public string SuppressScript { get; set; } = "";
         public string Scope { get; set; } = "";
         public string MacroLanguage { get; set; } = "";
-        public DateTime Deprecated { get; set; } = DateTime.MinValue;
+        public DateOnly Deprecated { get; set; } = DateOnly.MinValue;
         public List<string> Comments { get; set; } = new();
         public List<string> Prefix { get; set; } = new();
         public string PreferredValue { get; set; } = "";
         public string Tag { get; set; } = "";
     }
 
-    public DateTime FileDate { get; private set; } = new();
+    public DateOnly FileDate { get; private set; } = new();
     public List<Record> RecordList { get; private set; } = new();
 
     private List<KeyValuePair<string, string>> AttributeList = new();
 
     // Create() method is generated from Rfc5646Gen.tt
-    // public static Rfc5646 Create() { return new Rfc5646(); }
+    // public bool Create() { return true; }
 
     // Load from file
     public bool Load(string fileName)
@@ -86,7 +87,7 @@ public partial class Rfc5646
 
             // File-Date: 2023-03-22
             string line = lineReader.ReadLine();
-            FileDate = DateFromString(line);
+            FileDate = DateFromLine(line);
 
             // %%
             line = lineReader.ReadLine();
@@ -217,10 +218,33 @@ public partial class Rfc5646
         return record;
     }
 
-    private DateTime DateFromString(string value)
+    private static DateOnly DateFromLine(string line)
     {
-        value = value.Substring(value.IndexOf(':') + 1).Trim();
-        return DateTime.ParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var divider = line.IndexOf(':');
+        var key = line.Substring(0, divider);
+        var value = line.Substring(divider + 1).Trim();
+
+        return DateFromString(value);
+    }
+
+    public static DateOnly DateFromString(string value)
+    {
+        return DateOnly.ParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+    }
+
+    public static string StringFromDate(DateOnly value)
+    {
+        return value.ToString("yyyy-MM-dd");
+    }
+
+    public static string ToEncodedString(string value)
+    {
+        return Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
+    }
+
+    public static string FromEncodedString(string value)
+    {
+        return Encoding.UTF8.GetString(Convert.FromBase64String(value));
     }
 
     private RecordType TypeFromString(string value)
