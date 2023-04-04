@@ -11,6 +11,7 @@ namespace InsaneGenius.Utilities;
 
 // IETF BCP 47 / RFC 5646 references
 // https://en.wikipedia.org/wiki/IETF_language_tag
+// https://www.w3.org/International/questions/qa-choosing-language-tags
 // https://www.w3.org/International/articles/language-tags/
 // https://www.rfc-editor.org/info/bcp47
 // https://www.rfc-editor.org/info/rfc4647
@@ -61,6 +62,8 @@ public partial class Rfc5646
         public List<string> Prefix { get; set; } = new();
         public string PreferredValue { get; set; } = "";
         public string Tag { get; set; } = "";
+
+        public string TagAny { get => string.IsNullOrEmpty(SubTag) ? Tag : SubTag; }
     }
 
     public DateOnly FileDate { get; private set; } = new();
