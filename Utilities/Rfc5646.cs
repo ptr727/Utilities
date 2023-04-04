@@ -274,32 +274,35 @@ public partial class Rfc5646
         }
     }
 
-    public Record Find(string language)
+    public Record Find(string languageTag, bool includeDescription)
     {
-        ArgumentNullException.ThrowIfNullOrEmpty(nameof(language));
+        ArgumentNullException.ThrowIfNullOrEmpty(nameof(languageTag));
 
         // Find the matching language entry
         Record record = null;
 
         // Tag
-        record = RecordList.FirstOrDefault(item => item.Tag.Equals(language, StringComparison.OrdinalIgnoreCase));
+        record = RecordList.FirstOrDefault(item => item.Tag.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
         if (record != null)
             return record;
 
         // SubTag
-        record = RecordList.FirstOrDefault(item => item.SubTag.Equals(language, StringComparison.OrdinalIgnoreCase));
+        record = RecordList.FirstOrDefault(item => item.SubTag.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
         if (record != null)
             return record;
 
         // PreferredValue
-        record = RecordList.FirstOrDefault(item => item.PreferredValue.Equals(language, StringComparison.OrdinalIgnoreCase));
+        record = RecordList.FirstOrDefault(item => item.PreferredValue.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
         if (record != null)
             return record;
 
         // Description
-        record = RecordList.FirstOrDefault(item => item.Description.Any(description => description.Equals(language, StringComparison.OrdinalIgnoreCase)));
-        if (record != null)
-            return record;
+        if (includeDescription)
+        { 
+            record = RecordList.FirstOrDefault(item => item.Description.Any(description => description.Equals(languageTag, StringComparison.OrdinalIgnoreCase)));
+            if (record != null)
+                return record;
+        }
 
         // Not found
         return null;

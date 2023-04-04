@@ -44,7 +44,7 @@ public class Rfc5646Tests : IClassFixture<UtilitiesTests>
         Assert.True(rfc5646.Create());
 
         // Find matching language
-        var record = rfc5646.Find(input);
+        var record = rfc5646.Find(input, false);
         Assert.NotNull(record);
         Assert.Contains(record.Description, item => item.Equals(output, StringComparison.OrdinalIgnoreCase));
     }
@@ -58,7 +58,7 @@ public class Rfc5646Tests : IClassFixture<UtilitiesTests>
         Assert.True(rfc5646.Create());
 
         // Fail to find matching language
-        var record = rfc5646.Find(input);
+        var record = rfc5646.Find(input, false);
         Assert.Null(record);
     }
 }
