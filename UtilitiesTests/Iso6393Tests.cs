@@ -1,5 +1,4 @@
 ﻿using PlexCleaner.Utilities;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Xunit;
@@ -40,28 +39,28 @@ public class Iso6393Tests : IClassFixture<UtilitiesTests>
     [InlineData("deu", "German")]
     [InlineData("de", "German")]
     [InlineData("yue", "Yue Chinese")]
-    public void Succeed_From_String(string input, string output)
+    public void Succeed_Find(string input, string output)
     {
         // Create full list of languages
         Iso6393 iso6393 = new();
         Assert.True(iso6393.Create());
 
         // Find matching language
-        var record = iso6393.FromString(input);
+        var record = iso6393.Find(input);
         Assert.NotNull(record);
         Assert.Equal(record.RefName, output);
     }
 
     [Theory]
     [InlineData("xxx")]
-    public void Failed_From_String(string input) 
+    public void Fail_Find(string input) 
     {
         // Create full list of languages
         Iso6393 iso6393 = new();
         Assert.True(iso6393.Create());
 
         // Fail to find matching language
-        var record = iso6393.FromString(input);
+        var record = iso6393.Find(input);
         Assert.Null(record);
     }
 }
