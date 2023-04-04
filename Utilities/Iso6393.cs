@@ -89,49 +89,52 @@ public partial class Iso6393
         return true;
     }
 
-    public Record Find(string language)
+    public Record Find(string languageTag, bool includeDescription)
     {
-        ArgumentNullException.ThrowIfNullOrEmpty(nameof(language));
+        ArgumentNullException.ThrowIfNullOrEmpty(nameof(languageTag));
 
         // Find the matching language entry
         Record record = null;
 
         // 693 3 letter form
         // E.g. zho, chi, afr, ger
-        if (language.Length == 3)
+        if (languageTag.Length == 3)
         {
             // Try 639-3
-            record = RecordList.FirstOrDefault(item => item.Id.Equals(language, StringComparison.OrdinalIgnoreCase));
+            record = RecordList.FirstOrDefault(item => item.Id.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
             if (record != null)
                 return record;
 
             // Try the 639-2/B
-            record = RecordList.FirstOrDefault(item => item.Part2B.Equals(language, StringComparison.OrdinalIgnoreCase));
+            record = RecordList.FirstOrDefault(item => item.Part2B.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
             if (record != null)
                 return record;
 
             // Try the 639-2/T
-            record = RecordList.FirstOrDefault(item => item.Part2T.Equals(language, StringComparison.OrdinalIgnoreCase));
+            record = RecordList.FirstOrDefault(item => item.Part2T.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
             if (record != null)
                 return record;
         }
 
         // 693 2 letter form
         // E.g. zh, af, de
-        if (language.Length == 2)
+        if (languageTag.Length == 2)
         {
             // Try 639-1
-            record = RecordList.FirstOrDefault(item => item.Part1.Equals(language, StringComparison.OrdinalIgnoreCase));
+            record = RecordList.FirstOrDefault(item => item.Part1.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
             if (record != null)
                 return record;
         }
 
         // Long form
         // E.g. Zambian Sign Language, Zul
-        // Try long form
-        record = RecordList.FirstOrDefault(item => item.RefName.Equals(language, StringComparison.OrdinalIgnoreCase));
-        if (record != null)
-            return record;
+        if (includeDescription)
+        { 
+            // Try long form
+            record = RecordList.FirstOrDefault(item => item.RefName.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
+            if (record != null)
+                return record;
+        }
 
         // Not found
         return null;
