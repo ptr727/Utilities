@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -268,5 +269,36 @@ public partial class Rfc5646
             default:
                 throw new NotImplementedException();
         }
+    }
+
+    public Record Find(string language)
+    {
+        ArgumentNullException.ThrowIfNullOrEmpty(nameof(language));
+
+        // Find the matching language entry
+        Record record = null;
+
+        // Tag
+        record = RecordList.FirstOrDefault(item => item.Tag.Equals(language, StringComparison.OrdinalIgnoreCase));
+        if (record != null)
+            return record;
+
+        // SubTag
+        record = RecordList.FirstOrDefault(item => item.SubTag.Equals(language, StringComparison.OrdinalIgnoreCase));
+        if (record != null)
+            return record;
+
+        // PreferredValue
+        record = RecordList.FirstOrDefault(item => item.PreferredValue.Equals(language, StringComparison.OrdinalIgnoreCase));
+        if (record != null)
+            return record;
+
+        // Description
+        record = RecordList.FirstOrDefault(item => item.Description.Any(description => description.Equals(language, StringComparison.OrdinalIgnoreCase)));
+        if (record != null)
+            return record;
+
+        // Not found
+        return null;
     }
 }

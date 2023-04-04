@@ -1,6 +1,5 @@
 ﻿using PlexCleaner.Utilities;
-using System.Collections.Generic;
-using System.Diagnostics;
+using System;
 using System.IO;
 using System.Reflection;
 using Xunit;
@@ -32,25 +31,22 @@ public class Rfc5646Tests : IClassFixture<UtilitiesTests>
     }
 
     [Theory]
-    [InlineData("afr", "Afrikaans")]
     [InlineData("af", "Afrikaans")]
     [InlineData("zh", "Chinese")]
-    [InlineData("zho", "Chinese")]
-    [InlineData("chi", "Chinese")]
-    [InlineData("ger", "German")]
-    [InlineData("deu", "German")]
     [InlineData("de", "German")]
     [InlineData("yue", "Yue Chinese")]
-    public void Succeed_From_String(string input, string output)
+    [InlineData("zh-cmn-Hant", "Mandarin Chinese (Traditional)")]
+    [InlineData("cmn-Hant", "Mandarin Chinese (Traditional)")]
+    public void Succeed_Find(string input, string output)
     {
         // Create full list of languages
-        Iso6393 iso6393 = new();
-        Assert.True(iso6393.Create());
+        Rfc5646 rfc5646 = new();
+        Assert.True(rfc5646.Create());
 
         // Find matching language
-        var record = iso6393.FromString(input);
+        var record = rfc5646.Find(input);
         Assert.NotNull(record);
-        Assert.Equal(record.RefName, output);
+        Assert.Contains(record.Description, item => item.Equals(output, StringComparison.OrdinalIgnoreCase));
     }
 
     [Theory]
@@ -58,11 +54,11 @@ public class Rfc5646Tests : IClassFixture<UtilitiesTests>
     public void Failed_From_String(string input)
     {
         // Create full list of languages
-        Iso6393 iso6393 = new();
-        Assert.True(iso6393.Create());
+        Rfc5646 rfc5646 = new();
+        Assert.True(rfc5646.Create());
 
         // Fail to find matching language
-        var record = iso6393.FromString(input);
+        var record = rfc5646.Find(input);
         Assert.Null(record);
     }
 }
