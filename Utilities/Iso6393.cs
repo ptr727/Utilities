@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -90,10 +89,9 @@ public partial class Iso6393
         return true;
     }
 
-    public Record FromString(string language)
+    public Record Find(string language)
     {
-        if (string.IsNullOrEmpty(language))
-            throw new ArgumentNullException(nameof(language));
+        ArgumentNullException.ThrowIfNullOrEmpty(nameof(language));
 
         // Find the matching language entry
         Record record = null;
@@ -118,7 +116,7 @@ public partial class Iso6393
                 return record;
         }
 
-        // 693 2 letter
+        // 693 2 letter form
         // E.g. zh, af, de
         if (language.Length == 2)
         {
@@ -134,32 +132,6 @@ public partial class Iso6393
         record = RecordList.FirstOrDefault(item => item.RefName.Equals(language, StringComparison.OrdinalIgnoreCase));
         if (record != null)
             return record;
-
-        // Try to lookup from CultureInfo
-        // E.g. en-US, zh-Hans
-        try
-        {
-            // Cultures get created on the fly, do not rely on an exception
-            // https://stackoverflow.com/questions/35074033/invalid-cultureinfo-no-longer-throws-culturenotfoundexception/
-
-            // Get culture info from OS
-            // TODO: Not available in .NET Standard
-            // var cultureInfo = CultureInfo.GetCultureInfo(language, true);
-            CultureInfo cultureInfo = CultureInfo.GetCultureInfoByIetfLanguageTag(language);
-
-            // Make sure the culture was not dynamically created
-            if (cultureInfo != null &&
-                !cultureInfo.ThreeLetterWindowsLanguageName.Equals("ZZZ", StringComparison.OrdinalIgnoreCase) &&
-                (cultureInfo.CultureTypes & CultureTypes.UserCustomCulture) != CultureTypes.UserCustomCulture)
-            {
-                // Recursively call using the ISO 639-2 code
-                return FromString(cultureInfo.ThreeLetterISOLanguageName);
-            }
-        }
-        catch (CultureNotFoundException)
-        {
-            // Try something else
-        }
 
         // Not found
         return null;
