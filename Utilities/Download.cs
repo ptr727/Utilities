@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 
 // TODO : Consider switching to HttpClient
@@ -17,17 +18,15 @@ public static class Download
         modifiedTime = DateTime.MinValue;
         try
         {
+            // Send GET to URL
+            using var httpResponse = GetHttpClient().GetAsync(uri).Result;
+            httpResponse.EnsureSuccessStatusCode();
+
             // Get response
-            WebRequest webRequest = CreateWebRequest(uri);
-            WebResponse webResponse = webRequest.GetResponse();
-            size = webResponse.ContentLength;
-            if (webResponse.GetType() == typeof(HttpWebResponse))
-            {
-                HttpWebResponse httpResponse = (HttpWebResponse)webResponse;
-                modifiedTime = httpResponse.LastModified;
-            }
+            size = (long)httpResponse.Content.Headers.ContentLength;
+            modifiedTime = (DateTime)httpResponse.Content.Headers.LastModified?.DateTime;
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }
@@ -39,18 +38,16 @@ public static class Download
     {
         try
         {
-            // Get response
-            WebRequest webRequest = CreateWebRequest(uri);
-            WebResponse webResponse = webRequest.GetResponse();
+            // Get HTTP stream
+            var httpStream = GetHttpClient().GetStreamAsync(uri).Result;
 
-            // Write response to file
-            Stream webStream = webResponse.GetResponseStream();
+            // Get file stream
             using FileStream fileStream = File.OpenWrite(fileName);
-            webStream.CopyTo(fileStream);
-            fileStream.Close();
-            webStream.Close();
+
+            // Write HTTP to file
+            httpStream.CopyTo(fileStream);
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }
@@ -63,18 +60,9 @@ public static class Download
         value = null;
         try
         {
-            // Get response
-            WebRequest webRequest = CreateWebRequest(uri);
-            WebResponse webResponse = webRequest.GetResponse();
-
-            // Write response to text
-            Stream webStream = webResponse.GetResponseStream();
-            using StreamReader textStream = new(webStream);
-            value = textStream.ReadToEnd();
-            textStream.Close();
-            webStream.Close();
+            value = GetHttpClient().GetStringAsync(uri).Result;
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod().Name))
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }
@@ -82,18 +70,25 @@ public static class Download
         return true;
     }
 
-    public static WebRequest CreateWebRequest(Uri uri)
+    public static HttpClient GetHttpClient()
     {
-        // Open request
-        WebRequest webRequest = WebRequest.Create(uri);
-        webRequest.Timeout = Timeout;
-        webRequest.Headers.Add(HttpRequestHeader.UserAgent, Assembly.GetExecutingAssembly().GetName().Name);
-        if (webRequest.GetType() == typeof(HttpWebRequest))
+        // TODO: How does static init and synchronization work?
+        if (!HttpInit)
         {
-            HttpWebRequest httpRequest = (HttpWebRequest)webRequest;
-            httpRequest.ReadWriteTimeout = webRequest.Timeout;
+            // Default timeout
+            HttpClient.Timeout = TimeSpan.FromSeconds(30);
+
+            // Some services only work if a user agent is set, use the assembly info
+            // TODO: Set only once, not sure if Add() will keep adding the same value multiple times?
+            HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(Assembly.GetExecutingAssembly().GetName().Name,
+                Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+
+            HttpInit = true;
         }
-        return webRequest;
+
+        // Reuse the HTTP client per best practices
+        // Not able to "easily" use IHttpClientFactory
+        return HttpClient;
     }
 
     public static Uri CreateUri(string url, string userName, string password)
@@ -107,5 +102,6 @@ public static class Download
         return uriBuilder.Uri;
     }
 
-    private const int Timeout = 30 * 1000;
+    private static bool HttpInit = false;
+    private static readonly HttpClient HttpClient = new HttpClient();
 }
