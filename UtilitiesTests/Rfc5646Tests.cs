@@ -1,5 +1,8 @@
 ﻿using PlexCleaner.Utilities;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using Xunit;
 
 namespace InsaneGenius.Utilities.Tests;
@@ -12,6 +15,20 @@ public class Rfc5646Tests : IClassFixture<UtilitiesTests>
         // Create full list of languages
         Rfc5646 rfc5646 = new();
         Assert.True(rfc5646.Create());
+    }
+
+    [Fact]
+    public void Load()
+    {
+        // Get the assembly directory
+        var entryAssembly = Assembly.GetEntryAssembly();
+        string assemblyDirectory = Path.GetDirectoryName(entryAssembly.Location);
+        string dataDirectory = Path.GetFullPath(Path.Combine(assemblyDirectory, "../../../../Data"));
+        string dataFile = Path.GetFullPath(Path.Combine(dataDirectory, "language-subtag-registry"));
+
+        // Load list of languages
+        Rfc5646 rfc5646 = new();
+        Assert.True(rfc5646.Load(dataFile));
     }
 
     [Theory]
