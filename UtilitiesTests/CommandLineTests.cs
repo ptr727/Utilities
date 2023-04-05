@@ -1,8 +1,9 @@
-﻿using Xunit;
+﻿using PlexCleaner.Utilities;
+using Xunit;
 
 namespace InsaneGenius.Utilities.Tests;
 
-public class CommandLineTests
+public class CommandLineTests : IClassFixture<UtilitiesTests>
 {
     [Fact]
     public void ParseArguments()

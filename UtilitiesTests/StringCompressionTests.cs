@@ -1,9 +1,10 @@
-﻿using System;
+﻿using PlexCleaner.Utilities;
+using System;
 using Xunit;
 
 namespace InsaneGenius.Utilities.Tests;
 
-public class StringCompressionTests
+public class StringCompressionTests : IClassFixture<UtilitiesTests>
 {
     [Fact]
     public void CompressDecompress()
