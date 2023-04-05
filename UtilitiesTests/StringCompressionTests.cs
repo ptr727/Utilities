@@ -1,5 +1,4 @@
-﻿using PlexCleaner.Utilities;
-using System;
+﻿using System;
 using Xunit;
 
 namespace InsaneGenius.Utilities.Tests;
