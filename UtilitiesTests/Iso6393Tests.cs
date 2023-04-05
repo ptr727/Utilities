@@ -1,5 +1,4 @@
-﻿using PlexCleaner.Utilities;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using Xunit;
 
@@ -20,9 +19,9 @@ public class Iso6393Tests : IClassFixture<UtilitiesTests>
     {
         // Get the assembly directory
         var entryAssembly = Assembly.GetEntryAssembly();
-        string assemblyDirectory = Path.GetDirectoryName(entryAssembly.Location);
-        string dataDirectory = Path.GetFullPath(Path.Combine(assemblyDirectory, "../../../../Data"));
-        string dataFile = Path.GetFullPath(Path.Combine(dataDirectory, "iso-639-3.tab"));
+        var assemblyDirectory = Path.GetDirectoryName(entryAssembly.Location);
+        var dataDirectory = Path.GetFullPath(Path.Combine(assemblyDirectory, "../../../../Data"));
+        var dataFile = Path.GetFullPath(Path.Combine(dataDirectory, "iso-639-3.tab"));
 
         // Load list of languages
         Iso6393 iso6393 = new();
