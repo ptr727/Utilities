@@ -8,9 +8,9 @@ using System.Reflection;
 // Get the assembly directory
 var entryAssembly = Assembly.GetEntryAssembly();
 Debug.Assert(entryAssembly != null);
-string assemblyDirectory = Path.GetDirectoryName(entryAssembly.Location);
+var assemblyDirectory = Path.GetDirectoryName(entryAssembly.Location);
 Debug.Assert(assemblyDirectory != null);
-string projectDirectory = Path.GetFullPath(Path.Combine(assemblyDirectory, "../../../../"));
+var projectDirectory = Path.GetFullPath(Path.Combine(assemblyDirectory, "../../../../"));
 
 var rfc5646File = Path.GetFullPath(Path.Combine(projectDirectory, "Data/language-subtag-registry"));
 var rfc5646 = new Rfc5646();

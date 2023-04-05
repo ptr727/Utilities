@@ -1,13 +1,9 @@
 ﻿using System;
 
-namespace PlexCleaner.Utilities;
+namespace InsaneGenius.Utilities.Tests;
 
 public class UtilitiesTests : IDisposable
 {
-    public UtilitiesTests()
-    {
-    }
-
     public void Dispose()
     {
     }

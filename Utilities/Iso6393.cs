@@ -51,7 +51,7 @@ public partial class Iso6393
         try 
         {
             // Open the file as a stream
-            using StreamReader lineReader = new StreamReader(File.OpenRead(fileName));
+            using StreamReader lineReader = new(File.OpenRead(fileName));
 
             // Init
             RecordList.Clear();
@@ -68,7 +68,7 @@ public partial class Iso6393
                 Debug.Assert(records.Length == 8);
 
                 // Populate record                
-                var record = new Record()
+                var record = new Record
                 {
                     Id = records[0].Trim(),
                     Part2B = records[1].Trim(),
@@ -91,7 +91,7 @@ public partial class Iso6393
 
     public Record Find(string languageTag, bool includeDescription)
     {
-        ArgumentNullException.ThrowIfNullOrEmpty(nameof(languageTag));
+        ArgumentException.ThrowIfNullOrEmpty(nameof(languageTag));
 
         // Find the matching language entry
         Record record = null;
