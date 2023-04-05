@@ -18,12 +18,7 @@ Code and Pipeline is on [GitHub](https://github.com/ptr727/Utilities)
 Packages published on [NuGet](https://www.nuget.org/packages/InsaneGenius.Utilities/)  
 ![NuGet](https://img.shields.io/nuget/v/InsaneGenius.Utilities?logo=nuget)
 
-## Notes
+## External Data
 
-- ISO 639-3 language data is sourced from the [ISO 639-3 Registration Authority](https://iso639-3.sil.org/code_tables/download_tables).
-  - Download UTF8 format [ISO-639-3 file](https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab).
-  - Compile using Visual Studio's built-in [T4 Tool](https://docs.microsoft.com/en-us/visualstudio/modeling/code-generation-and-t4-text-templates).
-  - Or compile from the CLI using the [Mono T4](https://github.com/mono/t4) tool.
-    - `wget -O ISO-639-3.tab https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab`
-    - `dotnet tool install -g dotnet-t4`
-    - `t4 --out=ISO-639-3.cs ISO-639-3.tt`
+- ISO 639-3 language data is sourced from [ISO 639-3 Registration Authority](https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab).
+- RFC 5646 / BCP 47 language data is sourced from [IANA](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry).
