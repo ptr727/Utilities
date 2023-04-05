@@ -102,6 +102,6 @@ public static class Download
         return uriBuilder.Uri;
     }
 
-    private static bool HttpInit = false;
-    private static readonly HttpClient HttpClient = new HttpClient();
+    private static bool HttpInit;
+    private static readonly HttpClient HttpClient = new();
 }

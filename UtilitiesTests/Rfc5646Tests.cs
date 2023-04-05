@@ -1,5 +1,4 @@
-﻿using PlexCleaner.Utilities;
-using System;
+﻿using System;
 using System.IO;
 using System.Reflection;
 using Xunit;

@@ -63,10 +63,10 @@ public partial class Rfc5646
         public string PreferredValue { get; set; } = "";
         public string Tag { get; set; } = "";
 
-        public string TagAny { get => string.IsNullOrEmpty(SubTag) ? Tag : SubTag; }
+        public string TagAny => string.IsNullOrEmpty(SubTag) ? Tag : SubTag;
     }
 
-    public DateOnly FileDate { get; private set; } = new();
+    public DateOnly FileDate { get; private set; } = DateOnly.MinValue;
     public List<Record> RecordList { get; private set; } = new();
 
     private List<KeyValuePair<string, string>> AttributeList = new();
@@ -80,7 +80,7 @@ public partial class Rfc5646
         try 
         { 
             // Open the file as a stream
-            using StreamReader lineReader = new StreamReader(File.OpenRead(fileName));
+            using StreamReader lineReader = new(File.OpenRead(fileName));
 
             // Init
             AttributeList.Clear();
@@ -90,7 +90,7 @@ public partial class Rfc5646
             // https://datatracker.ietf.org/doc/html/draft-phillips-record-jar-02
 
             // File-Date: 2023-03-22
-            string line = lineReader.ReadLine();
+            var line = lineReader.ReadLine();
             FileDate = DateFromLine(line);
 
             // %%
@@ -124,7 +124,7 @@ public partial class Rfc5646
         while (true)
         {
             // Read next line
-            string line = lineReader.ReadLine();
+            var line = lineReader.ReadLine();
             if (string.IsNullOrEmpty(line))
             {
                 // End of file
@@ -161,8 +161,8 @@ public partial class Rfc5646
 
             // Create attribute pair
             var divider = line.IndexOf(':');
-            var key = line.Substring(0, divider);
-            var value = line.Substring(divider + 1).Trim();
+            var key = line[..divider];
+            var value = line[(divider + 1)..].Trim();
 
             // Add to attribute list
             AttributeList.Add(new KeyValuePair<string, string>(key, value));
@@ -225,8 +225,8 @@ public partial class Rfc5646
     private static DateOnly DateFromLine(string line)
     {
         var divider = line.IndexOf(':');
-        var key = line.Substring(0, divider);
-        var value = line.Substring(divider + 1).Trim();
+        // var key = line.Substring(0, divider);
+        var value = line[(divider + 1)..].Trim();
 
         return DateFromString(value);
     }
@@ -251,32 +251,24 @@ public partial class Rfc5646
         return Encoding.UTF8.GetString(Convert.FromBase64String(value));
     }
 
-    private RecordType TypeFromString(string value)
+    private static RecordType TypeFromString(string value)
     {
-        switch (value.ToLower())
+        return value.ToLower() switch
         {
-            case "language":
-                return RecordType.Language;
-            case "extlang":
-                return RecordType.ExtLanguage;
-            case "script":
-                return RecordType.Script;
-            case "variant":
-                return RecordType.Variant;
-            case "grandfathered":
-                return RecordType.Grandfathered;
-            case "region":
-                return RecordType.Region;
-            case "redundant":
-                return RecordType.Redundant;
-            default:
-                throw new NotImplementedException();
-        }
+            "language" => RecordType.Language,
+            "extlang" => RecordType.ExtLanguage,
+            "script" => RecordType.Script,
+            "variant" => RecordType.Variant,
+            "grandfathered" => RecordType.Grandfathered,
+            "region" => RecordType.Region,
+            "redundant" => RecordType.Redundant,
+            _ => throw new NotImplementedException()
+        };
     }
 
     public Record Find(string languageTag, bool includeDescription)
     {
-        ArgumentNullException.ThrowIfNullOrEmpty(nameof(languageTag));
+        ArgumentException.ThrowIfNullOrEmpty(nameof(languageTag));
 
         // Find the matching language entry
         Record record = null;
