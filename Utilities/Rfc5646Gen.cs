@@ -1,3 +1,7 @@
+
+
+using System;
+
 namespace InsaneGenius.Utilities;
 
 // Generated from Rfc5646Gen.tt
@@ -9,7 +13,7 @@ public partial class Rfc5646
 		RecordList.Clear();
 		Record record = null;
 
-		FileDate = DateFromString("2023-03-22");
+		FileDate = DateFromString("2023-04-13");
 
 		record = new()
 		{
@@ -166460,7 +166464,7 @@ public partial class Rfc5646
 			Scope = "",
 			MacroLanguage = "ar",
 			Deprecated = DateFromString("2023-03-17"),
-			PreferredValue = "apc",
+			PreferredValue = "ajp",
 			Tag = ""
 		};
 

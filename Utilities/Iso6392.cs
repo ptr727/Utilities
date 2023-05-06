@@ -7,49 +7,43 @@ using System.Reflection;
 
 namespace InsaneGenius.Utilities;
 
-// ISO-639-3 reference
-// http://www-01.sil.org/iso639-3
-// https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab
+// ISO-639-2 reference
+// https://www.loc.gov/standards/iso639-2/langhome.html
+// https://www.loc.gov/standards/iso639-2/ISO-639-2_utf-8.txt
 
 // T4 template
 // https://docs.microsoft.com/en-us/visualstudio/modeling/code-generation-and-t4-text-templates
 // https://github.com/mono/t4
-// wget -O ./Data/iso-639-3.tab https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab
+// wget -O ./Data/ISO-639-2_utf-8.txt https://www.loc.gov/standards/iso639-2/ISO-639-2_utf-8.txt
 // dotnet tool install -g dotnet-t4
 // dotnet publish ./Utilities/Utilities.csproj --self-contained=false --output=./bin/T4
-// t4 -P="./bin/T4" --out=./Utilities/Iso6393Gen.cs ./Utilities/Iso6393Gen.tt
+// t4 -P="./bin/T4" --out=./Utilities/Iso6392Gen.cs ./Utilities/Iso6392Gen.tt
 
-// ISO 639-3 class
-public partial class Iso6393
+// ISO 639-2 class
+public partial class Iso6392
 {
     public class Record
-    { 
-        // The three-letter 639-3 identifier
-        public string Id { get; set; } = "";
-        // Equivalent 639-2 identifier of the bibliographic applications code set, if there is one
+    {
+        // Default to use 2B
+        public string Id { get { return Part2B; } }
+        // 639-2 Bibliographic
         public string Part2B { get; set; } = "";
-        // Equivalent 639-2 identifier of the terminology applications code set, if there is one
+        // 639-2 Terminology
         public string Part2T { get; set; } = "";
-        // Equivalent 639-1 identifier, if there is one
+        // 639-1
         public string Part1 { get; set; } = "";
-        // I(ndividual), M(acrolanguage), S(pecial)
-        public string Scope { get; set; } = "";
-        // A(ncient), C(onstructed), E(xtinct), H(istorical), L(iving), S(pecial)
-        public string LanguageType { get; set; } = "";
-        // Reference language name
+        // English name
         public string RefName { get; set; } = "";
-        // Comment relating to one or more of the columns
-        public string Comment { get; set; } = "";
     }
 
     public List<Record> RecordList { get; private set; } = new();
 
-    // Create() method is generated from Iso6393Gen.tt
+    // Create() method is generated from Iso6392Gen.tt
     // public bool Create() { return true; }
 
     public bool Load(string fileName)
     {
-        try 
+        try
         {
             // Open the file as a stream
             using StreamReader lineReader = new(File.OpenRead(fileName));
@@ -64,27 +58,24 @@ public partial class Iso6393
             // Read line by line
             while ((line = lineReader.ReadLine()) is not null)
             {
-                // Parse using tab character
-                var records = line.Split('\t');
-                Debug.Assert(records.Length == 8);
+                // Parse using pipe character
+                var records = line.Split('|');
+                Debug.Assert(records.Length == 5);
 
                 // Populate record                
                 var record = new Record
                 {
-                    Id = records[0].Trim(),
-                    Part2B = records[1].Trim(),
-                    Part2T = records[2].Trim(),
-                    Part1 = records[3].Trim(),
-                    Scope = records[4].Trim(),
-                    LanguageType = records[5].Trim(),
-                    RefName = records[6].Trim(),
-                    Comment = records[7].Trim()
+                    Part2B = records[0].Trim(),
+                    Part2T = records[1].Trim(),
+                    Part1 = records[2].Trim(),
+                    RefName = records[3].Trim(),
+                    // Ignore the French name, German name is not in file
                 };
                 RecordList.Add(record);
             }
         }
         catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
-        { 
+        {
             return false;
         }
         return true;
@@ -98,14 +89,8 @@ public partial class Iso6393
         Record record = null;
 
         // 693 3 letter form
-        // E.g. zho, chi, afr, ger
         if (languageTag.Length == 3)
         {
-            // Try 639-3
-            record = RecordList.FirstOrDefault(item => item.Id.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
-            if (record != null)
-                return record;
-
             // Try the 639-2/B
             record = RecordList.FirstOrDefault(item => item.Part2B.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
             if (record != null)
@@ -118,7 +103,6 @@ public partial class Iso6393
         }
 
         // 693 2 letter form
-        // E.g. zh, af, de
         if (languageTag.Length == 2)
         {
             // Try 639-1
@@ -128,9 +112,8 @@ public partial class Iso6393
         }
 
         // Long form
-        // E.g. Zambian Sign Language, Zul
         if (includeDescription)
-        { 
+        {
             // Try long form
             record = RecordList.FirstOrDefault(item => item.RefName.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
             if (record != null)
