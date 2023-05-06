@@ -3,7 +3,6 @@
 <#@ assembly name="System.Runtime" #>
 <#@ assembly name="InsaneGenius.Utilities.dll" #>
 <#@ import namespace="System" #>
-<#@ import namespace="System.Text" #>
 <#@ import namespace="InsaneGenius.Utilities" #>
 
 <#
@@ -14,8 +13,6 @@ if (!rfc5646.Load(fileName) || rfc5646.RecordList.Count == 0)
 #>
 
 using System;
-using System.Text;
-using System.Globalization;
 
 namespace InsaneGenius.Utilities;
 

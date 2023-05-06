@@ -33,6 +33,9 @@
   </ItemGroup>
   
   <ItemGroup>
+    <None Update="Iso6392Gen.tt">
+      <Generator></Generator>
+    </None>
     <None Update="Iso6393Gen.tt">
       <Generator></Generator>
     </None>
@@ -44,5 +47,5 @@
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
-  
+ 
 </Project>

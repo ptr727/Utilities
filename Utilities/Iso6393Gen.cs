@@ -1,5 +1,7 @@
 
 
+using System;
+
 namespace InsaneGenius.Utilities;
 
 // Generated from Iso6393Gen.tt
