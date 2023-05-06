@@ -28,10 +28,10 @@ namespace InsaneGenius.Utilities;
 // T4 template
 // https://docs.microsoft.com/en-us/visualstudio/modeling/code-generation-and-t4-text-templates
 // https://github.com/mono/t4
-// wget -O language-subtag-registry https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
+// wget -O ./Data/language-subtag-registry https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
 // dotnet tool install -g dotnet-t4
-// dotnet publish Utilities.csproj --self-contained false --output ./bin/T4
-// t4 -P="./bin/T4" --out=Rfc5646Gen.cs Rfc5646Gen.tt
+// dotnet publish ./Utilities/Utilities.csproj --self-contained=false --output=./bin/T4
+// t4 -P="./bin/T4" --out=./Utilities/Rfc5646Gen.cs ./Utilities/Rfc5646Gen.tt
 
 // RFC 5646 class
 public partial class Rfc5646

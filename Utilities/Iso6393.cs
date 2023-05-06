@@ -14,9 +14,10 @@ namespace InsaneGenius.Utilities;
 // T4 template
 // https://docs.microsoft.com/en-us/visualstudio/modeling/code-generation-and-t4-text-templates
 // https://github.com/mono/t4
-// wget -O iso-639-3.tab https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab
+// wget -O ./Data/iso-639-3.tab https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab
 // dotnet tool install -g dotnet-t4
-// t4 -P="./bin/T4" --out=Iso6393Gen.cs .\Iso6393Gen.tt
+// dotnet publish ./Utilities/Utilities.csproj --self-contained=false --output=./bin/T4
+// t4 -P="./bin/T4" --out=./Utilities/Iso6393Gen.cs ./Utilities/Iso6393Gen.tt
 
 // ISO 639-3 class
 public partial class Iso6393
