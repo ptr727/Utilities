@@ -6,9 +6,9 @@
 <#@ import namespace="InsaneGenius.Utilities" #>
 
 <#
-var fileName = Host.ResolvePath("../Data/iso-639-3.tab");
-var iso6393 = new Iso6393();
-if (!iso6393.Load(fileName) || iso6393.RecordList.Count == 0)
+var fileName = Host.ResolvePath("../Data/ISO-639-2_utf-8.txt");
+var iso6392 = new Iso6392();
+if (!iso6392.Load(fileName) || iso6392.RecordList.Count == 0)
 	throw new NotImplementedException();
 #>
 
@@ -16,8 +16,8 @@ using System;
 
 namespace InsaneGenius.Utilities;
 
-// Generated from Iso6393Gen.tt
-public partial class Iso6393
+// Generated from Iso6392Gen.tt
+public partial class Iso6392
 {
 	public bool Create()
 	{
@@ -26,19 +26,15 @@ public partial class Iso6393
 		Record record = null;
 
 <#
-iso6393.RecordList.ForEach(record =>
+iso6392.RecordList.ForEach(record =>
 {
 #>
 		record = new()
 		{
-			Id = "<#=record.Id#>",
 			Part2B = "<#=record.Part2B#>",
 			Part2T = "<#=record.Part2T#>",
 			Part1 = "<#=record.Part1#>",
-			Scope = "<#=record.Scope#>",
-			LanguageType = "<#=record.LanguageType#>",
 			RefName = "<#=record.RefName#>",
-			Comment = "<#=record.Comment#>",
 		};
 
         RecordList.Add(record);
