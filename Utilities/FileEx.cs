@@ -360,9 +360,16 @@ public static class FileEx
     // Test if all files in the directory are readable
     public static bool AreFilesInDirectoryReadable(string directory)
     {
-        // Test each file in directory for readability
-        DirectoryInfo dirInfo = new(directory);
-        return dirInfo.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly).All(IsFileReadable);
+        try 
+        {
+            // Test each file in directory for readability
+            DirectoryInfo dirInfo = new(directory);
+            return dirInfo.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly).All(IsFileReadable);
+        }
+        catch (Exception e) when(LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        {
+            return false;
+        }
     }
 
     // Create directory if it does not already exists
