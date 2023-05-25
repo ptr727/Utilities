@@ -20,6 +20,6 @@ Packages published on [NuGet](https://www.nuget.org/packages/InsaneGenius.Utilit
 
 ## External Data
 
-- ISO 639-2 language data is sourced from the [ISO 639-2 Registration Authority](https://www.loc.gov/standards/iso639-2/langhome.html) [download](https://www.loc.gov/standards/iso639-2/ISO-639-2_utf-8.txt)
-- ISO 639-3 language data is sourced from the [ISO 639-3 Registration Authority](https://iso639-3.sil.org/) [download](https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab).
-- RFC 5646 / BCP 47 language data is sourced from the [IANA Tags for Identifying Languages RFC 5646](https://www.rfc-editor.org/rfc/rfc5646.html) [download](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry).
+- ISO 639-2 language data is sourced from the [ISO 639-2 Registration Authority](https://www.loc.gov/standards/iso639-2/langhome.html), [download](https://www.loc.gov/standards/iso639-2/ISO-639-2_utf-8.txt)
+- ISO 639-3 language data is sourced from the [ISO 639-3 Registration Authority](https://iso639-3.sil.org/), [download](https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab).
+- RFC 5646 / BCP 47 language data is sourced from the [IANA Tags for Identifying Languages RFC 5646](https://www.rfc-editor.org/rfc/rfc5646.html), [download](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry).
