@@ -4,10 +4,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 
-// TODO : Consider switching to HttpClient
-// https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=netcore-3.1
-// https://stackoverflow.com/questions/122853/how-to-get-the-file-size-from-http-headers
-
 namespace InsaneGenius.Utilities;
 
 public static class Download
