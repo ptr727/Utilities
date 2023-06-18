@@ -12,7 +12,7 @@ env:
   # Do not push on pull_request events
   dopush: ${{ github.event_name != 'pull_request' }}
   # main branch
-  mainbranch: ${{ !endsWith(github.ref, 'refs/heads/main') }}
+  mainbranch: ${{ endsWith(github.ref, 'refs/heads/main') }}
 
 jobs:
   build:
@@ -95,7 +95,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           automatic_release_tag: ${{ steps.nbgv.outputs.SemVer2 }}
           # Only main branch is not a pre-release
-          prerelease: ${{ env.mainbranch }}
+          prerelease: ${{ !env.mainbranch }}
           files: |
             LICENSE
             ./Publish/Utilities.7z
