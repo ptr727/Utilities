@@ -32,6 +32,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub Actions", "GitHub Actions", "{6AEC3BF4-00CE-4C23-A003-82F12FCBA630}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\BuildPublishPipeline.yml = .github\workflows\BuildPublishPipeline.yml
+		.github\dependabot.yml = .github\dependabot.yml
 	EndProjectSection
 EndProject
 Global
