@@ -8,6 +8,12 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+env:
+  # Do not push on pull_request events
+  dopush: ${{ github.event_name != 'pull_request' }}
+  # main branch
+  mainbranch: ${{ !endsWith(github.ref, 'refs/heads/main') }}
+
 jobs:
   build:
     name: 'Build and Publish Pipeline'
@@ -58,9 +64,7 @@ jobs:
       # Publish to NuGet.org Registry
       # https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-nuget-push
       - name: 'Publish to NuGet.org Registry'
-        # Do not push pull requests
-        if: ${{ github.event_name != 'pull_request' }}
-        # Use build platform specific path convention, relative paths do not work
+        if: ${{ dopush }}
         run: >-
             dotnet nuget push ${{ github.workspace }}/Publish/*.nupkg
             --source https://api.nuget.org/v3/index.json
@@ -70,9 +74,7 @@ jobs:
       # Publish to GitHub NuGet Registry
       # https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-nuget-registry
       - name: 'Publish to GitHub NuGet Registry'
-        # Do not push pull requests
-        if: ${{ github.event_name != 'pull_request' }}
-        # Use build platform specific path convention, relative paths do not work
+        if: ${{ dopush }}
         run: >-
             dotnet nuget push ${{ github.workspace }}/Publish/*.nupkg
             --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
@@ -81,19 +83,19 @@ jobs:
 
       # Zip the output
       - name: 'Zip Output'
+        if: ${{ dopush }}
         run: 7z a -t7z ./Publish/Utilities.7z ./Publish/*
 
       # Create GitHub release
       # https://github.com/marketplace/actions/automatic-releases
       - name: 'Create GitHub Release'
-        # Do not push on pull requests
-        if: ${{ (github.event_name != 'pull_request') }}
+        if: ${{ dopush }}
         uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           automatic_release_tag: ${{ steps.nbgv.outputs.SemVer2 }}
           # Only main branch is not a pre-release
-          prerelease: ${{ !endsWith(github.ref, 'refs/heads/main') }}
+          prerelease: ${{ mainbranch }}
           files: |
             LICENSE
             ./Publish/Utilities.7z
