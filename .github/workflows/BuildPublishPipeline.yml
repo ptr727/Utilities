@@ -68,7 +68,7 @@ jobs:
         run: >-
             dotnet nuget push ${{ github.workspace }}/Publish/*.nupkg
             --source https://api.nuget.org/v3/index.json
-            --api-key ${{ secrets.NUGET_API_KEY}}
+            --api-key ${{ env.dopush && secrets.NUGET_API_KEY || 'foo' }}
             --skip-duplicate
 
       # Publish to GitHub NuGet Registry
