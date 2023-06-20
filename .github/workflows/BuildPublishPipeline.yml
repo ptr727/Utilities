@@ -64,7 +64,7 @@ jobs:
       # Publish to NuGet.org Registry
       # https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-nuget-push
       - name: 'Publish to NuGet.org Registry'
-        if: ${{ env.dopush }}
+        if: env.dopush == 'true'
         run: >-
             dotnet nuget push ${{ github.workspace }}/Publish/*.nupkg
             --source https://api.nuget.org/v3/index.json
@@ -74,7 +74,7 @@ jobs:
       # Publish to GitHub NuGet Registry
       # https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-nuget-registry
       - name: 'Publish to GitHub NuGet Registry'
-        if: ${{ env.dopush }}
+        if: env.dopush == 'true'
         run: >-
             dotnet nuget push ${{ github.workspace }}/Publish/*.nupkg
             --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
@@ -83,13 +83,13 @@ jobs:
 
       # Zip the output
       - name: 'Zip Output'
-        if: ${{ env.dopush }}
+        if: env.dopush == 'true'
         run: 7z a -t7z ./Publish/Utilities.7z ./Publish/*
 
       # Create GitHub release
       # https://github.com/marketplace/actions/automatic-releases
       - name: 'Create GitHub Release'
-        if: ${{ env.dopush }}
+        if: env.dopush == 'true'
         uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
