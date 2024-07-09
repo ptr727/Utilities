@@ -1,0 +1,32 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"cSpell.words": [
+			"davidanson",
+			"dotnettools",
+			"gruntfuggly",
+			"templating",
+			"winget"
+		],
+		"dotnet.defaultSolution": "Utilities.sln",
+		"files.trimTrailingWhitespace": true,
+		"[markdown]": {
+			"files.trimTrailingWhitespace": false
+		},
+		"[plaintext]": {
+			"files.trimTrailingWhitespace": false
+		}
+	},
+	"extensions": {
+		"recommendations": [
+			"davidanson.vscode-markdownlint",
+			"gruntfuggly.todo-tree",
+			"ms-dotnettools.csharp",
+			"streetsidesoftware.code-spell-checker"
+		]
+	}
+}
