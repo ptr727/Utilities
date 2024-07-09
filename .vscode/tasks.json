@@ -2,14 +2,126 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build",
-            "command": "dotnet",
+            "label": "dotnet build",
             "type": "process",
+            "command": "dotnet",
             "args": [
                 "build",
-                "${workspaceFolder}/UtilitiesTests/UtilitiesTests.csproj"
+                "${workspaceFolder}/Utilities/Utilities.csproj"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "dotnet publish",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "publish",
+                "${workspaceFolder}/Utilities/Utilities.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "install t4",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "tool",
+                "install",
+                "-g",
+                "dotnet-t4"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "updata iso-639-2 data",
+            "type": "process",
+            "command": "wget",
+            "args": [
+                "-O",
+                "${workspaceFolder}/Data/ISO-639-2_utf-8.txt",
+                "https://www.loc.gov/standards/iso639-2/ISO-639-2_utf-8.txt"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "build iso-639-2 data",
+            "type": "process",
+            "command": "t4",
+            "args": [
+                "-P=${workspaceFolder}/Utilities/bin/Release/net8.0/publish",
+                "--out=${workspaceFolder}/Utilities/Iso6392Gen.cs",
+                "${workspaceFolder}/Utilities/Iso6392Gen.tt"
+            ],
+            "dependsOn": [
+                "updata iso-639-2 data"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
+            "label": "updata iso-639-3 data",
+            "type": "process",
+            "command": "wget",
+            "args": [
+                "-O",
+                "${workspaceFolder}/Data/iso-639-3.tab",
+                "https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "build iso-639-3 data",
+            "type": "process",
+            "command": "t4",
+            "args": [
+                "-P=${workspaceFolder}/Utilities/bin/Release/net8.0/publish",
+                "--out=${workspaceFolder}/Utilities/Iso6393Gen.cs",
+                "${workspaceFolder}/Utilities/Iso6393Gen.tt"
+            ],
+            "dependsOn": [
+                "updata iso-639-3 data"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
+            "label": "updata rfc-5646 data",
+            "type": "process",
+            "command": "wget",
+            "args": [
+                "-O",
+                "${workspaceFolder}/Data/language-subtag-registry",
+                "https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "build rfc-5646 data",
+            "type": "process",
+            "command": "t4",
+            "args": [
+                "-P=${workspaceFolder}/Utilities/bin/Release/net8.0/publish",
+                "--out=${workspaceFolder}/Utilities/Rfc5646Gen.cs",
+                "${workspaceFolder}/Utilities/Rfc5646Gen.tt"
+            ],
+            "dependsOn": [
+                "updata rfc-5646 data"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
+            "label": "build language files",
+            "dependsOn": [
+                "install t4",
+                "dotnet publish",
+                "build iso-6393-2 data",
+                "build iso-6393-3 data",
+                "build rfc-5646 data"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
         }
     ]
 }
