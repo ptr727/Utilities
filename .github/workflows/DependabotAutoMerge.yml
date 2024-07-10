@@ -7,15 +7,16 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: write
-  pull-requests: write
-
 jobs:
 
   dependabot:
     name: Dependabot auto-merge
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    # Only for dependabot PRs
     if: github.actor == 'dependabot[bot]'
 
     steps:
@@ -28,6 +29,7 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
       - name: Auto-merge dependabot non-major updates
+        # Only auto-merge non-major updates
         if: steps.metadata.outputs.update-type != 'version-update:semver-major'
         run: gh pr merge --auto --merge "$PR_URL"
         env:
