@@ -26,7 +26,8 @@
 			"davidanson.vscode-markdownlint",
 			"gruntfuggly.todo-tree",
 			"ms-dotnettools.csharp",
-			"streetsidesoftware.code-spell-checker"
+			"streetsidesoftware.code-spell-checker",
+			"ms-dotnettools.csdevkit"
 		]
 	}
 }
