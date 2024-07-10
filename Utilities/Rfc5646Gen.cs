@@ -13,7 +13,7 @@ public partial class Rfc5646
 		RecordList.Clear();
 		Record record = null;
 
-		FileDate = DateFromString("2023-04-13");
+		FileDate = DateFromString("2024-06-14");
 
 		record = new()
 		{
@@ -2931,7 +2931,7 @@ public partial class Rfc5646
 			SubTag = "sa",
 			Added = DateFromString("2005-10-16"),
 			SuppressScript = "",
-			Scope = "",
+			Scope = "macrolanguage",
 			MacroLanguage = "",
 			Deprecated = DateFromString("0001-01-01"),
 			PreferredValue = "",
@@ -30684,6 +30684,26 @@ public partial class Rfc5646
 		record = new()
 		{
 			Type = RecordType.Language,
+			SubTag = "cls",
+			Added = DateFromString("2024-03-04"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "sa",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Classical Sanskrit
+        record.Description.Add(FromEncodedString("Q2xhc3NpY2FsIFNhbnNrcml0"));
+
+
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Language,
 			SubTag = "clt",
 			Added = DateFromString("2012-08-12"),
 			SuppressScript = "",
@@ -35970,6 +35990,8 @@ public partial class Rfc5646
 			Tag = ""
 		};
 
+		// Tlicho
+        record.Description.Add(FromEncodedString("VGxpY2hv"));
 		// Dogrib
         record.Description.Add(FromEncodedString("RG9ncmli"));
 		// Tłı̨chǫ
@@ -58560,6 +58582,26 @@ public partial class Rfc5646
 
 		// Isu (Menchum Division)
         record.Description.Add(FromEncodedString("SXN1IChNZW5jaHVtIERpdmlzaW9uKQ=="));
+
+
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Language,
+			SubTag = "isv",
+			Added = DateFromString("2024-05-15"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Interslavic
+        record.Description.Add(FromEncodedString("SW50ZXJzbGF2aWM="));
 
 
 
@@ -119652,6 +119694,26 @@ public partial class Rfc5646
 		record = new()
 		{
 			Type = RecordType.Language,
+			SubTag = "rrm",
+			Added = DateFromString("2024-03-04"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Moriori
+        record.Description.Add(FromEncodedString("TW9yaW9yaQ=="));
+
+
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Language,
 			SubTag = "rro",
 			Added = DateFromString("2009-07-29"),
 			SuppressScript = "",
@@ -146028,6 +146090,26 @@ public partial class Rfc5646
 		record = new()
 		{
 			Type = RecordType.Language,
+			SubTag = "vsn",
+			Added = DateFromString("2024-03-04"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "sa",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Vedic Sanskrit
+        record.Description.Add(FromEncodedString("VmVkaWMgU2Fuc2tyaXQ="));
+
+
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Language,
 			SubTag = "vsv",
 			Added = DateFromString("2009-07-29"),
 			SuppressScript = "",
@@ -172009,6 +172091,26 @@ public partial class Rfc5646
 		record = new()
 		{
 			Type = RecordType.Script,
+			SubTag = "Chis",
+			Added = DateFromString("2023-10-16"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Chisoi
+        record.Description.Add(FromEncodedString("Q2hpc29p"));
+
+
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Script,
 			SubTag = "Chrs",
 			Added = DateFromString("2019-09-11"),
 			SuppressScript = "",
@@ -172379,6 +172481,26 @@ public partial class Rfc5646
 		record = new()
 		{
 			Type = RecordType.Script,
+			SubTag = "Gara",
+			Added = DateFromString("2023-10-16"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Garay
+        record.Description.Add(FromEncodedString("R2FyYXk="));
+
+
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Script,
 			SubTag = "Geok",
 			Added = DateFromString("2005-10-16"),
 			SuppressScript = "",
@@ -172551,6 +172673,26 @@ public partial class Rfc5646
 
 		// Gujarati
         record.Description.Add(FromEncodedString("R3VqYXJhdGk="));
+
+
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Script,
+			SubTag = "Gukh",
+			Added = DateFromString("2023-10-16"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Gurung Khema
+        record.Description.Add(FromEncodedString("R3VydW5nIEtoZW1h"));
 
 
 
@@ -173211,6 +173353,26 @@ public partial class Rfc5646
 
 		// Kpelle
         record.Description.Add(FromEncodedString("S3BlbGxl"));
+
+
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Script,
+			SubTag = "Krai",
+			Added = DateFromString("2023-10-16"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Kirat Rai
+        record.Description.Add(FromEncodedString("S2lyYXQgUmFp"));
 
 
 
@@ -174153,6 +174315,26 @@ public partial class Rfc5646
 		record = new()
 		{
 			Type = RecordType.Script,
+			SubTag = "Onao",
+			Added = DateFromString("2023-10-16"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Ol Onal
+        record.Description.Add(FromEncodedString("T2wgT25hbA=="));
+
+
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Script,
 			SubTag = "Orkh",
 			Added = DateFromString("2009-07-30"),
 			SuppressScript = "",
@@ -174851,6 +175033,26 @@ public partial class Rfc5646
 		record = new()
 		{
 			Type = RecordType.Script,
+			SubTag = "Sidt",
+			Added = DateFromString("2023-10-16"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Sidetic
+        record.Description.Add(FromEncodedString("U2lkZXRpYw=="));
+
+
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Script,
 			SubTag = "Sind",
 			Added = DateFromString("2010-08-16"),
 			SuppressScript = "",
@@ -175257,6 +175459,26 @@ public partial class Rfc5646
 		record = new()
 		{
 			Type = RecordType.Script,
+			SubTag = "Tayo",
+			Added = DateFromString("2023-10-16"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Tai Yo
+        record.Description.Add(FromEncodedString("VGFpIFlv"));
+
+
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Script,
 			SubTag = "Telu",
 			Added = DateFromString("2005-10-16"),
 			SuppressScript = "",
@@ -175443,6 +175665,46 @@ public partial class Rfc5646
 		record = new()
 		{
 			Type = RecordType.Script,
+			SubTag = "Todr",
+			Added = DateFromString("2023-10-16"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Todhri
+        record.Description.Add(FromEncodedString("VG9kaHJp"));
+
+
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Script,
+			SubTag = "Tols",
+			Added = DateFromString("2023-10-16"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Tolong Siki
+        record.Description.Add(FromEncodedString("VG9sb25nIFNpa2k="));
+
+
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Script,
 			SubTag = "Toto",
 			Added = DateFromString("2020-05-12"),
 			SuppressScript = "",
@@ -175455,6 +175717,26 @@ public partial class Rfc5646
 
 		// Toto
         record.Description.Add(FromEncodedString("VG90bw=="));
+
+
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Script,
+			SubTag = "Tutg",
+			Added = DateFromString("2023-10-16"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Tulu-Tigalari
+        record.Description.Add(FromEncodedString("VHVsdS1UaWdhbGFyaQ=="));
 
 
 
@@ -182202,6 +182484,29 @@ public partial class Rfc5646
 		record = new()
 		{
 			Type = RecordType.Variant,
+			SubTag = "anpezo",
+			Added = DateFromString("2024-03-04"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Anpezo standard of Ladin
+        record.Description.Add(FromEncodedString("QW5wZXpvIHN0YW5kYXJkIG9mIExhZGlu"));
+
+		// Represents the standard written form of Ladin in Anpezo
+        record.Comments.Add(FromEncodedString("UmVwcmVzZW50cyB0aGUgc3RhbmRhcmQgd3JpdHRlbiBmb3JtIG9mIExhZGluIGluIEFucGV6bw=="));
+
+        record.Prefix.Add("lld");
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Variant,
 			SubTag = "ao1990",
 			Added = DateFromString("2015-05-06"),
 			SuppressScript = "",
@@ -182486,6 +182791,52 @@ public partial class Rfc5646
 		record = new()
 		{
 			Type = RecordType.Variant,
+			SubTag = "bciav",
+			Added = DateFromString("2023-05-11"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// BCI Blissymbolics AV
+        record.Description.Add(FromEncodedString("QkNJIEJsaXNzeW1ib2xpY3MgQVY="));
+
+		// Name given to a subset of the variety of Blissymbolics curated by Blissymbolics Communication International, as represented by entries in the BCI Authorized Vocabulary
+        record.Comments.Add(FromEncodedString("TmFtZSBnaXZlbiB0byBhIHN1YnNldCBvZiB0aGUgdmFyaWV0eSBvZiBCbGlzc3ltYm9saWNzIGN1cmF0ZWQgYnkgQmxpc3N5bWJvbGljcyBDb21tdW5pY2F0aW9uIEludGVybmF0aW9uYWwsIGFzIHJlcHJlc2VudGVkIGJ5IGVudHJpZXMgaW4gdGhlIEJDSSBBdXRob3JpemVkIFZvY2FidWxhcnk="));
+
+        record.Prefix.Add("zbl");
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Variant,
+			SubTag = "bcizbl",
+			Added = DateFromString("2023-05-11"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// BCI Blissymbolics
+        record.Description.Add(FromEncodedString("QkNJIEJsaXNzeW1ib2xpY3M="));
+
+		// Name given to the variety of Blissymbolics curated by Blissymbolics Communication International
+        record.Comments.Add(FromEncodedString("TmFtZSBnaXZlbiB0byB0aGUgdmFyaWV0eSBvZiBCbGlzc3ltYm9saWNzIGN1cmF0ZWQgYnkgQmxpc3N5bWJvbGljcyBDb21tdW5pY2F0aW9uIEludGVybmF0aW9uYWw="));
+
+        record.Prefix.Add("zbl");
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Variant,
 			SubTag = "biscayan",
 			Added = DateFromString("2010-04-13"),
 			SuppressScript = "",
@@ -182526,6 +182877,30 @@ public partial class Rfc5646
         record.Comments.Add(FromEncodedString("VGhlIGRpYWxlY3Qgb2YgU2FuIEdpb3JnaW8vQmlsYSBpcyBvbmUgb2YgdGhlIGZvdXIgbWFqb3IgbG9jYWwgZGlhbGVjdHMgb2YgUmVzaWFu"));
 
         record.Prefix.Add("sl-rozaj");
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Variant,
+			SubTag = "blasl",
+			Added = DateFromString("2023-07-31"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Black American Sign Language dialect
+        record.Description.Add(FromEncodedString("QmxhY2sgQW1lcmljYW4gU2lnbiBMYW5ndWFnZSBkaWFsZWN0"));
+
+		// Black American Sign Language (BASL) or Black Sign Variation (BSV) is a dialect of American Sign Language (ASL)
+        record.Comments.Add(FromEncodedString("QmxhY2sgQW1lcmljYW4gU2lnbiBMYW5ndWFnZSAoQkFTTCkgb3IgQmxhY2sgU2lnbiBWYXJpYXRpb24gKEJTVikgaXMgYSBkaWFsZWN0IG9mIEFtZXJpY2FuIFNpZ24gTGFuZ3VhZ2UgKEFTTCk="));
+
+        record.Prefix.Add("ase");
+        record.Prefix.Add("sgn-ase");
 
         RecordList.Add(record);
 
@@ -182758,6 +183133,52 @@ public partial class Rfc5646
 		record = new()
 		{
 			Type = RecordType.Variant,
+			SubTag = "fascia",
+			Added = DateFromString("2024-03-04"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Fascia standard of Ladin
+        record.Description.Add(FromEncodedString("RmFzY2lhIHN0YW5kYXJkIG9mIExhZGlu"));
+
+		// Represents the standard written form of Ladin in Fascia which unified the three subvarieties Cazet, Brach and Moenat
+        record.Comments.Add(FromEncodedString("UmVwcmVzZW50cyB0aGUgc3RhbmRhcmQgd3JpdHRlbiBmb3JtIG9mIExhZGluIGluIEZhc2NpYSB3aGljaCB1bmlmaWVkIHRoZSB0aHJlZSBzdWJ2YXJpZXRpZXMgQ2F6ZXQsIEJyYWNoIGFuZCBNb2VuYXQ="));
+
+        record.Prefix.Add("lld");
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Variant,
+			SubTag = "fodom",
+			Added = DateFromString("2024-03-04"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Fodom standard of Ladin
+        record.Description.Add(FromEncodedString("Rm9kb20gc3RhbmRhcmQgb2YgTGFkaW4="));
+
+		// Represents the standard written form of Ladin in Livinallongo and Colle Santa Lucia
+        record.Comments.Add(FromEncodedString("UmVwcmVzZW50cyB0aGUgc3RhbmRhcmQgd3JpdHRlbiBmb3JtIG9mIExhZGluIGluIExpdmluYWxsb25nbyBhbmQgQ29sbGUgU2FudGEgTHVjaWE="));
+
+        record.Prefix.Add("lld");
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Variant,
 			SubTag = "fonipa",
 			Added = DateFromString("2006-12-11"),
 			SuppressScript = "",
@@ -182900,6 +183321,29 @@ public partial class Rfc5646
         record.Comments.Add(FromEncodedString("T2NjaXRhbiB2YXJpYW50IHNwb2tlbiBpbiBHYXNjb255"));
 
         record.Prefix.Add("oc");
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Variant,
+			SubTag = "gherd",
+			Added = DateFromString("2024-03-04"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Gherdëina standard of Ladin
+        record.Description.Add(FromEncodedString("R2hlcmTDq2luYSBzdGFuZGFyZCBvZiBMYWRpbg=="));
+
+		// Represents the standard written form of Ladin in Gherdëina
+        record.Comments.Add(FromEncodedString("UmVwcmVzZW50cyB0aGUgc3RhbmRhcmQgd3JpdHRlbiBmb3JtIG9mIExhZGluIGluIEdoZXJkw6tpbmE="));
+
+        record.Prefix.Add("lld");
 
         RecordList.Add(record);
 
@@ -183269,7 +183713,7 @@ public partial class Rfc5646
 			SuppressScript = "",
 			Scope = "",
 			MacroLanguage = "",
-			Deprecated = DateFromString("0001-01-01"),
+			Deprecated = DateFromString("2024-06-08"),
 			PreferredValue = "",
 			Tag = ""
 		};
@@ -183277,6 +183721,8 @@ public partial class Rfc5646
 		// Classical Sanskrit
         record.Description.Add(FromEncodedString("Q2xhc3NpY2FsIFNhbnNrcml0"));
 
+		// Preferred tag is cls
+        record.Comments.Add(FromEncodedString("UHJlZmVycmVkIHRhZyBpcyBjbHM="));
 
         record.Prefix.Add("sa");
 
@@ -183777,6 +184223,31 @@ public partial class Rfc5646
 		record = new()
 		{
 			Type = RecordType.Variant,
+			SubTag = "pehoeji",
+			Added = DateFromString("2024-03-04"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Hokkien Vernacular Romanization System
+        record.Description.Add(FromEncodedString("SG9ra2llbiBWZXJuYWN1bGFyIFJvbWFuaXphdGlvbiBTeXN0ZW0="));
+		// Pe̍h-ōe-jī orthography/romanization
+        record.Description.Add(FromEncodedString("UGXMjWgtxY1lLWrEqyBvcnRob2dyYXBoeS9yb21hbml6YXRpb24="));
+
+		// Modern Hokkien Vernacular Romanization System, evolved from the New Dictionary in the Amoy by John Van Nest Talmage in 1894
+        record.Comments.Add(FromEncodedString("TW9kZXJuIEhva2tpZW4gVmVybmFjdWxhciBSb21hbml6YXRpb24gU3lzdGVtLCBldm9sdmVkIGZyb20gdGhlIE5ldyBEaWN0aW9uYXJ5IGluIHRoZSBBbW95IGJ5IEpvaG4gVmFuIE5lc3QgVGFsbWFnZSBpbiAxODk0"));
+
+        record.Prefix.Add("nan-Latn");
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Variant,
 			SubTag = "petr1708",
 			Added = DateFromString("2010-10-10"),
 			SuppressScript = "",
@@ -184192,6 +184663,31 @@ public partial class Rfc5646
 		record = new()
 		{
 			Type = RecordType.Variant,
+			SubTag = "tailo",
+			Added = DateFromString("2024-03-04"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Taiwanese Hokkien Romanization System for Hokkien languages
+        record.Description.Add(FromEncodedString("VGFpd2FuZXNlIEhva2tpZW4gUm9tYW5pemF0aW9uIFN5c3RlbSBmb3IgSG9ra2llbiBsYW5ndWFnZXM="));
+		// Tâi-lô orthography/romanization
+        record.Description.Add(FromEncodedString("VMOiaS1sw7Qgb3J0aG9ncmFwaHkvcm9tYW5pemF0aW9u"));
+
+		// Taiwanese Hokkien Romanization System (Tâi-lô) published in 2006 by the Taiwan Ministry of Education
+        record.Comments.Add(FromEncodedString("VGFpd2FuZXNlIEhva2tpZW4gUm9tYW5pemF0aW9uIFN5c3RlbSAoVMOiaS1sw7QpIHB1Ymxpc2hlZCBpbiAyMDA2IGJ5IHRoZSBUYWl3YW4gTWluaXN0cnkgb2YgRWR1Y2F0aW9u"));
+
+        record.Prefix.Add("nan-Latn");
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Variant,
 			SubTag = "tarask",
 			Added = DateFromString("2007-04-27"),
 			SuppressScript = "",
@@ -184358,7 +184854,7 @@ public partial class Rfc5646
 			SuppressScript = "",
 			Scope = "",
 			MacroLanguage = "",
-			Deprecated = DateFromString("0001-01-01"),
+			Deprecated = DateFromString("2024-06-08"),
 			PreferredValue = "",
 			Tag = ""
 		};
@@ -184368,8 +184864,33 @@ public partial class Rfc5646
 
 		// The most ancient dialect of Sanskrit used in verse and prose composed until about the 4th century B.C.E.
         record.Comments.Add(FromEncodedString("VGhlIG1vc3QgYW5jaWVudCBkaWFsZWN0IG9mIFNhbnNrcml0IHVzZWQgaW4gdmVyc2UgYW5kIHByb3NlIGNvbXBvc2VkIHVudGlsIGFib3V0IHRoZSA0dGggY2VudHVyeSBCLkMuRS4="));
+		// Preferred tag is vsn
+        record.Comments.Add(FromEncodedString("UHJlZmVycmVkIHRhZyBpcyB2c24="));
 
         record.Prefix.Add("sa");
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Variant,
+			SubTag = "valbadia",
+			Added = DateFromString("2024-03-04"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Val Badia standard of Ladin
+        record.Description.Add(FromEncodedString("VmFsIEJhZGlhIHN0YW5kYXJkIG9mIExhZGlu"));
+
+		// Represents the standard written form of Ladin in the Val Badia, unifying the three variants Marô, Mesaval and Badiot spoken in this valley
+        record.Comments.Add(FromEncodedString("UmVwcmVzZW50cyB0aGUgc3RhbmRhcmQgd3JpdHRlbiBmb3JtIG9mIExhZGluIGluIHRoZSBWYWwgQmFkaWEsIHVuaWZ5aW5nIHRoZSB0aHJlZSB2YXJpYW50cyBNYXLDtCwgTWVzYXZhbCBhbmQgQmFkaW90IHNwb2tlbiBpbiB0aGlzIHZhbGxleQ=="));
+
+        record.Prefix.Add("lld");
 
         RecordList.Add(record);
 
