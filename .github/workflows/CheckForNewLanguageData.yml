@@ -1,0 +1,84 @@
+name: Check for new language data
+
+on:
+    workflow_dispatch:
+    schedule:
+      # Daily 2am
+      - cron: '0 2 * * *'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  update:
+    name: Update language data and generated files
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    outputs:
+      changes: ${{ steps.autocommit.outputs.changes_detected }}
+
+    steps:
+
+      # Install .NET SDK
+      # https://github.com/marketplace/actions/setup-net-core-sdk
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+
+          # Checkout code
+      # https://github.com/marketplace/actions/checkout
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Download data files
+      - name: Download language data files
+        run: |
+            wget -O ./Data/ISO-639-2_utf-8.txt https://www.loc.gov/standards/iso639-2/ISO-639-2_utf-8.txt
+            wget -O ./Data/iso-639-3.tab https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab
+            wget -O ./Data/language-subtag-registry https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
+
+      # Build T4 templates
+      - name: Build T4 templates
+        run: |
+          dotnet publish ./Utilities/Utilities.csproj --output=${{ runner.temp }}/T4
+          t4 -P="${{ runner.temp }}/T4" --out=./Utilities/Iso6392Gen.cs ./Utilities/Iso6392Gen.tt
+          t4 -P="${{ runner.temp }}/T4" --out=./Utilities/Iso6393Gen.cs ./Utilities/Iso6393Gen.tt
+          t4 -P="${{ runner.temp }}/T4" --out=./Utilities/Rfc5646Gen.cs ./Utilities/Rfc5646Gen.tt
+
+      # https://github.com/marketplace/actions/git-auto-commit
+      - name: Commit updated files
+        id: autocommit
+        uses: stefanzweifel/git-auto-commit-action@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          commit_message: Update language data and generated files
+
+  # Trigger build
+  triggerbuild:
+    name: Trigger build
+    runs-on: ubuntu-latest
+    needs: update
+    permissions: write-all
+
+    # Only if changes were comitted
+    if: ${{ needs.update.outputs.changes == 'true' }}
+
+    steps:
+
+      # Checkout code
+      # https://github.com/marketplace/actions/checkout
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Run workflow
+      # https://cli.github.com/manual/gh_workflow_run
+      - name: Trigger workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run BuildPublishPipeline.yml

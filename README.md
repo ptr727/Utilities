@@ -29,7 +29,7 @@ Packages published on [NuGet](https://www.nuget.org/packages/InsaneGenius.Utilit
 ### Update Language Content
 
 - If Windows install [wget for Windows](https://winget.run/pkg/JernejSimoncic/Wget) : `winget install -e --id JernejSimoncic.Wget`
-- Run [Task](./.vscode/tasks.json) : `build language files`
+- [Run Task](./.vscode/tasks.json) : `build language files`
 
 ### Language Matching Usage
 
