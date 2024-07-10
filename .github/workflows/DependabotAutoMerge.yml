@@ -16,7 +16,6 @@ jobs:
       contents: write
       pull-requests: write
 
-    # Only for dependabot PRs
     if: github.actor == 'dependabot[bot]'
 
     steps:
