@@ -2834,7 +2834,7 @@ public partial class Iso6393
 			Part2T = "akk",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Akkadian",
 			Comment = "",
 		};
@@ -4864,7 +4864,7 @@ public partial class Iso6393
 			Part2T = "arc",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Official Aramaic (700-300 BCE)",
 			Comment = "",
 		};
@@ -6194,7 +6194,7 @@ public partial class Iso6393
 			Part2T = "ave",
 			Part1 = "ae",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Avestan",
 			Comment = "",
 		};
@@ -17422,7 +17422,7 @@ public partial class Iso6393
 			Part2T = "chu",
 			Part1 = "cu",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Church Slavic",
 			Comment = "",
 		};
@@ -18215,6 +18215,20 @@ public partial class Iso6393
 
 		record = new()
 		{
+			Id = "cls",
+			Part2B = "",
+			Part2T = "",
+			Part1 = "",
+			Scope = "I",
+			LanguageType = "H",
+			RefName = "Classical Sanskrit",
+			Comment = "",
+		};
+
+        RecordList.Add(record);
+
+		record = new()
+		{
 			Id = "clt",
 			Part2B = "",
 			Part2T = "",
@@ -18402,7 +18416,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Messapic",
 			Comment = "",
 		};
@@ -21763,7 +21777,7 @@ public partial class Iso6393
 			Part1 = "",
 			Scope = "I",
 			LanguageType = "L",
-			RefName = "Dogrib",
+			RefName = "Tlicho",
 			Comment = "",
 		};
 
@@ -24828,7 +24842,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Eteocretan",
 			Comment = "",
 		};
@@ -24856,7 +24870,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Eteocypriot",
 			Comment = "",
 		};
@@ -24982,7 +24996,7 @@ public partial class Iso6393
 			Part2T = "egy",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Egyptian (Ancient)",
 			Comment = "",
 		};
@@ -25346,7 +25360,7 @@ public partial class Iso6393
 			Part2T = "elx",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Elamite",
 			Comment = "",
 		};
@@ -25556,7 +25570,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Epigraphic Mayan",
 			Comment = "",
 		};
@@ -26298,7 +26312,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Etruscan",
 			Comment = "",
 		};
@@ -26354,7 +26368,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "L",
+			LanguageType = "E",
 			RefName = "Eudeve",
 			Comment = "",
 		};
@@ -29168,7 +29182,7 @@ public partial class Iso6393
 			Part2T = "gez",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Geez",
 			Comment = "",
 		};
@@ -30358,7 +30372,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Mycenaean Greek",
 			Comment = "",
 		};
@@ -30932,7 +30946,7 @@ public partial class Iso6393
 			Part2T = "got",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Gothic",
 			Comment = "",
 		};
@@ -33466,7 +33480,7 @@ public partial class Iso6393
 			Part2T = "hit",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Hittite",
 			Comment = "",
 		};
@@ -33676,7 +33690,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Hieroglyphic Luwian",
 			Comment = "",
 		};
@@ -33830,7 +33844,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Maek",
 			Comment = "",
 		};
@@ -34796,7 +34810,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Middle Hittite",
 			Comment = "",
 		};
@@ -36602,7 +36616,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Marsian",
 			Comment = "",
 		};
@@ -36630,7 +36644,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Milyan",
 			Comment = "",
 		};
@@ -36742,7 +36756,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Minaean",
 			Comment = "",
 		};
@@ -37276,6 +37290,20 @@ public partial class Iso6393
 			Scope = "I",
 			LanguageType = "L",
 			RefName = "Isu (Menchum Division)",
+			Comment = "",
+		};
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Id = "isv",
+			Part2B = "",
+			Part2T = "",
+			Part1 = "",
+			Scope = "I",
+			LanguageType = "C",
+			RefName = "Interslavic",
 			Comment = "",
 		};
 
@@ -39976,7 +40004,7 @@ public partial class Iso6393
 			Part2T = "kaw",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Kawi",
 			Comment = "",
 		};
@@ -42258,7 +42286,7 @@ public partial class Iso6393
 			Part2T = "kho",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Khotanese",
 			Comment = "",
 		};
@@ -48684,7 +48712,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Linear A",
 			Comment = "",
 		};
@@ -48922,7 +48950,7 @@ public partial class Iso6393
 			Part2T = "lat",
 			Part1 = "la",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Latin",
 			Comment = "",
 		};
@@ -51708,7 +51736,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Langobardic",
 			Comment = "",
 		};
@@ -63846,7 +63874,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Neo-Hittite",
 			Comment = "",
 		};
@@ -67318,7 +67346,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Noric",
 			Comment = "",
 		};
@@ -67444,7 +67472,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "North Picene",
 			Comment = "",
 		};
@@ -68746,7 +68774,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Numidian",
 			Comment = "",
 		};
@@ -69362,7 +69390,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Old Aramaic (up to 700 BCE)",
 			Comment = "",
 		};
@@ -69432,7 +69460,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Moabite",
 			Comment = "",
 		};
@@ -69516,7 +69544,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Old Chinese",
 			Comment = "",
 		};
@@ -69768,7 +69796,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Old Hittite",
 			Comment = "",
 		};
@@ -70454,7 +70482,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Minoan",
 			Comment = "",
 		};
@@ -70860,7 +70888,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Old Ossetic",
 			Comment = "",
 		};
@@ -71224,7 +71252,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Oscan",
 			Comment = "",
 		};
@@ -71574,7 +71602,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Old Tamil",
 			Comment = "",
 		};
@@ -71910,7 +71938,7 @@ public partial class Iso6393
 			Part2T = "pal",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Pahlavi",
 			Comment = "",
 		};
@@ -73072,7 +73100,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Primitive Irish",
 			Comment = "",
 		};
@@ -73086,7 +73114,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Paelignian",
 			Comment = "",
 		};
@@ -73254,7 +73282,7 @@ public partial class Iso6393
 			Part2T = "phn",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Phoenician",
 			Comment = "",
 		};
@@ -73730,7 +73758,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Paekche",
 			Comment = "",
 		};
@@ -73968,7 +73996,7 @@ public partial class Iso6393
 			Part2T = "pli",
 			Part1 = "pi",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Pali",
 			Comment = "",
 		};
@@ -74038,7 +74066,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Palaic",
 			Comment = "",
 		};
@@ -76488,7 +76516,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Pyu (Myanmar)",
 			Comment = "",
 		};
@@ -79073,6 +79101,20 @@ public partial class Iso6393
 
 		record = new()
 		{
+			Id = "rrm",
+			Part2B = "",
+			Part2T = "",
+			Part1 = "",
+			Scope = "I",
+			LanguageType = "E",
+			RefName = "Moriori",
+			Comment = "",
+		};
+
+        RecordList.Add(record);
+
+		record = new()
+		{
 			Id = "rro",
 			Part2B = "",
 			Part2T = "",
@@ -79819,8 +79861,8 @@ public partial class Iso6393
 			Part2B = "san",
 			Part2T = "san",
 			Part1 = "sa",
-			Scope = "I",
-			LanguageType = "A",
+			Scope = "M",
+			LanguageType = "H",
 			RefName = "Sanskrit",
 			Comment = "",
 		};
@@ -80282,7 +80324,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Sabine",
 			Comment = "",
 		};
@@ -80590,7 +80632,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Sicel",
 			Comment = "",
 		};
@@ -83838,7 +83880,7 @@ public partial class Iso6393
 			Part2T = "sog",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Sogdian",
 			Comment = "",
 		};
@@ -84370,7 +84412,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "South Picene",
 			Comment = "",
 		};
@@ -85826,7 +85868,7 @@ public partial class Iso6393
 			Part2T = "sux",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Sumerian",
 			Comment = "",
 		};
@@ -86330,7 +86372,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Sicanian",
 			Comment = "",
 		};
@@ -86428,7 +86470,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Sorothaptic",
 			Comment = "",
 		};
@@ -93582,7 +93624,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Tokharian B",
 			Comment = "",
 		};
@@ -93624,7 +93666,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Tangut",
 			Comment = "",
 		};
@@ -93638,7 +93680,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Thracian",
 			Comment = "",
 		};
@@ -93736,7 +93778,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Tartessian",
 			Comment = "",
 		};
@@ -94422,7 +94464,7 @@ public partial class Iso6393
 			Part2T = "uga",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Ugaritic",
 			Comment = "",
 		};
@@ -95010,7 +95052,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Marrucinian",
 			Comment = "",
 		};
@@ -96774,7 +96816,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "L",
+			LanguageType = "E",
 			RefName = "Martuyhunira",
 			Comment = "",
 		};
@@ -97252,6 +97294,20 @@ public partial class Iso6393
 			Scope = "I",
 			LanguageType = "L",
 			RefName = "Venezuelan Sign Language",
+			Comment = "",
+		};
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Id = "vsn",
+			Part2B = "",
+			Part2T = "",
+			Part1 = "",
+			Scope = "I",
+			LanguageType = "H",
+			RefName = "Vedic Sanskrit",
 			Comment = "",
 		};
 
@@ -100582,7 +100638,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Aequian",
 			Comment = "",
 		};
@@ -100596,7 +100652,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Aghwan",
 			Comment = "",
 		};
@@ -100722,7 +100778,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Aquitanian",
 			Comment = "",
 		};
@@ -100848,7 +100904,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Bactrian",
 			Comment = "",
 		};
@@ -101044,7 +101100,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Camunic",
 			Comment = "",
 		};
@@ -101058,7 +101114,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Celtiberian",
 			Comment = "",
 		};
@@ -101072,7 +101128,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Cisalpine Gaulish",
 			Comment = "",
 		};
@@ -101142,7 +101198,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Chorasmian",
 			Comment = "",
 		};
@@ -101156,7 +101212,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Carian",
 			Comment = "",
 		};
@@ -101254,7 +101310,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Dacian",
 			Comment = "",
 		};
@@ -101282,7 +101338,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Edomite",
 			Comment = "",
 		};
@@ -101338,7 +101394,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Eblan",
 			Comment = "",
 		};
@@ -101408,7 +101464,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Epi-Olmec",
 			Comment = "",
 		};
@@ -101478,7 +101534,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Faliscan",
 			Comment = "",
 		};
@@ -101492,7 +101548,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Galatian",
 			Comment = "",
 		};
@@ -101646,7 +101702,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Harami",
 			Comment = "",
 		};
@@ -101660,7 +101716,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Hunnic",
 			Comment = "",
 		};
@@ -101674,7 +101730,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Hadrami",
 			Comment = "",
 		};
@@ -101730,7 +101786,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Hernican",
 			Comment = "",
 		};
@@ -101744,7 +101800,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Hattic",
 			Comment = "",
 		};
@@ -101758,7 +101814,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Hurrian",
 			Comment = "",
 		};
@@ -101786,7 +101842,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Iberian",
 			Comment = "",
 		};
@@ -101814,7 +101870,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Illyrian",
 			Comment = "",
 		};
@@ -101870,7 +101926,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Indus Valley Language",
 			Comment = "",
 		};
@@ -102290,7 +102346,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Lycian",
 			Comment = "",
 		};
@@ -102304,7 +102360,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Lydian",
 			Comment = "",
 		};
@@ -102318,7 +102374,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Lemnian",
 			Comment = "",
 		};
@@ -102332,7 +102388,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Ligurian (Ancient)",
 			Comment = "",
 		};
@@ -102346,7 +102402,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Liburnian",
 			Comment = "",
 		};
@@ -102360,7 +102416,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Alanic",
 			Comment = "",
 		};
@@ -102388,7 +102444,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Lepontic",
 			Comment = "",
 		};
@@ -102402,7 +102458,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Lusitanian",
 			Comment = "",
 		};
@@ -102416,7 +102472,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Cuneiform Luwian",
 			Comment = "",
 		};
@@ -102430,7 +102486,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Elymian",
 			Comment = "",
 		};
@@ -102500,7 +102556,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Median",
 			Comment = "",
 		};
@@ -102570,7 +102626,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Ancient Macedonian",
 			Comment = "",
 		};
@@ -102668,7 +102724,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Meroitic",
 			Comment = "",
 		};
@@ -102794,7 +102850,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Ancient North Arabian",
 			Comment = "",
 		};
@@ -103270,7 +103326,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Phrygian",
 			Comment = "",
 		};
@@ -103396,7 +103452,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Puyo-Paekche",
 			Comment = "",
 		};
@@ -103424,7 +103480,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Parthian",
 			Comment = "",
 		};
@@ -103438,7 +103494,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Pisidian",
 			Comment = "",
 		};
@@ -103466,7 +103522,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Punic",
 			Comment = "",
 		};
@@ -103522,7 +103578,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Puyo",
 			Comment = "",
 		};
@@ -103564,7 +103620,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Qatabanian",
 			Comment = "",
 		};
@@ -103662,7 +103718,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Armazic",
 			Comment = "",
 		};
@@ -103690,7 +103746,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Raetic",
 			Comment = "",
 		};
@@ -103746,7 +103802,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Sabaean",
 			Comment = "",
 		};
@@ -103774,7 +103830,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Scythian",
 			Comment = "",
 		};
@@ -103788,7 +103844,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Sidetic",
 			Comment = "",
 		};
@@ -104068,7 +104124,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Transalpine Gaulish",
 			Comment = "",
 		};
@@ -104166,7 +104222,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Tokharian A",
 			Comment = "",
 		};
@@ -104208,7 +104264,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Early Tripuri",
 			Comment = "",
 		};
@@ -104390,7 +104446,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Umbrian",
 			Comment = "",
 		};
@@ -104446,7 +104502,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Urartian",
 			Comment = "",
 		};
@@ -104488,7 +104544,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Venetic",
 			Comment = "",
 		};
@@ -104516,7 +104572,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Vandalic",
 			Comment = "",
 		};
@@ -104530,7 +104586,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Volscian",
 			Comment = "",
 		};
@@ -104544,7 +104600,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Vestinian",
 			Comment = "",
 		};
@@ -104894,7 +104950,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Zhang-Zhung",
 			Comment = "",
 		};
@@ -106812,7 +106868,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Mysian",
 			Comment = "",
 		};
@@ -109164,7 +109220,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Koguryo",
 			Comment = "",
 		};
@@ -110312,7 +110368,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Kara (Korea)",
 			Comment = "",
 		};
@@ -110410,7 +110466,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "A",
+			LanguageType = "H",
 			RefName = "Kaskean",
 			Comment = "",
 		};
