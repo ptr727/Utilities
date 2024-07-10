@@ -45,6 +45,7 @@ jobs:
       # Build T4 templates
       - name: Build T4 templates
         run: |
+          dotnet tool install -g dotnet-t4
           dotnet publish ./Utilities/Utilities.csproj --output=${{ runner.temp }}/T4
           t4 -P="${{ runner.temp }}/T4" --out=./Utilities/Iso6392Gen.cs ./Utilities/Iso6392Gen.tt
           t4 -P="${{ runner.temp }}/T4" --out=./Utilities/Iso6393Gen.cs ./Utilities/Iso6393Gen.tt
