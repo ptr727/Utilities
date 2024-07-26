@@ -6,6 +6,7 @@
 	],
 	"settings": {
 		"cSpell.words": [
+			"csdevkit",
 			"davidanson",
 			"dotnettools",
 			"gruntfuggly",
@@ -21,7 +22,7 @@
 			"files.trimTrailingWhitespace": false
 		},
 		"diffEditor.ignoreTrimWhitespace": false,
-		"editor.renderWhitespace": "trailing"
+		"editor.renderWhitespace": "boundary"
 	},
 	"extensions": {
 		"recommendations": [
