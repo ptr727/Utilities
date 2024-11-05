@@ -12719,7 +12719,7 @@ public partial class Iso6393
 			Part1 = "",
 			Scope = "I",
 			LanguageType = "L",
-			RefName = "Bilakura",
+			RefName = "Karian",
 			Comment = "",
 		};
 
@@ -20881,7 +20881,7 @@ public partial class Iso6393
 			Part1 = "",
 			Scope = "I",
 			LanguageType = "L",
-			RefName = "Dao",
+			RefName = "Moi-Wadea",
 			Comment = "",
 		};
 
@@ -21442,20 +21442,6 @@ public partial class Iso6393
 			Scope = "I",
 			LanguageType = "L",
 			RefName = "Demisa",
-			Comment = "",
-		};
-
-        RecordList.Add(record);
-
-		record = new()
-		{
-			Id = "dek",
-			Part2B = "",
-			Part2T = "",
-			Part1 = "",
-			Scope = "I",
-			LanguageType = "L",
-			RefName = "Dek",
 			Comment = "",
 		};
 
@@ -34140,6 +34126,20 @@ public partial class Iso6393
 			Scope = "I",
 			LanguageType = "L",
 			RefName = "Hmong Njua",
+			Comment = "",
+		};
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Id = "hnm",
+			Part2B = "",
+			Part2T = "",
+			Part1 = "",
+			Scope = "I",
+			LanguageType = "L",
+			RefName = "Hainanese",
 			Comment = "",
 		};
 
@@ -52991,6 +52991,20 @@ public partial class Iso6393
 
 		record = new()
 		{
+			Id = "luh",
+			Part2B = "",
+			Part2T = "",
+			Part1 = "",
+			Scope = "I",
+			LanguageType = "L",
+			RefName = "Leizhou Chinese",
+			Comment = "",
+		};
+
+        RecordList.Add(record);
+
+		record = new()
+		{
 			Id = "lui",
 			Part2B = "lui",
 			Part2T = "lui",
@@ -57827,7 +57841,7 @@ public partial class Iso6393
 			Part1 = "",
 			Scope = "I",
 			LanguageType = "L",
-			RefName = "Musar",
+			RefName = "Hember Avu",
 			Comment = "",
 		};
 
@@ -67908,20 +67922,6 @@ public partial class Iso6393
 			Scope = "I",
 			LanguageType = "L",
 			RefName = "Northern Tidung",
-			Comment = "",
-		};
-
-        RecordList.Add(record);
-
-		record = new()
-		{
-			Id = "nte",
-			Part2B = "",
-			Part2T = "",
-			Part1 = "",
-			Scope = "I",
-			LanguageType = "L",
-			RefName = "Nathembo",
 			Comment = "",
 		};
 
@@ -82300,6 +82300,20 @@ public partial class Iso6393
 			Scope = "I",
 			LanguageType = "L",
 			RefName = "Sajau Basap",
+			Comment = "",
+		};
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Id = "sjc",
+			Part2B = "",
+			Part2T = "",
+			Part1 = "",
+			Scope = "I",
+			LanguageType = "L",
+			RefName = "Shaojiang Chinese",
 			Comment = "",
 		};
 
