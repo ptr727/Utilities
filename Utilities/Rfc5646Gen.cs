@@ -13,7 +13,7 @@ public partial class Rfc5646
 		RecordList.Clear();
 		Record record = null;
 
-		FileDate = DateFromString("2024-06-14");
+		FileDate = DateFromString("2024-11-19");
 
 		record = new()
 		{
@@ -183656,6 +183656,32 @@ public partial class Rfc5646
 
 
         record.Prefix.Add("kw");
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Variant,
+			SubTag = "kleinsch",
+			Added = DateFromString("2024-07-20"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Kleinschmidt orthography
+        record.Description.Add(FromEncodedString("S2xlaW5zY2htaWR0IG9ydGhvZ3JhcGh5"));
+		// Allattaasitaamut
+        record.Description.Add(FromEncodedString("QWxsYXR0YWFzaXRhYW11dA=="));
+
+		// Orthography for Greenlandic designed by Samuel Kleinschmidt, used from 1851 to 1973.
+        record.Comments.Add(FromEncodedString("T3J0aG9ncmFwaHkgZm9yIEdyZWVubGFuZGljIGRlc2lnbmVkIGJ5IFNhbXVlbCBLbGVpbnNjaG1pZHQsIHVzZWQgZnJvbSAxODUxIHRvIDE5NzMu"));
+
+        record.Prefix.Add("kl");
+        record.Prefix.Add("kl-tunumiit");
 
         RecordList.Add(record);
 
