@@ -13,7 +13,7 @@ public partial class Rfc5646
 		RecordList.Clear();
 		Record record = null;
 
-		FileDate = DateFromString("2024-11-19");
+		FileDate = DateFromString("2025-01-21");
 
 		record = new()
 		{
@@ -22562,6 +22562,8 @@ public partial class Rfc5646
 			Tag = ""
 		};
 
+		// Karian
+        record.Description.Add(FromEncodedString("S2FyaWFu"));
 		// Bilakura
         record.Description.Add(FromEncodedString("QmlsYWt1cmE="));
 
@@ -34728,6 +34730,8 @@ public partial class Rfc5646
 			Tag = ""
 		};
 
+		// Moi-Wadea
+        record.Description.Add(FromEncodedString("TW9pLVdhZGVh"));
 		// Dao
         record.Description.Add(FromEncodedString("RGFv"));
 
@@ -35543,8 +35547,8 @@ public partial class Rfc5646
 			SuppressScript = "",
 			Scope = "",
 			MacroLanguage = "",
-			Deprecated = DateFromString("0001-01-01"),
-			PreferredValue = "",
+			Deprecated = DateFromString("2024-12-12"),
+			PreferredValue = "sqm",
 			Tag = ""
 		};
 
@@ -54016,6 +54020,26 @@ public partial class Rfc5646
         record.Description.Add(FromEncodedString("TW9uZyBMZW5n"));
 		// Mong Njua
         record.Description.Add(FromEncodedString("TW9uZyBOanVh"));
+
+
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Language,
+			SubTag = "hnm",
+			Added = DateFromString("2024-12-12"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "zh",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Hainanese
+        record.Description.Add(FromEncodedString("SGFpbmFuZXNl"));
 
 
 
@@ -81378,6 +81402,26 @@ public partial class Rfc5646
 		record = new()
 		{
 			Type = RecordType.Language,
+			SubTag = "luh",
+			Added = DateFromString("2024-12-12"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "zh",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Leizhou Chinese
+        record.Description.Add(FromEncodedString("TGVpemhvdSBDaGluZXNl"));
+
+
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Language,
 			SubTag = "lui",
 			Added = DateFromString("2005-10-16"),
 			SuppressScript = "",
@@ -88336,6 +88380,10 @@ public partial class Rfc5646
 			Tag = ""
 		};
 
+		// Hember Avu
+        record.Description.Add(FromEncodedString("SGVtYmVyIEF2dQ=="));
+		// Amben
+        record.Description.Add(FromEncodedString("QW1iZW4="));
 		// Musar
         record.Description.Add(FromEncodedString("TXVzYXI="));
 
@@ -103145,8 +103193,8 @@ public partial class Rfc5646
 			SuppressScript = "",
 			Scope = "",
 			MacroLanguage = "",
-			Deprecated = DateFromString("0001-01-01"),
-			PreferredValue = "",
+			Deprecated = DateFromString("2024-12-12"),
+			PreferredValue = "eko",
 			Tag = ""
 		};
 
@@ -124448,6 +124496,26 @@ public partial class Rfc5646
 
 		// Sajau Basap
         record.Description.Add(FromEncodedString("U2FqYXUgQmFzYXA="));
+
+
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Language,
+			SubTag = "sjc",
+			Added = DateFromString("2024-12-12"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "zh",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Shaojiang Chinese
+        record.Description.Add(FromEncodedString("U2hhb2ppYW5nIENoaW5lc2U="));
 
 
 
@@ -168257,6 +168325,27 @@ public partial class Rfc5646
 		record = new()
 		{
 			Type = RecordType.ExtLanguage,
+			SubTag = "hnm",
+			Added = DateFromString("2024-12-12"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "zh",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "hnm",
+			Tag = ""
+		};
+
+		// Hainanese
+        record.Description.Add(FromEncodedString("SGFpbmFuZXNl"));
+
+
+        record.Prefix.Add("zh");
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.ExtLanguage,
 			SubTag = "hos",
 			Added = DateFromString("2009-07-29"),
 			SuppressScript = "",
@@ -169233,6 +169322,27 @@ public partial class Rfc5646
 
 
         record.Prefix.Add("lv");
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.ExtLanguage,
+			SubTag = "luh",
+			Added = DateFromString("2024-12-12"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "zh",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "luh",
+			Tag = ""
+		};
+
+		// Leizhou Chinese
+        record.Description.Add(FromEncodedString("TGVpemhvdSBDaGluZXNl"));
+
+
+        record.Prefix.Add("zh");
 
         RecordList.Add(record);
 
@@ -170478,6 +170588,27 @@ public partial class Rfc5646
 
 
         record.Prefix.Add("ar");
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.ExtLanguage,
+			SubTag = "sjc",
+			Added = DateFromString("2024-12-12"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "zh",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "sjc",
+			Tag = ""
+		};
+
+		// Shaojiang Chinese
+        record.Description.Add(FromEncodedString("U2hhb2ppYW5nIENoaW5lc2U="));
+
+
+        record.Prefix.Add("zh");
 
         RecordList.Add(record);
 
