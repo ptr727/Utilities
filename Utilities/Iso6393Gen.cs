@@ -29448,7 +29448,7 @@ public partial class Iso6393
 			Part2T = "",
 			Part1 = "",
 			Scope = "I",
-			LanguageType = "E",
+			LanguageType = "L",
 			RefName = "Ghomara",
 			Comment = "",
 		};
@@ -106926,6 +106926,20 @@ public partial class Iso6393
 			Scope = "I",
 			LanguageType = "L",
 			RefName = "Aluo",
+			Comment = "",
+		};
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Id = "ynb",
+			Part2B = "",
+			Part2T = "",
+			Part1 = "",
+			Scope = "I",
+			LanguageType = "L",
+			RefName = "Yamben",
 			Comment = "",
 		};
 
