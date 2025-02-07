@@ -13,7 +13,7 @@ public partial class Rfc5646
 		RecordList.Clear();
 		Record record = null;
 
-		FileDate = DateFromString("2025-01-21");
+		FileDate = DateFromString("2025-02-06");
 
 		record = new()
 		{
@@ -160382,6 +160382,26 @@ public partial class Rfc5646
 		record = new()
 		{
 			Type = RecordType.Language,
+			SubTag = "ynb",
+			Added = DateFromString("2025-02-06"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Yamben
+        record.Description.Add(FromEncodedString("WWFtYmVu"));
+
+
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Language,
 			SubTag = "ynd",
 			Added = DateFromString("2009-07-29"),
 			SuppressScript = "",
@@ -171974,6 +171994,26 @@ public partial class Rfc5646
         record.Description.Add(FromEncodedString("QmVuZ2FsaQ=="));
 		// Bangla
         record.Description.Add(FromEncodedString("QmFuZ2xh"));
+
+
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Script,
+			SubTag = "Berf",
+			Added = DateFromString("2025-02-06"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Beria Erfe
+        record.Description.Add(FromEncodedString("QmVyaWEgRXJmZQ=="));
 
 
 
@@ -183888,6 +183928,29 @@ public partial class Rfc5646
 		record = new()
 		{
 			Type = RecordType.Variant,
+			SubTag = "leidentr",
+			Added = DateFromString("2025-02-06"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Ancient Egyptian in Leiden Unified Transliteration
+        record.Description.Add(FromEncodedString("QW5jaWVudCBFZ3lwdGlhbiBpbiBMZWlkZW4gVW5pZmllZCBUcmFuc2xpdGVyYXRpb24="));
+
+		// Recommended by the International Association of Egyptologists
+        record.Comments.Add(FromEncodedString("UmVjb21tZW5kZWQgYnkgdGhlIEludGVybmF0aW9uYWwgQXNzb2NpYXRpb24gb2YgRWd5cHRvbG9naXN0cw=="));
+
+        record.Prefix.Add("egy");
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Variant,
 			SubTag = "lemosin",
 			Added = DateFromString("2018-04-22"),
 			SuppressScript = "",
@@ -184018,6 +184081,48 @@ public partial class Rfc5646
         record.Comments.Add(FromEncodedString("UnVzc2lhbiBvcnRob2dyYXBoeSBhcyBlc3RhYmxpc2hlZCBieSB0aGUgMTkxNy8xOTE4IG9ydGhvZ3JhcGhpYyByZWZvcm1z"));
 
         record.Prefix.Add("ru");
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Variant,
+			SubTag = "mdcegyp",
+			Added = DateFromString("2025-02-06"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Ancient Egyptian hieroglyphs encoded in Manuel de Codage
+        record.Description.Add(FromEncodedString("QW5jaWVudCBFZ3lwdGlhbiBoaWVyb2dseXBocyBlbmNvZGVkIGluIE1hbnVlbCBkZSBDb2RhZ2U="));
+
+
+        record.Prefix.Add("egy");
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Variant,
+			SubTag = "mdctrans",
+			Added = DateFromString("2025-02-06"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// Ancient Egyptian transliteration encoded in Manuel de Codage
+        record.Description.Add(FromEncodedString("QW5jaWVudCBFZ3lwdGlhbiB0cmFuc2xpdGVyYXRpb24gZW5jb2RlZCBpbiBNYW51ZWwgZGUgQ29kYWdl"));
+
+
+        record.Prefix.Add("egy");
 
         RecordList.Add(record);
 
