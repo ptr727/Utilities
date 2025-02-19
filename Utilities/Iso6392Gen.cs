@@ -527,7 +527,7 @@ public partial class Iso6392
 		{
 			Part2B = "bih",
 			Part2T = "",
-			Part1 = "bh",
+			Part1 = "",
 			RefName = "Bihari languages",
 		};
 
@@ -1088,7 +1088,7 @@ public partial class Iso6392
 			Part2B = "dgr",
 			Part2T = "",
 			Part1 = "",
-			RefName = "Dogrib",
+			RefName = "Tlicho; Dogrib",
 		};
 
         RecordList.Add(record);
