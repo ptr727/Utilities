@@ -13,7 +13,7 @@ public partial class Rfc5646
 		RecordList.Clear();
 		Record record = null;
 
-		FileDate = DateFromString("2025-02-06");
+		FileDate = DateFromString("2025-03-10");
 
 		record = new()
 		{
@@ -183611,6 +183611,27 @@ public partial class Rfc5646
 		record = new()
 		{
 			Type = RecordType.Variant,
+			SubTag = "hanoi",
+			Added = DateFromString("2025-03-10"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// The Hà Nội variant of Vietnamese
+        record.Description.Add(FromEncodedString("VGhlIEjDoCBO4buZaSB2YXJpYW50IG9mIFZpZXRuYW1lc2U="));
+
+
+        record.Prefix.Add("vi");
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Variant,
 			SubTag = "hepburn",
 			Added = DateFromString("2009-10-01"),
 			SuppressScript = "",
@@ -183693,6 +183714,27 @@ public partial class Rfc5646
 
 
         record.Prefix.Add("eo");
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Variant,
+			SubTag = "huett",
+			Added = DateFromString("2025-03-10"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// The Huế (province Thừa Thiên) variant of Vietnamese
+        record.Description.Add(FromEncodedString("VGhlIEh14bq/IChwcm92aW5jZSBUaOG7q2EgVGhpw6puKSB2YXJpYW50IG9mIFZpZXRuYW1lc2U="));
+
+
+        record.Prefix.Add("vi");
 
         RecordList.Add(record);
 
@@ -184691,6 +184733,27 @@ public partial class Rfc5646
         record.Comments.Add(FromEncodedString("U3VwcmFyZWdpb25hbCBSb21hbnNoIHdyaXR0ZW4gc3RhbmRhcmQ="));
 
         record.Prefix.Add("rm");
+
+        RecordList.Add(record);
+
+		record = new()
+		{
+			Type = RecordType.Variant,
+			SubTag = "saigon",
+			Added = DateFromString("2025-03-10"),
+			SuppressScript = "",
+			Scope = "",
+			MacroLanguage = "",
+			Deprecated = DateFromString("0001-01-01"),
+			PreferredValue = "",
+			Tag = ""
+		};
+
+		// The Sài Gòn variant of Vietnamese
+        record.Description.Add(FromEncodedString("VGhlIFPDoGkgR8OybiB2YXJpYW50IG9mIFZpZXRuYW1lc2U="));
+
+
+        record.Prefix.Add("vi");
 
         RecordList.Add(record);
 
