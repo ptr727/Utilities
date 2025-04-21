@@ -1,54 +1,50 @@
-<#@ template debug="true" hostspecific="true" language="C#" #>
+﻿<#@ template debug="true" hostspecific="true" language="C#" #>
 <#@ output extension=".cs" #>
 <#@ assembly name="System.Runtime" #>
 <#@ assembly name="InsaneGenius.Utilities.dll" #>
 <#@ import namespace="System" #>
 <#@ import namespace="InsaneGenius.Utilities" #>
-
 <#
 var fileName = Host.ResolvePath("../Data/language-subtag-registry");
 var rfc5646 = new Rfc5646();
 if (!rfc5646.Load(fileName) || rfc5646.RecordList.Count == 0)
-	throw new NotImplementedException();
+    throw new NotImplementedException();
 #>
-
-using System;
-
 namespace InsaneGenius.Utilities;
 
 // Generated from Rfc5646Gen.tt
 public partial class Rfc5646
 {
-	public bool Create()
-	{
-		// Init
-		RecordList.Clear();
-		Record record = null;
+    public bool Create()
+    {
+        // Init
+        RecordList.Clear();
+        Record record;
 
-		FileDate = DateFromString("<#=Rfc5646.StringFromDate(rfc5646.FileDate)#>");
+        FileDate = DateFromString("<#=Rfc5646.StringFromDate(rfc5646.FileDate)#>");
 
 <#
 rfc5646.RecordList.ForEach(record =>
 {
 #>
-		record = new()
-		{
-			Type = RecordType.<#=record.Type.ToString()#>,
-			SubTag = "<#=record.SubTag#>",
-			Added = DateFromString("<#=Rfc5646.StringFromDate(record.Added)#>"),
-			SuppressScript = "<#=record.SuppressScript#>",
-			Scope = "<#=record.Scope#>",
-			MacroLanguage = "<#=record.MacroLanguage#>",
-			Deprecated = DateFromString("<#=Rfc5646.StringFromDate(record.Deprecated)#>"),
-			PreferredValue = "<#=record.PreferredValue#>",
-			Tag = "<#=record.Tag#>"
-		};
+        record = new()
+        {
+            Type = RecordType.<#=record.Type.ToString()#>,
+            SubTag = "<#=record.SubTag#>",
+            Added = DateFromString("<#=Rfc5646.StringFromDate(record.Added)#>"),
+            SuppressScript = "<#=record.SuppressScript#>",
+            Scope = "<#=record.Scope#>",
+            MacroLanguage = "<#=record.MacroLanguage#>",
+            Deprecated = DateFromString("<#=Rfc5646.StringFromDate(record.Deprecated)#>"),
+            PreferredValue = "<#=record.PreferredValue#>",
+            Tag = "<#=record.Tag#>"
+        };
 
 <#
         record.Description.ForEach(description =>
-		{
+        {
 #>
-		// <#=description#>
+        // <#=description#>
         record.Description.Add(FromEncodedString("<#=Rfc5646.ToEncodedString(description)#>"));
 <#
         });
@@ -56,9 +52,9 @@ rfc5646.RecordList.ForEach(record =>
 
 <#
         record.Comments.ForEach(comments =>
-		{
+        {
 #>
-		// <#=comments#>
+        // <#=comments#>
         record.Comments.Add(FromEncodedString("<#=Rfc5646.ToEncodedString(comments)#>"));
 <#
         });
@@ -66,7 +62,7 @@ rfc5646.RecordList.ForEach(record =>
 
 <#
         record.Prefix.ForEach(prefix =>
-		{
+        {
 #>
         record.Prefix.Add("<#=prefix#>");
 <#
@@ -79,6 +75,6 @@ rfc5646.RecordList.ForEach(record =>
 });
 #>
 
-		return true;
-	}
+        return true;
+    }
 }

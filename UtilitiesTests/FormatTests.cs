@@ -2,8 +2,10 @@
 
 namespace InsaneGenius.Utilities.Tests;
 
-public class FormatTests : IClassFixture<UtilitiesTests>
+public class FormatTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests>
 {
+    private readonly UtilitiesTests _fixture = fixture;
+
     [Theory]
     [InlineData(0, "0B")]
     [InlineData(1, "1B")]

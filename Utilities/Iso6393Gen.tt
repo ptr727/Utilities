@@ -1,45 +1,41 @@
-<#@ template debug="true" hostspecific="true" language="C#" #>
+﻿<#@ template debug="true" hostspecific="true" language="C#" #>
 <#@ output extension=".cs" #>
 <#@ assembly name="System.Runtime" #>
 <#@ assembly name="InsaneGenius.Utilities.dll" #>
 <#@ import namespace="System" #>
 <#@ import namespace="InsaneGenius.Utilities" #>
-
 <#
 var fileName = Host.ResolvePath("../Data/iso-639-3.tab");
 var iso6393 = new Iso6393();
 if (!iso6393.Load(fileName) || iso6393.RecordList.Count == 0)
-	throw new NotImplementedException();
+    throw new NotImplementedException();
 #>
-
-using System;
-
 namespace InsaneGenius.Utilities;
 
 // Generated from Iso6393Gen.tt
 public partial class Iso6393
 {
-	public bool Create()
-	{
-		// Init
-		RecordList.Clear();
-		Record record = null;
+    public bool Create()
+    {
+        // Init
+        RecordList.Clear();
+        Record record;
 
 <#
 iso6393.RecordList.ForEach(record =>
 {
 #>
-		record = new()
-		{
-			Id = "<#=record.Id#>",
-			Part2B = "<#=record.Part2B#>",
-			Part2T = "<#=record.Part2T#>",
-			Part1 = "<#=record.Part1#>",
-			Scope = "<#=record.Scope#>",
-			LanguageType = "<#=record.LanguageType#>",
-			RefName = "<#=record.RefName#>",
-			Comment = "<#=record.Comment#>",
-		};
+        record = new()
+        {
+            Id = "<#=record.Id#>",
+            Part2B = "<#=record.Part2B#>",
+            Part2T = "<#=record.Part2T#>",
+            Part1 = "<#=record.Part1#>",
+            Scope = "<#=record.Scope#>",
+            LanguageType = "<#=record.LanguageType#>",
+            RefName = "<#=record.RefName#>",
+            Comment = "<#=record.Comment#>",
+        };
 
         RecordList.Add(record);
 
@@ -47,6 +43,6 @@ iso6393.RecordList.ForEach(record =>
 });
 #>
 
-		return true;
-	}
+        return true;
+    }
 }
