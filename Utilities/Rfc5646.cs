@@ -52,14 +52,14 @@ public partial class Rfc5646
     {
         public RecordType Type { get; set; } = RecordType.None;
         public string SubTag { get; set; } = "";
-        public List<string> Description { get; set; } = new();
+        public List<string> Description { get; set; } = [];
         public DateOnly Added { get; set; } = DateOnly.MinValue;
         public string SuppressScript { get; set; } = "";
         public string Scope { get; set; } = "";
         public string MacroLanguage { get; set; } = "";
         public DateOnly Deprecated { get; set; } = DateOnly.MinValue;
-        public List<string> Comments { get; set; } = new();
-        public List<string> Prefix { get; set; } = new();
+        public List<string> Comments { get; set; } = [];
+        public List<string> Prefix { get; set; } = [];
         public string PreferredValue { get; set; } = "";
         public string Tag { get; set; } = "";
 
@@ -67,9 +67,9 @@ public partial class Rfc5646
     }
 
     public DateOnly FileDate { get; private set; } = DateOnly.MinValue;
-    public List<Record> RecordList { get; private set; } = new();
+    public List<Record> RecordList { get; private set; } = [];
 
-    private List<KeyValuePair<string, string>> AttributeList = new();
+    private readonly List<KeyValuePair<string, string>> _attributeList = [];
 
     // Create() method is generated from Rfc5646Gen.tt
     // public bool Create() { return true; }
@@ -77,29 +77,29 @@ public partial class Rfc5646
     // Load from file
     public bool Load(string fileName)
     {
-        try 
-        { 
+        try
+        {
             // Open the file as a stream
             using StreamReader lineReader = new(File.OpenRead(fileName));
 
             // Init
-            AttributeList.Clear();
+            _attributeList.Clear();
             RecordList.Clear();
 
             // record-jar format
             // https://datatracker.ietf.org/doc/html/draft-phillips-record-jar-02
 
             // File-Date: 2023-03-22
-            var line = lineReader.ReadLine();
+            string line = lineReader.ReadLine();
             FileDate = DateFromLine(line);
 
             // %%
             line = lineReader.ReadLine();
-            Debug.Assert(line.Equals("%%"));
+            Debug.Assert(line.Equals("%%", StringComparison.Ordinal));
 
             // Read all record attributes until EOF
             while (ReadAttributes(lineReader))
-            { 
+            {
                 // Add record
                 RecordList.Add(CreateRecord());
             }
@@ -108,7 +108,7 @@ public partial class Rfc5646
             RecordList.Add(CreateRecord());
         }
         catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
-        { 
+        {
             return false;
         }
         return true;
@@ -117,28 +117,28 @@ public partial class Rfc5646
     private bool ReadAttributes(StreamReader lineReader)
     {
         // Clear attribute list
-        AttributeList.Clear();
+        _attributeList.Clear();
 
         // Read until %% or EOF
         bool eof = false;
         while (true)
         {
             // Read next line
-            var line = lineReader.ReadLine();
+            string line = lineReader.ReadLine();
             if (string.IsNullOrEmpty(line))
             {
                 // End of file
                 eof = true;
                 break;
             }
-            if (line.Equals("%%"))
+            if (line.Equals("%%", StringComparison.Ordinal))
             {
                 // End of record
                 break;
             }
 
             // First line should not be multiline
-            Debug.Assert(!line.StartsWith("  "));
+            Debug.Assert(!line.StartsWith("  ", StringComparison.Ordinal));
 
             // Multiline record starts with two spaces
             // Peek at the next line an look for a space
@@ -146,26 +146,26 @@ public partial class Rfc5646
             {
                 // There is no PeekLine(), so we only get 1 char look ahead
                 // -1 is EOF or error, else cast to Char
-                var peek = lineReader.Peek();
-                if (peek == -1 || (Char)peek != ' ')
+                int peek = lineReader.Peek();
+                if (peek == -1 || (char)peek != ' ')
                 {
                     // Done
                     break;
                 }
 
                 // Append the next line to the current line
-                var multiLine = lineReader.ReadLine();
-                Debug.Assert(multiLine.StartsWith("  "));
+                string multiLine = lineReader.ReadLine();
+                Debug.Assert(multiLine.StartsWith("  ", StringComparison.Ordinal));
                 line = $"{line.Trim()} {multiLine.Trim()}";
             }
 
             // Create attribute pair
-            var divider = line.IndexOf(':');
-            var key = line[..divider];
-            var value = line[(divider + 1)..].Trim();
+            int divider = line.IndexOf(':');
+            string key = line[..divider];
+            string value = line[(divider + 1)..].Trim();
 
             // Add to attribute list
-            AttributeList.Add(new KeyValuePair<string, string>(key, value));
+            _attributeList.Add(new KeyValuePair<string, string>(key, value));
         }
 
         return !eof;
@@ -173,13 +173,13 @@ public partial class Rfc5646
 
     private Record CreateRecord()
     {
-        var record = new Record();
-        foreach (var pair in AttributeList) 
-        { 
-            switch (pair.Key.ToLower())
-            { 
+        Record record = new();
+        foreach (KeyValuePair<string, string> pair in _attributeList)
+        {
+            switch (pair.Key.ToLowerInvariant())
+            {
                 case "type":
-                    record.Type = TypeFromString(pair.Value); 
+                    record.Type = TypeFromString(pair.Value);
                     break;
                 case "subtag":
                     record.SubTag = pair.Value;
@@ -224,47 +224,32 @@ public partial class Rfc5646
 
     private static DateOnly DateFromLine(string line)
     {
-        var divider = line.IndexOf(':');
+        int divider = line.IndexOf(':');
         // var key = line.Substring(0, divider);
-        var value = line[(divider + 1)..].Trim();
+        string value = line[(divider + 1)..].Trim();
 
         return DateFromString(value);
     }
 
-    public static DateOnly DateFromString(string value)
-    {
-        return DateOnly.ParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-    }
+    public static DateOnly DateFromString(string value) => DateOnly.ParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture);
 
-    public static string StringFromDate(DateOnly value)
-    {
-        return value.ToString("yyyy-MM-dd");
-    }
+    public static string StringFromDate(DateOnly value) => value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
-    public static string ToEncodedString(string value)
-    {
-        return Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
-    }
+    public static string ToEncodedString(string value) => Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
 
-    public static string FromEncodedString(string value)
-    {
-        return Encoding.UTF8.GetString(Convert.FromBase64String(value));
-    }
+    public static string FromEncodedString(string value) => Encoding.UTF8.GetString(Convert.FromBase64String(value));
 
-    private static RecordType TypeFromString(string value)
+    private static RecordType TypeFromString(string value) => value.ToLower(CultureInfo.InvariantCulture) switch
     {
-        return value.ToLower() switch
-        {
-            "language" => RecordType.Language,
-            "extlang" => RecordType.ExtLanguage,
-            "script" => RecordType.Script,
-            "variant" => RecordType.Variant,
-            "grandfathered" => RecordType.Grandfathered,
-            "region" => RecordType.Region,
-            "redundant" => RecordType.Redundant,
-            _ => throw new NotImplementedException()
-        };
-    }
+        "language" => RecordType.Language,
+        "extlang" => RecordType.ExtLanguage,
+        "script" => RecordType.Script,
+        "variant" => RecordType.Variant,
+        "grandfathered" => RecordType.Grandfathered,
+        "region" => RecordType.Region,
+        "redundant" => RecordType.Redundant,
+        _ => throw new NotImplementedException()
+    };
 
     public Record Find(string languageTag, bool includeDescription)
     {
@@ -276,24 +261,32 @@ public partial class Rfc5646
         // Tag
         record = RecordList.FirstOrDefault(item => item.Tag.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
         if (record != null)
+        {
             return record;
+        }
 
         // SubTag
         record = RecordList.FirstOrDefault(item => item.SubTag.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
         if (record != null)
+        {
             return record;
+        }
 
         // PreferredValue
         record = RecordList.FirstOrDefault(item => item.PreferredValue.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
         if (record != null)
+        {
             return record;
+        }
 
         // Description
         if (includeDescription)
-        { 
+        {
             record = RecordList.FirstOrDefault(item => item.Description.Any(description => description.Equals(languageTag, StringComparison.OrdinalIgnoreCase)));
             if (record != null)
+            {
                 return record;
+            }
         }
 
         // Not found

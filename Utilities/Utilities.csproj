@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Pieter Viljoen</Authors>
     <Company>Pieter Viljoen</Company>
@@ -31,7 +31,7 @@
   <ItemGroup>
     <None Include="..\README.md" Pack="true" PackagePath="" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Update="Iso6392Gen.tt">
       <Generator></Generator>
@@ -43,9 +43,9 @@
       <Generator></Generator>
     </None>
   </ItemGroup>
-  
+
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
- 
+
 </Project>

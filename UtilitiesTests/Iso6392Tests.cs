@@ -4,8 +4,10 @@ using Xunit;
 
 namespace InsaneGenius.Utilities.Tests;
 
-public class Iso6392Tests : IClassFixture<UtilitiesTests>
+public class Iso6392Tests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests>
 {
+    private readonly UtilitiesTests _fixture = fixture;
+
     [Fact]
     public void Create()
     {
@@ -18,10 +20,10 @@ public class Iso6392Tests : IClassFixture<UtilitiesTests>
     public void Load()
     {
         // Get the assembly directory
-        var entryAssembly = Assembly.GetEntryAssembly();
-        var assemblyDirectory = Path.GetDirectoryName(entryAssembly.Location);
-        var dataDirectory = Path.GetFullPath(Path.Combine(assemblyDirectory, "../../../../Data"));
-        var dataFile = Path.GetFullPath(Path.Combine(dataDirectory, "ISO-639-2_utf-8.txt"));
+        Assembly entryAssembly = Assembly.GetEntryAssembly();
+        string assemblyDirectory = Path.GetDirectoryName(entryAssembly.Location);
+        string dataDirectory = Path.GetFullPath(Path.Combine(assemblyDirectory, "../../../../Data"));
+        string dataFile = Path.GetFullPath(Path.Combine(dataDirectory, "ISO-639-2_utf-8.txt"));
 
         // Load list of languages
         Iso6392 iso6392 = new();
@@ -45,7 +47,7 @@ public class Iso6392Tests : IClassFixture<UtilitiesTests>
         Assert.True(iso6392.Create());
 
         // Find matching language
-        var record = iso6392.Find(input, false);
+        Iso6392.Record record = iso6392.Find(input, false);
         Assert.NotNull(record);
         Assert.Equal(record.RefName, output);
     }
@@ -59,7 +61,7 @@ public class Iso6392Tests : IClassFixture<UtilitiesTests>
         Assert.True(iso6392.Create());
 
         // Fail to find matching language
-        var record = iso6392.Find(input, false);
+        Iso6392.Record record = iso6392.Find(input, false);
         Assert.Null(record);
     }
 }
