@@ -3,8 +3,10 @@ using Xunit;
 
 namespace InsaneGenius.Utilities.Tests;
 
-public class StringCompressionTests : IClassFixture<UtilitiesTests>
+public class StringCompressionTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests>
 {
+    private readonly UtilitiesTests _fixture = fixture;
+
     [Fact]
     public void CompressDecompress()
     {

@@ -5,8 +5,10 @@ using Xunit;
 
 namespace InsaneGenius.Utilities.Tests;
 
-public class Rfc5646Tests : IClassFixture<UtilitiesTests>
+public class Rfc5646Tests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests>
 {
+    private readonly UtilitiesTests _fixture = fixture;
+
     [Fact]
     public void Create()
     {
@@ -19,7 +21,7 @@ public class Rfc5646Tests : IClassFixture<UtilitiesTests>
     public void Load()
     {
         // Get the assembly directory
-        var entryAssembly = Assembly.GetEntryAssembly();
+        Assembly entryAssembly = Assembly.GetEntryAssembly();
         string assemblyDirectory = Path.GetDirectoryName(entryAssembly.Location);
         string dataDirectory = Path.GetFullPath(Path.Combine(assemblyDirectory, "../../../../Data"));
         string dataFile = Path.GetFullPath(Path.Combine(dataDirectory, "language-subtag-registry"));
@@ -43,7 +45,7 @@ public class Rfc5646Tests : IClassFixture<UtilitiesTests>
         Assert.True(rfc5646.Create());
 
         // Find matching language
-        var record = rfc5646.Find(input, false);
+        Rfc5646.Record record = rfc5646.Find(input, false);
         Assert.NotNull(record);
         Assert.Contains(record.Description, item => item.Equals(output, StringComparison.OrdinalIgnoreCase));
     }
@@ -57,7 +59,7 @@ public class Rfc5646Tests : IClassFixture<UtilitiesTests>
         Assert.True(rfc5646.Create());
 
         // Fail to find matching language
-        var record = rfc5646.Find(input, false);
+        Rfc5646.Record record = rfc5646.Find(input, false);
         Assert.Null(record);
     }
 }
