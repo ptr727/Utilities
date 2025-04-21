@@ -19,20 +19,27 @@ public static class FileEx
     {
         // Test
         if (Options.TestNoModify)
+        {
             return true;
+        }
 
         bool result = false;
-        for (int retryCount = 0; retryCount < Options.RetryCount; retryCount ++)
+        for (int retryCount = 0; retryCount < Options.RetryCount; retryCount++)
         {
             // Break on cancel
             if (Options.Cancel.IsCancellationRequested)
+            {
                 break;
+            }
 
             // Try to delete the file
             try
             {
                 if (File.Exists(fileName))
+                {
                     File.Delete(fileName);
+                }
+
                 result = true;
                 break;
             }
@@ -40,7 +47,7 @@ public static class FileEx
             {
                 // Retry
                 LogOptions.Logger.Information("Deleting ({RetryCount} / {OptionsRetryCount}) : {FileName}", retryCount, Options.RetryCount, fileName);
-                Options.RetryWaitForCancel();
+                _ = Options.RetryWaitForCancel();
             }
             catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
             {
@@ -56,20 +63,27 @@ public static class FileEx
     {
         // Test
         if (Options.TestNoModify)
+        {
             return true;
+        }
 
         bool result = false;
-        for (int retryCount = 0; retryCount < Options.RetryCount; retryCount ++)
+        for (int retryCount = 0; retryCount < Options.RetryCount; retryCount++)
         {
             // Break on cancel
             if (Options.Cancel.IsCancellationRequested)
+            {
                 break;
+            }
 
             // Try to delete the directory
             try
             {
                 if (Directory.Exists(directory))
+                {
                     Directory.Delete(directory);
+                }
+
                 result = true;
                 break;
             }
@@ -79,7 +93,7 @@ public static class FileEx
 
                 // Retry
                 LogOptions.Logger.Information("Deleting ({RetryCount} / {OptionsRetryCount}) : {Directory}", retryCount, Options.RetryCount, directory);
-                Options.RetryWaitForCancel();
+                _ = Options.RetryWaitForCancel();
             }
             catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
             {
@@ -95,7 +109,9 @@ public static class FileEx
     {
         // Just delete the directory, will fail if not empty
         if (!recursive)
+        {
             return DeleteDirectory(directory);
+        }
 
         // Recursively delete inside the directory and the directory
         return DeleteInsideDirectory(directory) && DeleteDirectory(directory);
@@ -106,7 +122,9 @@ public static class FileEx
     {
         // Test
         if (Options.TestNoModify)
+        {
             return true;
+        }
 
         // Split path components so we can use them for pretty printing
         string originalDirectory = Path.GetDirectoryName(originalName);
@@ -115,18 +133,23 @@ public static class FileEx
         string newFile = Path.GetFileName(newName);
 
         bool result = false;
-        for (int retryCount = 0; retryCount < Options.RetryCount; retryCount ++)
+        for (int retryCount = 0; retryCount < Options.RetryCount; retryCount++)
         {
             // Break on cancel
             if (Options.Cancel.IsCancellationRequested)
+            {
                 break;
+            }
 
             // Try to rename the file
             // Delete the destination if it exists
             try
             {
                 if (File.Exists(newName))
+                {
                     File.Delete(newName);
+                }
+
                 File.Move(originalName, newName);
                 result = true;
                 break;
@@ -140,10 +163,15 @@ public static class FileEx
             {
                 // Retry
                 if (originalDirectory.Equals(newDirectory, StringComparison.OrdinalIgnoreCase))
+                {
                     LogOptions.Logger.Information("Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalDirectory} : {OriginalFile} to {NewFile}", retryCount, Options.RetryCount, originalDirectory, originalFile, newFile);
-                else 
+                }
+                else
+                {
                     LogOptions.Logger.Information("Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalName} to {NewName}", retryCount, Options.RetryCount, originalName, newName);
-                Options.RetryWaitForCancel();
+                }
+
+                _ = Options.RetryWaitForCancel();
             }
             catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
             {
@@ -159,20 +187,27 @@ public static class FileEx
     {
         // Test
         if (Options.TestNoModify)
+        {
             return true;
+        }
 
         bool result = false;
-        for (int retryCount = 0; retryCount < Options.RetryCount; retryCount ++)
+        for (int retryCount = 0; retryCount < Options.RetryCount; retryCount++)
         {
             // Break on cancel
             if (Options.Cancel.IsCancellationRequested)
+            {
                 break;
+            }
 
             // Try to move the folder
             try
             {
                 if (Directory.Exists(newName))
-                    DeleteDirectory(newName, true);
+                {
+                    _ = DeleteDirectory(newName, true);
+                }
+
                 Directory.Move(originalName, newName);
                 result = true;
                 break;
@@ -186,7 +221,7 @@ public static class FileEx
             {
                 // Retry
                 LogOptions.Logger.Information("Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalName} to {NewName}", retryCount, Options.RetryCount, originalName, newName);
-                Options.RetryWaitForCancel();
+                _ = Options.RetryWaitForCancel();
             }
             catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
             {
@@ -206,14 +241,21 @@ public static class FileEx
         {
             // Call recursively for this directory
             if (!DeleteEmptyDirectories(dirInfo.FullName, ref deleted))
+            {
                 return false;
+            }
 
             // Test for files and directories, if none, delete this directory
             if (dirInfo.GetFiles().Length != 0 || dirInfo.GetDirectories().Length != 0)
+            {
                 continue;
+            }
 
             if (!DeleteDirectory(dirInfo.FullName))
+            {
                 return false;
+            }
+
             deleted++;
         }
 
@@ -225,7 +267,9 @@ public static class FileEx
     {
         // Skip if directory does not exist
         if (!Directory.Exists(directory))
+        {
             return true;
+        }
 
         // Delete all files in this directory
         DirectoryInfo parentInfo = new(directory);
@@ -239,11 +283,15 @@ public static class FileEx
         {
             // Call recursively for this directory
             if (!DeleteInsideDirectory(dirInfo.FullName))
+            {
                 return false;
+            }
 
             // Delete this directory
             if (!DeleteDirectory(dirInfo.FullName))
+            {
                 return false;
+            }
         }
 
         return true;
@@ -267,11 +315,13 @@ public static class FileEx
     public static bool WaitFileReadAble(string fileName)
     {
         bool result = false;
-        for (int retryCount = 0; retryCount < Options.RetryCount; retryCount ++)
+        for (int retryCount = 0; retryCount < Options.RetryCount; retryCount++)
         {
             // Break on cancel
             if (Options.Cancel.IsCancellationRequested)
+            {
                 break;
+            }
 
             // Try to access the file
             try
@@ -286,7 +336,7 @@ public static class FileEx
             {
                 // Retry
                 LogOptions.Logger.Information("Waiting for file to become readable ({RetryCount} / {OptionsRetryCount}) : {Name}", retryCount, Options.RetryCount, fileName);
-                Options.RetryWaitForCancel();
+                _ = Options.RetryWaitForCancel();
             }
             catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
             {
@@ -300,8 +350,7 @@ public static class FileEx
     // Try to open the file for read access
     public static bool IsFileReadable(FileInfo fileInfo)
     {
-        if (fileInfo == null)
-            throw new ArgumentNullException(nameof(fileInfo));
+        ArgumentNullException.ThrowIfNull(fileInfo);
 
         try
         {
@@ -320,8 +369,7 @@ public static class FileEx
     // Try to open the file for write access
     public static bool IsFileWriteable(FileInfo fileInfo)
     {
-        if (fileInfo == null)
-            throw new ArgumentNullException(nameof(fileInfo));
+        ArgumentNullException.ThrowIfNull(fileInfo);
 
         try
         {
@@ -340,8 +388,7 @@ public static class FileEx
     // Try to open the file for read and write access
     public static bool IsFileReadWriteable(FileInfo fileInfo)
     {
-        if (fileInfo == null)
-            throw new ArgumentNullException(nameof(fileInfo));
+        ArgumentNullException.ThrowIfNull(fileInfo);
 
         try
         {
@@ -360,13 +407,13 @@ public static class FileEx
     // Test if all files in the directory are readable
     public static bool AreFilesInDirectoryReadable(string directory)
     {
-        try 
+        try
         {
             // Test each file in directory for readability
             DirectoryInfo dirInfo = new(directory);
             return dirInfo.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly).All(IsFileReadable);
         }
-        catch (Exception e) when(LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }
@@ -378,7 +425,9 @@ public static class FileEx
         try
         {
             if (!Directory.Exists(directory))
-                Directory.CreateDirectory(directory);
+            {
+                _ = Directory.CreateDirectory(directory);
+            }
         }
         catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
@@ -391,12 +440,9 @@ public static class FileEx
     // Combine paths and convert relative to absolute
     public static string CombinePath(string path1, string path2, string path3)
     {
-        if (path1 == null)
-            throw new ArgumentNullException(nameof(path1));
-        if (path2 == null)
-            throw new ArgumentNullException(nameof(path2));
-        if (path3 == null)
-            throw new ArgumentNullException(nameof(path3));
+        ArgumentNullException.ThrowIfNull(path1);
+        ArgumentNullException.ThrowIfNull(path2);
+        ArgumentNullException.ThrowIfNull(path3);
 
         // Trim roots from second and third path
         if (Path.IsPathRooted(path2))
@@ -424,10 +470,8 @@ public static class FileEx
 
     public static string CombinePath(string path1, string path2)
     {
-        if (path1 == null)
-            throw new ArgumentNullException(nameof(path1));
-        if (path2 == null)
-            throw new ArgumentNullException(nameof(path2));
+        ArgumentNullException.ThrowIfNull(path1);
+        ArgumentNullException.ThrowIfNull(path2);
 
         return CombinePath(path1, path2, "");
     }
@@ -436,11 +480,10 @@ public static class FileEx
     // The source directories will be added to the directory list
     public static bool EnumerateDirectories(List<string> sourceList, out List<FileInfo> fileList, out List<DirectoryInfo> directoryList)
     {
-        if (sourceList == null)
-            throw new ArgumentNullException(nameof(sourceList));
+        ArgumentNullException.ThrowIfNull(sourceList);
 
-        directoryList = new List<DirectoryInfo>();
-        fileList = new List<FileInfo>();
+        directoryList = [];
+        fileList = [];
 
         try
         {
@@ -474,7 +517,7 @@ public static class FileEx
     // This directory  will be added to the directory list
     public static bool EnumerateDirectory(string directory, out List<FileInfo> fileList, out List<DirectoryInfo> directoryList)
     {
-        List<string> sourceList = new() {directory};
+        List<string> sourceList = [directory];
         return EnumerateDirectories(sourceList, out fileList, out directoryList);
     }
 
@@ -484,7 +527,9 @@ public static class FileEx
     {
         // Test
         if (Options.TestNoModify)
+        {
             return true;
+        }
 
         // Windows only
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -511,10 +556,7 @@ public static class FileEx
     }
 
     // Prefix the filename with a timestamp
-    public static string TimeStampFileName(string filePath)
-    {
-        return TimeStampFileName(filePath, DateTime.UtcNow);
-    }
+    public static string TimeStampFileName(string filePath) => TimeStampFileName(filePath, DateTime.UtcNow);
 
     public static string TimeStampFileName(string filePath, DateTime timeStamp)
     {
@@ -532,7 +574,7 @@ public static class FileEx
 
             // Set the file length, this has no real impact on COW filesystems
             stream.SetLength(size);
-            stream.Seek(0, SeekOrigin.Begin);
+            _ = stream.Seek(0, SeekOrigin.Begin);
 
             // Buffer with random data
             const int bufferSize = 2 * Format.MiB;

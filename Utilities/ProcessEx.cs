@@ -8,16 +8,15 @@ namespace InsaneGenius.Utilities;
 
 public class ProcessEx : Process
 {
-    public int ExecuteEx(string executable, string parameters)
-    {
-        return ExecuteExAsync(executable, parameters).Result;
-    }
+    public int ExecuteEx(string executable, string parameters) => ExecuteExAsync(executable, parameters).Result;
 
     public async Task<int> ExecuteExAsync(string executable, string parameters)
     {
         // Start
         if (!StartEx(executable, parameters))
+        {
             return -1;
+        }
 
         // Wait for exit
         return await WaitForExitAsync().ConfigureAwait(true);
@@ -26,18 +25,9 @@ public class ProcessEx : Process
     public bool StartEx(string executable, string parameters)
     {
         // Event handlers
-        void OutputHandlerEx(object s, DataReceivedEventArgs e)
-        {
-            OutputHandler(e);
-        }
-        void ErrorHandlerEx(object s, DataReceivedEventArgs e)
-        {
-            ErrorHandler(e);
-        }
-        void ExitHandlerEx(object s, EventArgs e)
-        {
-            ExitHandler();
-        }
+        void OutputHandlerEx(object s, DataReceivedEventArgs e) => OutputHandler(e);
+        void ErrorHandlerEx(object s, DataReceivedEventArgs e) => ErrorHandler(e);
+        void ExitHandlerEx(object s, EventArgs e) => ExitHandler();
 
         // Output and error handlers
         StartInfo.RedirectStandardOutput = RedirectOutput;
@@ -54,11 +44,13 @@ public class ProcessEx : Process
         StartInfo.Arguments = parameters;
         StartInfo.UseShellExecute = false;
 
-        try 
-        { 
+        try
+        {
             // Start process
             if (!Start())
+            {
                 return false;
+            }
         }
         catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
@@ -67,9 +59,14 @@ public class ProcessEx : Process
 
         // Read output and error
         if (RedirectOutput)
+        {
             BeginOutputReadLine();
+        }
+
         if (RedirectError)
+        {
             BeginErrorReadLine();
+        }
 
         return true;
     }
@@ -77,27 +74,33 @@ public class ProcessEx : Process
     public async Task<int> WaitForExitAsync()
     {
         // Wait for exit handler to be signalled
-        await ProcessExitComplete.Task.ConfigureAwait(true);
+        _ = await _processExitComplete.Task.ConfigureAwait(true);
 
         // Wait for the process to exit to make sure all output has been written
         WaitForExit();
 
         // Flush streams
         if (OutputStream != null)
+        {
             await OutputStream.FlushAsync();
+        }
+
         if (ErrorStream != null)
+        {
             await ErrorStream.FlushAsync();
+        }
 
         return ExitCode;
     }
 
     protected virtual void OutputHandler(DataReceivedEventArgs e)
     {
-        if (e == null)
-            throw new ArgumentNullException(nameof(e));
+        ArgumentNullException.ThrowIfNull(e);
 
         if (string.IsNullOrEmpty(e.Data))
+        {
             return;
+        }
 
         // Stream output
         OutputStream?.WriteLine(e.Data);
@@ -107,33 +110,36 @@ public class ProcessEx : Process
 
         // Console output
         if (ConsoleOutput)
+        {
             Console.Out.WriteLine(e.Data);
+        }
     }
 
     protected virtual void ErrorHandler(DataReceivedEventArgs e)
     {
-        if (e == null)
-            throw new ArgumentNullException(nameof(e));
+        ArgumentNullException.ThrowIfNull(e);
 
         if (string.IsNullOrEmpty(e.Data))
+        {
             return;
+        }
 
         // Stream output
         ErrorStream?.WriteLine(e.Data);
-            
+
         // String output
         ErrorString?.AppendLine(e.Data);
 
         // Console output
         if (ConsoleError)
+        {
             Console.Error.WriteLine(e.Data);
+        }
     }
 
-    protected virtual void ExitHandler()
-    {
+    protected virtual void ExitHandler() =>
         // Signal exit
-        ProcessExitComplete.TrySetResult(true);
-    }
+        _processExitComplete.TrySetResult(true);
 
     public static int Execute(string executable, string parameters)
     {
@@ -214,5 +220,5 @@ public class ProcessEx : Process
     public StreamWriter ErrorStream { get; set; }
     public StringHistory ErrorString { get; set; }
 
-    private readonly TaskCompletionSource<bool> ProcessExitComplete = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private readonly TaskCompletionSource<bool> _processExitComplete = new(TaskCreationOptions.RunContinuationsAsynchronously);
 }

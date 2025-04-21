@@ -16,8 +16,5 @@ public class FileExOptions
     // Wait time between retries in seconds
     public int RetryWaitTime { get; set; } = 5;
 
-    public bool RetryWaitForCancel()
-    {
-        return Cancel.WaitHandle.WaitOne(RetryWaitTime * 1000);
-    }
+    public bool RetryWaitForCancel() => Cancel.WaitHandle.WaitOne(RetryWaitTime * 1000);
 }
