@@ -23,7 +23,7 @@ namespace InsaneGenius.Utilities;
 public partial class Iso6393
 {
     public class Record
-    { 
+    {
         // The three-letter 639-3 identifier
         public string Id { get; set; } = "";
         // Equivalent 639-2 identifier of the bibliographic applications code set, if there is one
@@ -42,14 +42,14 @@ public partial class Iso6393
         public string Comment { get; set; } = "";
     }
 
-    public List<Record> RecordList { get; private set; } = new();
+    public List<Record> RecordList { get; private set; } = [];
 
     // Create() method is generated from Iso6393Gen.tt
     // public bool Create() { return true; }
 
     public bool Load(string fileName)
     {
-        try 
+        try
         {
             // Open the file as a stream
             using StreamReader lineReader = new(File.OpenRead(fileName));
@@ -58,18 +58,18 @@ public partial class Iso6393
             RecordList.Clear();
 
             // Read header
-            var line = lineReader.ReadLine();
+            string line = lineReader.ReadLine();
             Debug.Assert(!string.IsNullOrEmpty(line));
 
             // Read line by line
             while ((line = lineReader.ReadLine()) is not null)
             {
                 // Parse using tab character
-                var records = line.Split('\t');
+                string[] records = line.Split('\t');
                 Debug.Assert(records.Length == 8);
 
-                // Populate record                
-                var record = new Record
+                // Populate record
+                Record record = new()
                 {
                     Id = records[0].Trim(),
                     Part2B = records[1].Trim(),
@@ -84,7 +84,7 @@ public partial class Iso6393
             }
         }
         catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
-        { 
+        {
             return false;
         }
         return true;
@@ -104,17 +104,23 @@ public partial class Iso6393
             // Try 639-3
             record = RecordList.FirstOrDefault(item => item.Id.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
             if (record != null)
+            {
                 return record;
+            }
 
             // Try the 639-2/B
             record = RecordList.FirstOrDefault(item => item.Part2B.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
             if (record != null)
+            {
                 return record;
+            }
 
             // Try the 639-2/T
             record = RecordList.FirstOrDefault(item => item.Part2T.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
             if (record != null)
+            {
                 return record;
+            }
         }
 
         // 693 2 letter form
@@ -124,17 +130,21 @@ public partial class Iso6393
             // Try 639-1
             record = RecordList.FirstOrDefault(item => item.Part1.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
             if (record != null)
+            {
                 return record;
+            }
         }
 
         // Long form
         // E.g. Zambian Sign Language, Zul
         if (includeDescription)
-        { 
+        {
             // Try long form
             record = RecordList.FirstOrDefault(item => item.RefName.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
             if (record != null)
+            {
                 return record;
+            }
         }
 
         // Not found

@@ -10,7 +10,7 @@ public class StringHistory
     }
 
     public StringHistory(int maxFirstLines, int maxLastLines)
-    { 
+    {
         MaxFirstLines = maxFirstLines;
         MaxLastLines = maxLastLines;
     }
@@ -19,24 +19,24 @@ public class StringHistory
     {
         // No restrictions
         if (MaxFirstLines == 0 && MaxLastLines == 0)
-        { 
+        {
             StringList.Add(value);
             return;
         }
 
         // Restrict first lines
-        if (FirstLines < MaxFirstLines)
+        if (_firstLines < MaxFirstLines)
         {
             StringList.Add(value);
-            FirstLines ++;
+            _firstLines++;
             return;
         }
 
         // Restrict last lines
-        if (LastLines < MaxLastLines)
+        if (_lastLines < MaxLastLines)
         {
             StringList.Add(value);
-            LastLines ++;
+            _lastLines++;
             return;
         }
 
@@ -49,15 +49,17 @@ public class StringHistory
     {
         StringBuilder stringBuilder = new();
         foreach (string item in StringList)
-            stringBuilder.AppendLine(item);
-            
+        {
+            _ = stringBuilder.AppendLine(item);
+        }
+
         return stringBuilder.ToString();
     }
 
     public int MaxFirstLines { get; set; }
     public int MaxLastLines { get; set; }
-    public List<string> StringList { get; } = new();
+    public List<string> StringList { get; } = [];
 
-    private int FirstLines;
-    private int LastLines;
+    private int _firstLines;
+    private int _lastLines;
 }
