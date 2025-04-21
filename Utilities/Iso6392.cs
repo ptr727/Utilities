@@ -25,7 +25,7 @@ public partial class Iso6392
     public class Record
     {
         // Default to use 2B
-        public string Id { get { return Part2B; } }
+        public string Id => Part2B;
         // 639-2 Bibliographic
         public string Part2B { get; set; } = "";
         // 639-2 Terminology
@@ -36,7 +36,7 @@ public partial class Iso6392
         public string RefName { get; set; } = "";
     }
 
-    public List<Record> RecordList { get; private set; } = new();
+    public List<Record> RecordList { get; private set; } = [];
 
     // Create() method is generated from Iso6392Gen.tt
     // public bool Create() { return true; }
@@ -52,18 +52,18 @@ public partial class Iso6392
             RecordList.Clear();
 
             // Read header
-            var line = lineReader.ReadLine();
+            string line = lineReader.ReadLine();
             Debug.Assert(!string.IsNullOrEmpty(line));
 
             // Read line by line
             while ((line = lineReader.ReadLine()) is not null)
             {
                 // Parse using pipe character
-                var records = line.Split('|');
+                string[] records = line.Split('|');
                 Debug.Assert(records.Length == 5);
 
-                // Populate record                
-                var record = new Record
+                // Populate record
+                Record record = new()
                 {
                     Part2B = records[0].Trim(),
                     Part2T = records[1].Trim(),
@@ -94,12 +94,16 @@ public partial class Iso6392
             // Try the 639-2/B
             record = RecordList.FirstOrDefault(item => item.Part2B.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
             if (record != null)
+            {
                 return record;
+            }
 
             // Try the 639-2/T
             record = RecordList.FirstOrDefault(item => item.Part2T.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
             if (record != null)
+            {
                 return record;
+            }
         }
 
         // 693 2 letter form
@@ -108,7 +112,9 @@ public partial class Iso6392
             // Try 639-1
             record = RecordList.FirstOrDefault(item => item.Part1.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
             if (record != null)
+            {
                 return record;
+            }
         }
 
         // Long form
@@ -117,7 +123,9 @@ public partial class Iso6392
             // Try long form
             record = RecordList.FirstOrDefault(item => item.RefName.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
             if (record != null)
+            {
                 return record;
+            }
         }
 
         // Not found

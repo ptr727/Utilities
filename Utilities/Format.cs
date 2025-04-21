@@ -30,28 +30,38 @@ public static class Format
     public static string BytesToKibi(long value, string units = "B")
     {
         if (value < 0)
+        {
             return "-" + BytesToKibi(Math.Abs(value));
+        }
+
         if (value == 0)
+        {
             return $"0{units}";
+        }
 
         int magnitude = Convert.ToInt32(Math.Floor(Math.Log(value, KiB)));
         double fraction = Math.Round(value / Math.Pow(KiB, magnitude), 1);
         double truncate = Math.Truncate(fraction);
-        return fraction.Equals(truncate) ? $"{Convert.ToInt64(truncate):D}{KibiSuffix[magnitude]}{units}" : $"{fraction:F}{KibiSuffix[magnitude]}{units}";
+        return fraction.Equals(truncate) ? $"{Convert.ToInt64(truncate):D}{s_kibiSuffix[magnitude]}{units}" : $"{fraction:F}{s_kibiSuffix[magnitude]}{units}";
     }
-    private static readonly string[] KibiSuffix = { "", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei" };
+    private static readonly string[] s_kibiSuffix = ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei"];
 
     public static string BytesToKilo(long value, string units = "B")
     {
         if (value < 0)
+        {
             return "-" + BytesToKilo(Math.Abs(value));
+        }
+
         if (value == 0)
+        {
             return $"0{units}";
+        }
 
         int magnitude = Convert.ToInt32(Math.Floor(Math.Log(value, KB)));
         double fraction = Math.Round(value / Math.Pow(KB, magnitude), 1);
         double truncate = Math.Truncate(fraction);
-        return fraction.Equals(truncate) ? $"{Convert.ToInt64(truncate):D}{KiloSuffix[magnitude]}{units}" : $"{fraction:F}{KiloSuffix[magnitude]}{units}";
+        return fraction.Equals(truncate) ? $"{Convert.ToInt64(truncate):D}{s_kiloSuffix[magnitude]}{units}" : $"{fraction:F}{s_kiloSuffix[magnitude]}{units}";
     }
-    private static readonly string[] KiloSuffix = { "", "K", "M", "G", "T", "P", "E" };
+    private static readonly string[] s_kiloSuffix = ["", "K", "M", "G", "T", "P", "E"];
 }

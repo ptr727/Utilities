@@ -15,8 +15,8 @@ public static class Download
         try
         {
             // Send GET to URL
-            using var httpResponse = GetHttpClient().GetAsync(uri).Result;
-            httpResponse.EnsureSuccessStatusCode();
+            using HttpResponseMessage httpResponse = GetHttpClient().GetAsync(uri).Result;
+            _ = httpResponse.EnsureSuccessStatusCode();
 
             // Get response
             size = (long)httpResponse.Content.Headers.ContentLength;
@@ -35,7 +35,7 @@ public static class Download
         try
         {
             // Get HTTP stream
-            var httpStream = GetHttpClient().GetStreamAsync(uri).Result;
+            Stream httpStream = GetHttpClient().GetStreamAsync(uri).Result;
 
             // Get file stream
             using FileStream fileStream = File.OpenWrite(fileName);
@@ -69,22 +69,22 @@ public static class Download
     public static HttpClient GetHttpClient()
     {
         // TODO: How does static init and synchronization work?
-        if (!HttpInit)
+        if (!s_httpInit)
         {
             // Default timeout
-            HttpClient.Timeout = TimeSpan.FromSeconds(30);
+            s_httpClient.Timeout = TimeSpan.FromSeconds(30);
 
             // Some services only work if a user agent is set, use the assembly info
             // TODO: Set only once, not sure if Add() will keep adding the same value multiple times?
-            HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(Assembly.GetExecutingAssembly().GetName().Name,
+            s_httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(Assembly.GetExecutingAssembly().GetName().Name,
                 Assembly.GetExecutingAssembly().GetName().Version.ToString()));
 
-            HttpInit = true;
+            s_httpInit = true;
         }
 
         // Reuse the HTTP client per best practices
         // Not able to "easily" use IHttpClientFactory
-        return HttpClient;
+        return s_httpClient;
     }
 
     public static Uri CreateUri(string url, string userName, string password)
@@ -92,12 +92,18 @@ public static class Download
         // Create Uri
         UriBuilder uriBuilder = new(url);
         if (!string.IsNullOrEmpty(userName))
+        {
             uriBuilder.UserName = userName;
+        }
+
         if (!string.IsNullOrEmpty(password))
+        {
             uriBuilder.Password = password;
+        }
+
         return uriBuilder.Uri;
     }
 
-    private static bool HttpInit;
-    private static readonly HttpClient HttpClient = new();
+    private static bool s_httpInit;
+    private static readonly HttpClient s_httpClient = new();
 }

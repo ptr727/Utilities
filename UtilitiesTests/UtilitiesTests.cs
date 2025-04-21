@@ -4,7 +4,5 @@ namespace InsaneGenius.Utilities.Tests;
 
 public class UtilitiesTests : IDisposable
 {
-    public void Dispose()
-    {
-    }
+    public void Dispose() => GC.SuppressFinalize(this);
 }

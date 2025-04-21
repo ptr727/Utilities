@@ -3,8 +3,10 @@ using Xunit;
 
 namespace InsaneGenius.Utilities.Tests;
 
-public class FileTests : IClassFixture<UtilitiesTests>
+public class FileTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests>
 {
+    private readonly UtilitiesTests _fixture = fixture;
+
     [Theory]
     [InlineData(@"C:\Path One", @"Path Two", @"C:\Path One\Path Two")]
     [InlineData(@"C:\Path One\", @"\Path Two", @"C:\Path One\Path Two")]
@@ -16,7 +18,9 @@ public class FileTests : IClassFixture<UtilitiesTests>
     {
         // This only work on Windows
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
             return;
+        }
 
         string path = FileEx.CombinePath(path1, path2);
         Assert.Equal(path, output);
@@ -33,7 +37,9 @@ public class FileTests : IClassFixture<UtilitiesTests>
     {
         // This only work on Windows
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
             return;
+        }
 
         string path = FileEx.CombinePath(path1, path2, path3);
         Assert.Equal(path, output);
