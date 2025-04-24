@@ -8,7 +8,8 @@ namespace InsaneGenius.Utilities;
 
 public class ProcessEx : Process
 {
-    public int ExecuteEx(string executable, string parameters) => ExecuteExAsync(executable, parameters).Result;
+    public int ExecuteEx(string executable, string parameters) =>
+        ExecuteExAsync(executable, parameters).Result;
 
     public async Task<int> ExecuteExAsync(string executable, string parameters)
     {
@@ -52,7 +53,8 @@ public class ProcessEx : Process
                 return false;
             }
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e)
+            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }
@@ -164,14 +166,20 @@ public class ProcessEx : Process
             RedirectOutput = true,
             ConsoleOutput = false,
             RedirectError = true,
-            ConsoleError = false
+            ConsoleError = false,
         };
         int exitCode = process.ExecuteEx(executable, parameters);
 
         return exitCode;
     }
 
-    public static int Execute(string executable, string parameters, bool console, int lines, out string output)
+    public static int Execute(
+        string executable,
+        string parameters,
+        bool console,
+        int lines,
+        out string output
+    )
     {
         // Create new process
         // Redirect output
@@ -182,7 +190,7 @@ public class ProcessEx : Process
             ConsoleOutput = console,
             OutputString = new StringHistory(lines, lines),
             // If console is false then redirect error but do not output anything
-            RedirectError = !console
+            RedirectError = !console,
         };
         int exitCode = process.ExecuteEx(executable, parameters);
         output = process.OutputString.ToString();
@@ -190,7 +198,14 @@ public class ProcessEx : Process
         return exitCode;
     }
 
-    public static int Execute(string executable, string parameters, bool console, int lines, out string output, out string error)
+    public static int Execute(
+        string executable,
+        string parameters,
+        bool console,
+        int lines,
+        out string output,
+        out string error
+    )
     {
         // Create new process
         // Redirect output and error
@@ -202,7 +217,7 @@ public class ProcessEx : Process
             OutputString = new StringHistory(lines, lines),
             RedirectError = true,
             ConsoleError = console,
-            ErrorString = new StringHistory(lines, lines)
+            ErrorString = new StringHistory(lines, lines),
         };
         int exitCode = process.ExecuteEx(executable, parameters);
         output = process.OutputString.ToString();
@@ -220,5 +235,7 @@ public class ProcessEx : Process
     public StreamWriter ErrorStream { get; set; }
     public StringHistory ErrorString { get; set; }
 
-    private readonly TaskCompletionSource<bool> _processExitComplete = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private readonly TaskCompletionSource<bool> _processExitComplete = new(
+        TaskCreationOptions.RunContinuationsAsynchronously
+    );
 }
