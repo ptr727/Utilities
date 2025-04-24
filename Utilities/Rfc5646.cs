@@ -45,7 +45,7 @@ public partial class Rfc5646
         Variant,
         Grandfathered,
         Region,
-        Redundant
+        Redundant,
     }
 
     public class Record
@@ -107,7 +107,8 @@ public partial class Rfc5646
             // Add last record
             RecordList.Add(CreateRecord());
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e)
+            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }
@@ -231,25 +232,30 @@ public partial class Rfc5646
         return DateFromString(value);
     }
 
-    public static DateOnly DateFromString(string value) => DateOnly.ParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+    public static DateOnly DateFromString(string value) =>
+        DateOnly.ParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture);
 
-    public static string StringFromDate(DateOnly value) => value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+    public static string StringFromDate(DateOnly value) =>
+        value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
-    public static string ToEncodedString(string value) => Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
+    public static string ToEncodedString(string value) =>
+        Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
 
-    public static string FromEncodedString(string value) => Encoding.UTF8.GetString(Convert.FromBase64String(value));
+    public static string FromEncodedString(string value) =>
+        Encoding.UTF8.GetString(Convert.FromBase64String(value));
 
-    private static RecordType TypeFromString(string value) => value.ToLower(CultureInfo.InvariantCulture) switch
-    {
-        "language" => RecordType.Language,
-        "extlang" => RecordType.ExtLanguage,
-        "script" => RecordType.Script,
-        "variant" => RecordType.Variant,
-        "grandfathered" => RecordType.Grandfathered,
-        "region" => RecordType.Region,
-        "redundant" => RecordType.Redundant,
-        _ => throw new NotImplementedException()
-    };
+    private static RecordType TypeFromString(string value) =>
+        value.ToLower(CultureInfo.InvariantCulture) switch
+        {
+            "language" => RecordType.Language,
+            "extlang" => RecordType.ExtLanguage,
+            "script" => RecordType.Script,
+            "variant" => RecordType.Variant,
+            "grandfathered" => RecordType.Grandfathered,
+            "region" => RecordType.Region,
+            "redundant" => RecordType.Redundant,
+            _ => throw new NotImplementedException(),
+        };
 
     public Record Find(string languageTag, bool includeDescription)
     {
@@ -259,21 +265,27 @@ public partial class Rfc5646
         Record record = null;
 
         // Tag
-        record = RecordList.FirstOrDefault(item => item.Tag.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
+        record = RecordList.FirstOrDefault(item =>
+            item.Tag.Equals(languageTag, StringComparison.OrdinalIgnoreCase)
+        );
         if (record != null)
         {
             return record;
         }
 
         // SubTag
-        record = RecordList.FirstOrDefault(item => item.SubTag.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
+        record = RecordList.FirstOrDefault(item =>
+            item.SubTag.Equals(languageTag, StringComparison.OrdinalIgnoreCase)
+        );
         if (record != null)
         {
             return record;
         }
 
         // PreferredValue
-        record = RecordList.FirstOrDefault(item => item.PreferredValue.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
+        record = RecordList.FirstOrDefault(item =>
+            item.PreferredValue.Equals(languageTag, StringComparison.OrdinalIgnoreCase)
+        );
         if (record != null)
         {
             return record;
@@ -282,7 +294,11 @@ public partial class Rfc5646
         // Description
         if (includeDescription)
         {
-            record = RecordList.FirstOrDefault(item => item.Description.Any(description => description.Equals(languageTag, StringComparison.OrdinalIgnoreCase)));
+            record = RecordList.FirstOrDefault(item =>
+                item.Description.Any(description =>
+                    description.Equals(languageTag, StringComparison.OrdinalIgnoreCase)
+                )
+            );
             if (record != null)
             {
                 return record;

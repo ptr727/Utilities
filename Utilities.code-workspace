@@ -26,23 +26,32 @@
 			"winget"
 		],
 		"dotnet.defaultSolution": "Utilities.sln",
-		"files.trimTrailingWhitespace": true,
-		"[markdown]": {
-			"files.trimTrailingWhitespace": false
-		},
-		"[plaintext]": {
-			"files.trimTrailingWhitespace": false
-		},
-		"diffEditor.ignoreTrimWhitespace": false,
-		"editor.renderWhitespace": "boundary"
+        "files.trimTrailingWhitespace": true,
+        "[markdown]": {
+            "files.trimTrailingWhitespace": false
+        },
+        "[plaintext]": {
+            "files.trimTrailingWhitespace": false
+        },
+        "[csharp]": {
+            "editor.formatOnSave": true,
+            "editor.defaultFormatter": "csharpier.csharpier-vscode"
+        },
+        "diffEditor.ignoreTrimWhitespace": false,
+        "editor.renderWhitespace": "boundary",
+        "dotnet.formatting.organizeImportsOnFormat": true,
+        "csharp.debug.symbolOptions.searchNuGetOrgSymbolServer": true,
+        "csharp.debug.symbolOptions.searchMicrosoftSymbolServer": true,
+        "files.encoding": "utf8bom"
 	},
 	"extensions": {
 		"recommendations": [
-			"davidanson.vscode-markdownlint",
-			"gruntfuggly.todo-tree",
-			"ms-dotnettools.csharp",
-			"streetsidesoftware.code-spell-checker",
-			"ms-dotnettools.csdevkit"
+            "davidanson.vscode-markdownlint",
+            "gruntfuggly.todo-tree",
+            "ms-dotnettools.csdevkit",
+            "streetsidesoftware.code-spell-checker",
+            "editorconfig.editorconfig",
+            "csharpier.csharpier-vscode"
 		]
 	}
 }
