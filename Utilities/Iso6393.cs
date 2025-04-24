@@ -26,18 +26,25 @@ public partial class Iso6393
     {
         // The three-letter 639-3 identifier
         public string Id { get; set; } = "";
+
         // Equivalent 639-2 identifier of the bibliographic applications code set, if there is one
         public string Part2B { get; set; } = "";
+
         // Equivalent 639-2 identifier of the terminology applications code set, if there is one
         public string Part2T { get; set; } = "";
+
         // Equivalent 639-1 identifier, if there is one
         public string Part1 { get; set; } = "";
+
         // I(ndividual), M(acrolanguage), S(pecial)
         public string Scope { get; set; } = "";
+
         // A(ncient), C(onstructed), E(xtinct), H(istorical), L(iving), S(pecial)
         public string LanguageType { get; set; } = "";
+
         // Reference language name
         public string RefName { get; set; } = "";
+
         // Comment relating to one or more of the columns
         public string Comment { get; set; } = "";
     }
@@ -78,12 +85,13 @@ public partial class Iso6393
                     Scope = records[4].Trim(),
                     LanguageType = records[5].Trim(),
                     RefName = records[6].Trim(),
-                    Comment = records[7].Trim()
+                    Comment = records[7].Trim(),
                 };
                 RecordList.Add(record);
             }
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e)
+            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }
@@ -102,21 +110,27 @@ public partial class Iso6393
         if (languageTag.Length == 3)
         {
             // Try 639-3
-            record = RecordList.FirstOrDefault(item => item.Id.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
+            record = RecordList.FirstOrDefault(item =>
+                item.Id.Equals(languageTag, StringComparison.OrdinalIgnoreCase)
+            );
             if (record != null)
             {
                 return record;
             }
 
             // Try the 639-2/B
-            record = RecordList.FirstOrDefault(item => item.Part2B.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
+            record = RecordList.FirstOrDefault(item =>
+                item.Part2B.Equals(languageTag, StringComparison.OrdinalIgnoreCase)
+            );
             if (record != null)
             {
                 return record;
             }
 
             // Try the 639-2/T
-            record = RecordList.FirstOrDefault(item => item.Part2T.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
+            record = RecordList.FirstOrDefault(item =>
+                item.Part2T.Equals(languageTag, StringComparison.OrdinalIgnoreCase)
+            );
             if (record != null)
             {
                 return record;
@@ -128,7 +142,9 @@ public partial class Iso6393
         if (languageTag.Length == 2)
         {
             // Try 639-1
-            record = RecordList.FirstOrDefault(item => item.Part1.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
+            record = RecordList.FirstOrDefault(item =>
+                item.Part1.Equals(languageTag, StringComparison.OrdinalIgnoreCase)
+            );
             if (record != null)
             {
                 return record;
@@ -140,7 +156,9 @@ public partial class Iso6393
         if (includeDescription)
         {
             // Try long form
-            record = RecordList.FirstOrDefault(item => item.RefName.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
+            record = RecordList.FirstOrDefault(item =>
+                item.RefName.Equals(languageTag, StringComparison.OrdinalIgnoreCase)
+            );
             if (record != null)
             {
                 return record;

@@ -3,6 +3,7 @@ using System.IO.Compression;
 using System.Text;
 
 namespace InsaneGenius.Utilities;
+
 // https://stackoverflow.com/questions/7343465/compression-decompression-string-with-c-sharp
 
 public static class StringCompression
@@ -14,7 +15,10 @@ public static class StringCompression
         {
             using MemoryStream compressedStream = new();
             {
-                using DeflateStream compressorStream = new(compressedStream, CompressionMode.Compress);
+                using DeflateStream compressorStream = new(
+                    compressedStream,
+                    CompressionMode.Compress
+                );
                 {
                     uncompressedStream.CopyTo(compressorStream);
                 }
@@ -28,9 +32,14 @@ public static class StringCompression
     public static string Decompress(string compressedString)
     {
         byte[] decompressedBytes;
-        using MemoryStream compressedStream = new(System.Convert.FromBase64String(compressedString));
+        using MemoryStream compressedStream = new(
+            System.Convert.FromBase64String(compressedString)
+        );
         {
-            using DeflateStream decompressorStream = new(compressedStream, CompressionMode.Decompress);
+            using DeflateStream decompressorStream = new(
+                compressedStream,
+                CompressionMode.Decompress
+            );
             {
                 using MemoryStream decompressedStream = new();
                 {
