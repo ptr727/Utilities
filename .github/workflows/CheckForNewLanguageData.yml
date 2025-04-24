@@ -46,6 +46,13 @@ jobs:
           t4 -P="${{ runner.temp }}/T4" --out=./Utilities/Iso6393Gen.cs ./Utilities/Iso6393Gen.tt
           t4 -P="${{ runner.temp }}/T4" --out=./Utilities/Rfc5646Gen.cs ./Utilities/Rfc5646Gen.tt
 
+      - name: CSharpier Gen templates
+        run: |
+          dotnet tool install -g csharpier
+          csharpier format ./Utilities/Iso6392Gen.cs
+          csharpier format ./Utilities/Iso6393Gen.cs
+          csharpier format ./Utilities/Rfc5646Gen.cs
+
       # https://github.com/marketplace/actions/git-auto-commit
       - name: Commit updated files
         id: autocommit
