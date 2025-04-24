@@ -151,7 +151,8 @@
                 ".NET Publish",
                 "Build iso-639-2 data",
                 "Build iso-639-3 data",
-                "Build rfc-5646 data"
+                "Build rfc-5646 data",
+                "CSharpier Format"
             ],
             "dependsOrder": "sequence",
             "problemMatcher": [],
@@ -175,7 +176,23 @@
             ],
             "presentation": {
                 "showReuseMessage": false,
-                "clear": true
+                "clear": false
+            }
+        },
+        {
+            "label": "CSharpier Format",
+            "type": "process",
+            "command": "csharpier",
+            "args": [
+                "format",
+                "."
+            ],
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "presentation": {
+                "showReuseMessage": false,
+                "clear": false
             }
         },
    ]
