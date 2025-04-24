@@ -854,7 +854,8 @@ public partial class Iso6392
             Part2B = "chu",
             Part2T = "",
             Part1 = "cu",
-            RefName = "Church Slavic; Old Slavonic; Church Slavonic; Old Bulgarian; Old Church Slavonic",
+            RefName =
+                "Church Slavic; Old Slavonic; Church Slavonic; Old Bulgarian; Old Church Slavonic",
         };
 
         RecordList.Add(record);
@@ -4868,7 +4869,6 @@ public partial class Iso6392
         };
 
         RecordList.Add(record);
-
 
         return true;
     }
