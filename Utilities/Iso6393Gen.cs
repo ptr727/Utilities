@@ -40519,7 +40519,7 @@ public partial class Iso6393
             Part1 = "",
             Scope = "I",
             LanguageType = "L",
-            RefName = "Kamantan",
+            RefName = "Ngyian",
             Comment = "",
         };
 
@@ -64067,7 +64067,7 @@ public partial class Iso6393
             Part1 = "",
             Scope = "I",
             LanguageType = "L",
-            RefName = "Newari",
+            RefName = "Nepal Bhasa",
             Comment = "",
         };
 
@@ -69374,6 +69374,20 @@ public partial class Iso6393
             Scope = "I",
             LanguageType = "L",
             RefName = "Oroch",
+            Comment = "",
+        };
+
+        RecordList.Add(record);
+
+        record = new()
+        {
+            Id = "oak",
+            Part2B = "",
+            Part2T = "",
+            Part1 = "",
+            Scope = "I",
+            LanguageType = "L",
+            RefName = "Noakhali",
             Comment = "",
         };
 
