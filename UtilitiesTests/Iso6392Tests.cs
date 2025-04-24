@@ -22,7 +22,9 @@ public class Iso6392Tests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests
         // Get the assembly directory
         Assembly entryAssembly = Assembly.GetEntryAssembly();
         string assemblyDirectory = Path.GetDirectoryName(entryAssembly.Location);
-        string dataDirectory = Path.GetFullPath(Path.Combine(assemblyDirectory, "../../../../Data"));
+        string dataDirectory = Path.GetFullPath(
+            Path.Combine(assemblyDirectory, "../../../../Data")
+        );
         string dataFile = Path.GetFullPath(Path.Combine(dataDirectory, "ISO-639-2_utf-8.txt"));
 
         // Load list of languages

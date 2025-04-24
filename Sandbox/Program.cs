@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-
 using InsaneGenius.Utilities;
 
 // Get the assembly directory
@@ -11,7 +10,9 @@ string assemblyDirectory = Path.GetDirectoryName(entryAssembly.Location);
 Debug.Assert(assemblyDirectory != null);
 string projectDirectory = Path.GetFullPath(Path.Combine(assemblyDirectory, "../../../../"));
 
-string rfc5646File = Path.GetFullPath(Path.Combine(projectDirectory, "Data/language-subtag-registry"));
+string rfc5646File = Path.GetFullPath(
+    Path.Combine(projectDirectory, "Data/language-subtag-registry")
+);
 Rfc5646 rfc5646 = new();
 rfc5646.Load(rfc5646File);
 

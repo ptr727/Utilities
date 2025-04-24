@@ -5,9 +5,7 @@ namespace InsaneGenius.Utilities;
 
 public class StringHistory
 {
-    public StringHistory()
-    {
-    }
+    public StringHistory() { }
 
     public StringHistory(int maxFirstLines, int maxLastLines)
     {

@@ -30,9 +30,24 @@ public class FileTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests>
     [InlineData(@"C:\Path One", @"Path Two", @"foo.txt", @"C:\Path One\Path Two\foo.txt")]
     [InlineData(@"C:\Path One\", @"\Path Two", @"foo.txt", @"C:\Path One\Path Two\foo.txt")]
     [InlineData(@"C:\Path One\", @"/Path Two", @"foo.txt", @"C:\Path One\Path Two\foo.txt")]
-    [InlineData(@"C:\Path One\Path Two\", @"..\Path Three\", @"foo.txt", @"C:\Path One\Path Three\foo.txt")]
-    [InlineData(@"\\server\Path One\", @"\Path Two", @"foo.txt", @"\\server\Path One\Path Two\foo.txt")]
-    [InlineData(@"\\server\Path One\Path Two\", @"..\Path Three", @"foo.txt", @"\\server\Path One\Path Three\foo.txt")]
+    [InlineData(
+        @"C:\Path One\Path Two\",
+        @"..\Path Three\",
+        @"foo.txt",
+        @"C:\Path One\Path Three\foo.txt"
+    )]
+    [InlineData(
+        @"\\server\Path One\",
+        @"\Path Two",
+        @"foo.txt",
+        @"\\server\Path One\Path Two\foo.txt"
+    )]
+    [InlineData(
+        @"\\server\Path One\Path Two\",
+        @"..\Path Three",
+        @"foo.txt",
+        @"\\server\Path One\Path Three\foo.txt"
+    )]
     public void CombineAbsolutePath3(string path1, string path2, string path3, string output)
     {
         // This only work on Windows
