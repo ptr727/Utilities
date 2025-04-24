@@ -43,13 +43,20 @@ public static class FileEx
                 result = true;
                 break;
             }
-            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (IOException e)
+                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
             {
                 // Retry
-                LogOptions.Logger.Information("Deleting ({RetryCount} / {OptionsRetryCount}) : {FileName}", retryCount, Options.RetryCount, fileName);
+                LogOptions.Logger.Information(
+                    "Deleting ({RetryCount} / {OptionsRetryCount}) : {FileName}",
+                    retryCount,
+                    Options.RetryCount,
+                    fileName
+                );
                 _ = Options.RetryWaitForCancel();
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (Exception e)
+                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
             {
                 break;
             }
@@ -87,15 +94,22 @@ public static class FileEx
                 result = true;
                 break;
             }
-            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (IOException e)
+                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
             {
                 // TODO : Do not retry if folder is not empty, it will never succeed
 
                 // Retry
-                LogOptions.Logger.Information("Deleting ({RetryCount} / {OptionsRetryCount}) : {Directory}", retryCount, Options.RetryCount, directory);
+                LogOptions.Logger.Information(
+                    "Deleting ({RetryCount} / {OptionsRetryCount}) : {Directory}",
+                    retryCount,
+                    Options.RetryCount,
+                    directory
+                );
                 _ = Options.RetryWaitForCancel();
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (Exception e)
+                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
             {
                 break;
             }
@@ -154,26 +168,42 @@ public static class FileEx
                 result = true;
                 break;
             }
-            catch (FileNotFoundException e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (FileNotFoundException e)
+                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
             {
                 // File not found
                 break;
             }
-            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (IOException e)
+                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
             {
                 // Retry
                 if (originalDirectory.Equals(newDirectory, StringComparison.OrdinalIgnoreCase))
                 {
-                    LogOptions.Logger.Information("Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalDirectory} : {OriginalFile} to {NewFile}", retryCount, Options.RetryCount, originalDirectory, originalFile, newFile);
+                    LogOptions.Logger.Information(
+                        "Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalDirectory} : {OriginalFile} to {NewFile}",
+                        retryCount,
+                        Options.RetryCount,
+                        originalDirectory,
+                        originalFile,
+                        newFile
+                    );
                 }
                 else
                 {
-                    LogOptions.Logger.Information("Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalName} to {NewName}", retryCount, Options.RetryCount, originalName, newName);
+                    LogOptions.Logger.Information(
+                        "Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalName} to {NewName}",
+                        retryCount,
+                        Options.RetryCount,
+                        originalName,
+                        newName
+                    );
                 }
 
                 _ = Options.RetryWaitForCancel();
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (Exception e)
+                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
             {
                 break;
             }
@@ -212,18 +242,27 @@ public static class FileEx
                 result = true;
                 break;
             }
-            catch (FileNotFoundException e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (FileNotFoundException e)
+                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
             {
                 // File not found
                 break;
             }
-            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (IOException e)
+                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
             {
                 // Retry
-                LogOptions.Logger.Information("Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalName} to {NewName}", retryCount, Options.RetryCount, originalName, newName);
+                LogOptions.Logger.Information(
+                    "Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalName} to {NewName}",
+                    retryCount,
+                    Options.RetryCount,
+                    originalName,
+                    newName
+                );
                 _ = Options.RetryWaitForCancel();
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (Exception e)
+                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
             {
                 break;
             }
@@ -237,7 +276,12 @@ public static class FileEx
     {
         // Find all directories in this directory, not all subdirectories, we will call recursively
         DirectoryInfo parentInfo = new(directory);
-        foreach (DirectoryInfo dirInfo in parentInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
+        foreach (
+            DirectoryInfo dirInfo in parentInfo.EnumerateDirectories(
+                "*",
+                SearchOption.TopDirectoryOnly
+            )
+        )
         {
             // Call recursively for this directory
             if (!DeleteEmptyDirectories(dirInfo.FullName, ref deleted))
@@ -279,7 +323,12 @@ public static class FileEx
         }
 
         // Find all directories in this directory, not all subdirectories, we will call recursively
-        foreach (DirectoryInfo dirInfo in parentInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
+        foreach (
+            DirectoryInfo dirInfo in parentInfo.EnumerateDirectories(
+                "*",
+                SearchOption.TopDirectoryOnly
+            )
+        )
         {
             // Call recursively for this directory
             if (!DeleteInsideDirectory(dirInfo.FullName))
@@ -305,7 +354,8 @@ public static class FileEx
             FileInfo fileInfo = new(fileName);
             return IsFileReadable(fileInfo);
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e)
+            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }
@@ -327,18 +377,29 @@ public static class FileEx
             try
             {
                 FileInfo fileInfo = new(fileName);
-                using FileStream stream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                using FileStream stream = fileInfo.Open(
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.ReadWrite
+                );
                 stream.Close();
                 result = true;
                 break;
             }
-            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (IOException e)
+                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
             {
                 // Retry
-                LogOptions.Logger.Information("Waiting for file to become readable ({RetryCount} / {OptionsRetryCount}) : {Name}", retryCount, Options.RetryCount, fileName);
+                LogOptions.Logger.Information(
+                    "Waiting for file to become readable ({RetryCount} / {OptionsRetryCount}) : {Name}",
+                    retryCount,
+                    Options.RetryCount,
+                    fileName
+                );
                 _ = Options.RetryWaitForCancel();
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (Exception e)
+                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
             {
                 break;
             }
@@ -355,10 +416,15 @@ public static class FileEx
         try
         {
             // Try to open the file for read access
-            using FileStream stream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using FileStream stream = fileInfo.Open(
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.ReadWrite
+            );
             stream.Close();
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e)
+            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }
@@ -374,10 +440,15 @@ public static class FileEx
         try
         {
             // Try to open the file for write access
-            using FileStream stream = fileInfo.Open(FileMode.Open, FileAccess.Write, FileShare.ReadWrite);
+            using FileStream stream = fileInfo.Open(
+                FileMode.Open,
+                FileAccess.Write,
+                FileShare.ReadWrite
+            );
             stream.Close();
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e)
+            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }
@@ -393,10 +464,15 @@ public static class FileEx
         try
         {
             // Try to open the file for read-write access
-            using FileStream stream = fileInfo.Open(FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+            using FileStream stream = fileInfo.Open(
+                FileMode.Open,
+                FileAccess.ReadWrite,
+                FileShare.ReadWrite
+            );
             stream.Close();
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e)
+            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }
@@ -413,7 +489,8 @@ public static class FileEx
             DirectoryInfo dirInfo = new(directory);
             return dirInfo.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly).All(IsFileReadable);
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e)
+            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }
@@ -429,7 +506,8 @@ public static class FileEx
                 _ = Directory.CreateDirectory(directory);
             }
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e)
+            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }
@@ -478,7 +556,11 @@ public static class FileEx
 
     // Enumerate all files and directories in the list of source directories
     // The source directories will be added to the directory list
-    public static bool EnumerateDirectories(List<string> sourceList, out List<FileInfo> fileList, out List<DirectoryInfo> directoryList)
+    public static bool EnumerateDirectories(
+        List<string> sourceList,
+        out List<FileInfo> fileList,
+        out List<DirectoryInfo> directoryList
+    )
     {
         ArgumentNullException.ThrowIfNull(sourceList);
 
@@ -495,7 +577,9 @@ public static class FileEx
                 directoryList.Add(dirInfo);
 
                 // Recursively add all child folders
-                directoryList.AddRange(dirInfo.EnumerateDirectories("*", SearchOption.AllDirectories));
+                directoryList.AddRange(
+                    dirInfo.EnumerateDirectories("*", SearchOption.AllDirectories)
+                );
             }
 
             // Add all files from all the directories to the file list
@@ -505,7 +589,8 @@ public static class FileEx
                 fileList.AddRange(dirInfo.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly));
             }
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e)
+            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }
@@ -515,7 +600,11 @@ public static class FileEx
 
     // Enumerate all files and directories in the directory
     // This directory  will be added to the directory list
-    public static bool EnumerateDirectory(string directory, out List<FileInfo> fileList, out List<DirectoryInfo> directoryList)
+    public static bool EnumerateDirectory(
+        string directory,
+        out List<FileInfo> fileList,
+        out List<DirectoryInfo> directoryList
+    )
     {
         List<string> sourceList = [directory];
         return EnumerateDirectories(sourceList, out fileList, out directoryList);
@@ -542,12 +631,17 @@ public static class FileEx
             // Grant everyone full control
             DirectoryInfo directoryInfo = new(directory);
             SecurityIdentifier everyone = new(WellKnownSidType.WorldSid, null);
-            FileSystemAccessRule accessRule = new(everyone, FileSystemRights.FullControl, AccessControlType.Allow);
+            FileSystemAccessRule accessRule = new(
+                everyone,
+                FileSystemRights.FullControl,
+                AccessControlType.Allow
+            );
             DirectorySecurity directorySecurity = directoryInfo.GetAccessControl();
             directorySecurity.AddAccessRule(accessRule);
             directoryInfo.SetAccessControl(directorySecurity);
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e)
+            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }
@@ -556,7 +650,8 @@ public static class FileEx
     }
 
     // Prefix the filename with a timestamp
-    public static string TimeStampFileName(string filePath) => TimeStampFileName(filePath, DateTime.UtcNow);
+    public static string TimeStampFileName(string filePath) =>
+        TimeStampFileName(filePath, DateTime.UtcNow);
 
     public static string TimeStampFileName(string filePath, DateTime timeStamp)
     {
@@ -570,7 +665,12 @@ public static class FileEx
         try
         {
             // Create the file
-            using FileStream stream = File.Open(name, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+            using FileStream stream = File.Open(
+                name,
+                FileMode.Create,
+                FileAccess.ReadWrite,
+                FileShare.ReadWrite
+            );
 
             // Set the file length, this has no real impact on COW filesystems
             stream.SetLength(size);
@@ -597,7 +697,8 @@ public static class FileEx
             // Close
             stream.Close();
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e)
+            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }
@@ -610,7 +711,12 @@ public static class FileEx
         try
         {
             // Create the file
-            using FileStream stream = File.Open(name, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+            using FileStream stream = File.Open(
+                name,
+                FileMode.OpenOrCreate,
+                FileAccess.ReadWrite,
+                FileShare.ReadWrite
+            );
 
             // Set length
             stream.SetLength(size);
@@ -618,7 +724,8 @@ public static class FileEx
             // Close
             stream.Close();
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e)
+            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }

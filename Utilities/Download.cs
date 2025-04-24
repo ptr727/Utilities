@@ -22,7 +22,8 @@ public static class Download
             size = (long)httpResponse.Content.Headers.ContentLength;
             modifiedTime = (DateTime)httpResponse.Content.Headers.LastModified?.DateTime;
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e)
+            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }
@@ -43,7 +44,8 @@ public static class Download
             // Write HTTP to file
             httpStream.CopyTo(fileStream);
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e)
+            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }
@@ -58,7 +60,8 @@ public static class Download
         {
             value = GetHttpClient().GetStringAsync(uri).Result;
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e)
+            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }
@@ -76,8 +79,12 @@ public static class Download
 
             // Some services only work if a user agent is set, use the assembly info
             // TODO: Set only once, not sure if Add() will keep adding the same value multiple times?
-            s_httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(Assembly.GetExecutingAssembly().GetName().Name,
-                Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+            s_httpClient.DefaultRequestHeaders.UserAgent.Add(
+                new ProductInfoHeaderValue(
+                    Assembly.GetExecutingAssembly().GetName().Name,
+                    Assembly.GetExecutingAssembly().GetName().Version.ToString()
+                )
+            );
 
             s_httpInit = true;
         }

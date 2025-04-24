@@ -11,6 +11,7 @@ public static class Format
     public const long TiB = GiB * 1024L;
     public const long PiB = TiB * 1024L;
     public const long EiB = PiB * 1024L;
+
     // public const long ZiB = EiB * 1024L;
     // public const long YiB = ZiB * 1024L;
     public const int KB = 1000;
@@ -19,6 +20,7 @@ public static class Format
     public const long TB = GB * 1000L;
     public const long PB = TB * 1000L;
     public const long EB = PB * 1000L;
+
     // public const long ZB = EB * 1000L;
     // public const long YB = ZB * 1000L;
     // ReSharper restore InconsistentNaming
@@ -42,8 +44,11 @@ public static class Format
         int magnitude = Convert.ToInt32(Math.Floor(Math.Log(value, KiB)));
         double fraction = Math.Round(value / Math.Pow(KiB, magnitude), 1);
         double truncate = Math.Truncate(fraction);
-        return fraction.Equals(truncate) ? $"{Convert.ToInt64(truncate):D}{s_kibiSuffix[magnitude]}{units}" : $"{fraction:F}{s_kibiSuffix[magnitude]}{units}";
+        return fraction.Equals(truncate)
+            ? $"{Convert.ToInt64(truncate):D}{s_kibiSuffix[magnitude]}{units}"
+            : $"{fraction:F}{s_kibiSuffix[magnitude]}{units}";
     }
+
     private static readonly string[] s_kibiSuffix = ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei"];
 
     public static string BytesToKilo(long value, string units = "B")
@@ -61,7 +66,10 @@ public static class Format
         int magnitude = Convert.ToInt32(Math.Floor(Math.Log(value, KB)));
         double fraction = Math.Round(value / Math.Pow(KB, magnitude), 1);
         double truncate = Math.Truncate(fraction);
-        return fraction.Equals(truncate) ? $"{Convert.ToInt64(truncate):D}{s_kiloSuffix[magnitude]}{units}" : $"{fraction:F}{s_kiloSuffix[magnitude]}{units}";
+        return fraction.Equals(truncate)
+            ? $"{Convert.ToInt64(truncate):D}{s_kiloSuffix[magnitude]}{units}"
+            : $"{fraction:F}{s_kiloSuffix[magnitude]}{units}";
     }
+
     private static readonly string[] s_kiloSuffix = ["", "K", "M", "G", "T", "P", "E"];
 }

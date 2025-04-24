@@ -14,10 +14,15 @@ public static class ConsoleEx
         {
             ConsoleColor oldColor = Console.ForegroundColor;
             Console.ForegroundColor = color;
-            Console.WriteLine(string.IsNullOrEmpty(value) ? $"{value}" : $"{DateTime.Now.ToString(CultureInfo.CurrentCulture)} : {value}");
+            Console.WriteLine(
+                string.IsNullOrEmpty(value)
+                    ? $"{value}"
+                    : $"{DateTime.Now.ToString(CultureInfo.CurrentCulture)} : {value}"
+            );
             Console.ForegroundColor = oldColor;
         }
     }
+
     public static void WriteLineColor(ConsoleColor color, object value)
     {
         ArgumentNullException.ThrowIfNull(value);
@@ -26,6 +31,7 @@ public static class ConsoleEx
     }
 
     public static void WriteLineError(string value) => WriteLineColor(ErrorColor, value);
+
     public static void WriteLineError(object value)
     {
         ArgumentNullException.ThrowIfNull(value);
@@ -34,6 +40,7 @@ public static class ConsoleEx
     }
 
     public static void WriteLineEvent(string value) => WriteLineColor(EventColor, value);
+
     public static void WriteLineEvent(object value)
     {
         ArgumentNullException.ThrowIfNull(value);
@@ -42,6 +49,7 @@ public static class ConsoleEx
     }
 
     public static void WriteLineTool(string value) => WriteLineColor(ToolColor, value);
+
     public static void WriteLineTool(object value)
     {
         ArgumentNullException.ThrowIfNull(value);
@@ -50,6 +58,7 @@ public static class ConsoleEx
     }
 
     public static void WriteLine(string value) => WriteLineColor(OutputColor, value);
+
     public static void WriteLine(object value)
     {
         ArgumentNullException.ThrowIfNull(value);
