@@ -23,7 +23,9 @@ public class Rfc5646Tests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests
         // Get the assembly directory
         Assembly entryAssembly = Assembly.GetEntryAssembly();
         string assemblyDirectory = Path.GetDirectoryName(entryAssembly.Location);
-        string dataDirectory = Path.GetFullPath(Path.Combine(assemblyDirectory, "../../../../Data"));
+        string dataDirectory = Path.GetFullPath(
+            Path.Combine(assemblyDirectory, "../../../../Data")
+        );
         string dataFile = Path.GetFullPath(Path.Combine(dataDirectory, "language-subtag-registry"));
 
         // Load list of languages
@@ -47,7 +49,10 @@ public class Rfc5646Tests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests
         // Find matching language
         Rfc5646.Record record = rfc5646.Find(input, false);
         Assert.NotNull(record);
-        Assert.Contains(record.Description, item => item.Equals(output, StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(
+            record.Description,
+            item => item.Equals(output, StringComparison.OrdinalIgnoreCase)
+        );
     }
 
     [Theory]

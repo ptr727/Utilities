@@ -9,7 +9,8 @@ public class CommandLineTests(UtilitiesTests fixture) : IClassFixture<UtilitiesT
     [Fact]
     public void ParseArguments()
     {
-        const string input = @"/src:""C:\tmp\Some Folder\Sub Folder"" /users:""abcdefg@hijkl.com"" tasks:""SomeTask,Some Other Task"" -someParam foo D:\";
+        const string input =
+            @"/src:""C:\tmp\Some Folder\Sub Folder"" /users:""abcdefg@hijkl.com"" tasks:""SomeTask,Some Other Task"" -someParam foo D:\";
         string[] expected =
         [
             @"/src:""C:\tmp\Some Folder\Sub Folder""",
@@ -17,7 +18,7 @@ public class CommandLineTests(UtilitiesTests fixture) : IClassFixture<UtilitiesT
             @"tasks:""SomeTask,Some Other Task""",
             @"-someParam",
             @"foo",
-            @"D:\"
+            @"D:\",
         ];
 
         string[] output = CommandLineEx.ParseArguments(input);

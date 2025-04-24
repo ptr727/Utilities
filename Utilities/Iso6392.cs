@@ -26,12 +26,16 @@ public partial class Iso6392
     {
         // Default to use 2B
         public string Id => Part2B;
+
         // 639-2 Bibliographic
         public string Part2B { get; set; } = "";
+
         // 639-2 Terminology
         public string Part2T { get; set; } = "";
+
         // 639-1
         public string Part1 { get; set; } = "";
+
         // English name
         public string RefName { get; set; } = "";
     }
@@ -74,7 +78,8 @@ public partial class Iso6392
                 RecordList.Add(record);
             }
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e)
+            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
         {
             return false;
         }
@@ -92,14 +97,18 @@ public partial class Iso6392
         if (languageTag.Length == 3)
         {
             // Try the 639-2/B
-            record = RecordList.FirstOrDefault(item => item.Part2B.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
+            record = RecordList.FirstOrDefault(item =>
+                item.Part2B.Equals(languageTag, StringComparison.OrdinalIgnoreCase)
+            );
             if (record != null)
             {
                 return record;
             }
 
             // Try the 639-2/T
-            record = RecordList.FirstOrDefault(item => item.Part2T.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
+            record = RecordList.FirstOrDefault(item =>
+                item.Part2T.Equals(languageTag, StringComparison.OrdinalIgnoreCase)
+            );
             if (record != null)
             {
                 return record;
@@ -110,7 +119,9 @@ public partial class Iso6392
         if (languageTag.Length == 2)
         {
             // Try 639-1
-            record = RecordList.FirstOrDefault(item => item.Part1.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
+            record = RecordList.FirstOrDefault(item =>
+                item.Part1.Equals(languageTag, StringComparison.OrdinalIgnoreCase)
+            );
             if (record != null)
             {
                 return record;
@@ -121,7 +132,9 @@ public partial class Iso6392
         if (includeDescription)
         {
             // Try long form
-            record = RecordList.FirstOrDefault(item => item.RefName.Equals(languageTag, StringComparison.OrdinalIgnoreCase));
+            record = RecordList.FirstOrDefault(item =>
+                item.RefName.Equals(languageTag, StringComparison.OrdinalIgnoreCase)
+            );
             if (record != null)
             {
                 return record;
