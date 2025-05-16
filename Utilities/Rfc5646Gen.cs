@@ -9,7 +9,7 @@ public partial class Rfc5646
         RecordList.Clear();
         Record record;
 
-        FileDate = DateFromString("2025-03-10");
+        FileDate = DateFromString("2025-05-15");
 
         record = new()
         {
@@ -56982,6 +56982,8 @@ public partial class Rfc5646
             Tag = "",
         };
 
+        // Ngyian
+        record.Description.Add(FromEncodedString("Tmd5aWFu"));
         // Kamantan
         record.Description.Add(FromEncodedString("S2FtYW50YW4="));
 
@@ -87937,10 +87939,12 @@ public partial class Rfc5646
             Tag = "",
         };
 
-        // Newari
-        record.Description.Add(FromEncodedString("TmV3YXJp"));
         // Nepal Bhasa
         record.Description.Add(FromEncodedString("TmVwYWwgQmhhc2E="));
+        // Newar
+        record.Description.Add(FromEncodedString("TmV3YXI="));
+        // Newari
+        record.Description.Add(FromEncodedString("TmV3YXJp"));
 
         RecordList.Add(record);
 
@@ -94965,6 +94969,26 @@ public partial class Rfc5646
 
         // Oroch
         record.Description.Add(FromEncodedString("T3JvY2g="));
+
+        RecordList.Add(record);
+
+        record = new()
+        {
+            Type = RecordType.Language,
+            SubTag = "oak",
+            Added = DateFromString("2025-05-14"),
+            SuppressScript = "",
+            Scope = "",
+            MacroLanguage = "",
+            Deprecated = DateFromString("0001-01-01"),
+            PreferredValue = "",
+            Tag = "",
+        };
+
+        // Noakhali
+        record.Description.Add(FromEncodedString("Tm9ha2hhbGk="));
+        // Noakhailla
+        record.Description.Add(FromEncodedString("Tm9ha2hhaWxsYQ=="));
 
         RecordList.Add(record);
 
@@ -156383,6 +156407,28 @@ public partial class Rfc5646
         record = new()
         {
             Type = RecordType.Script,
+            SubTag = "Hntl",
+            Added = DateFromString("2025-05-14"),
+            SuppressScript = "",
+            Scope = "",
+            MacroLanguage = "",
+            Deprecated = DateFromString("0001-01-01"),
+            PreferredValue = "",
+            Tag = "",
+        };
+
+        // Han (Traditional variant) with Latin (alias for Hant + Latn)
+        record.Description.Add(
+            FromEncodedString(
+                "SGFuIChUcmFkaXRpb25hbCB2YXJpYW50KSB3aXRoIExhdGluIChhbGlhcyBmb3IgSGFudCArIExhdG4p"
+            )
+        );
+
+        RecordList.Add(record);
+
+        record = new()
+        {
+            Type = RecordType.Script,
             SubTag = "Hrkt",
             Added = DateFromString("2005-10-16"),
             SuppressScript = "",
@@ -158147,6 +158193,26 @@ public partial class Rfc5646
 
         // Saurashtra
         record.Description.Add(FromEncodedString("U2F1cmFzaHRyYQ=="));
+
+        RecordList.Add(record);
+
+        record = new()
+        {
+            Type = RecordType.Script,
+            SubTag = "Seal",
+            Added = DateFromString("2025-05-14"),
+            SuppressScript = "",
+            Scope = "",
+            MacroLanguage = "",
+            Deprecated = DateFromString("0001-01-01"),
+            PreferredValue = "",
+            Tag = "",
+        };
+
+        // Seal
+        record.Description.Add(FromEncodedString("U2VhbA=="));
+        // Small Seal
+        record.Description.Add(FromEncodedString("U21hbGwgU2VhbA=="));
 
         RecordList.Add(record);
 
