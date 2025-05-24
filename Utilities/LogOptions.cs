@@ -1,4 +1,4 @@
-﻿// TODO: Problematic when used in different environments
+// TODO: Problematic when used in different environments
 // using Microsoft.Extensions.Logging;
 
 using Serilog;
