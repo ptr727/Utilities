@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -15,8 +15,11 @@ public static class Download
         try
         {
             // Send GET to URL
-            using HttpResponseMessage httpResponse = GetHttpClient().GetAsync(uri).Result;
-            _ = httpResponse.EnsureSuccessStatusCode();
+            using HttpResponseMessage httpResponse = GetHttpClient()
+                .GetAsync(uri)
+                .GetAwaiter()
+                .GetResult()
+                .EnsureSuccessStatusCode();
 
             // Get response
             size = (long)httpResponse.Content.Headers.ContentLength;
@@ -36,7 +39,7 @@ public static class Download
         try
         {
             // Get HTTP stream
-            Stream httpStream = GetHttpClient().GetStreamAsync(uri).Result;
+            Stream httpStream = GetHttpClient().GetStreamAsync(uri).GetAwaiter().GetResult();
 
             // Get file stream
             using FileStream fileStream = File.OpenWrite(fileName);
@@ -58,7 +61,7 @@ public static class Download
         value = null;
         try
         {
-            value = GetHttpClient().GetStringAsync(uri).Result;
+            value = GetHttpClient().GetStringAsync(uri).GetAwaiter().GetResult();
         }
         catch (Exception e)
             when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
