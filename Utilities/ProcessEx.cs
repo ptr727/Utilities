@@ -9,7 +9,7 @@ namespace InsaneGenius.Utilities;
 public class ProcessEx : Process
 {
     public int ExecuteEx(string executable, string parameters) =>
-        ExecuteExAsync(executable, parameters).Result;
+        ExecuteExAsync(executable, parameters).GetAwaiter().GetResult();
 
     public async Task<int> ExecuteExAsync(string executable, string parameters)
     {
