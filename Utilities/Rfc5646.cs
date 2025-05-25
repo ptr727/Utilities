@@ -23,6 +23,7 @@ namespace InsaneGenius.Utilities;
 // BCP 47 libraries
 // https://github.com/mattcg/language-subtag-registry
 // https://github.com/DanSmith/languagetags-sharp
+// https://github.com/jkporter/bcp47
 // https://github.com/rspeer/langcodes
 
 // T4 template
