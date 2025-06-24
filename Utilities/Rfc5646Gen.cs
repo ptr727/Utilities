@@ -9,7 +9,7 @@ public partial class Rfc5646
         RecordList.Clear();
         Record record;
 
-        FileDate = DateFromString("2025-05-15");
+        FileDate = DateFromString("2025-06-23");
 
         record = new()
         {
@@ -167991,6 +167991,26 @@ public partial class Rfc5646
         );
 
         record.Prefix.Add("lv");
+
+        RecordList.Add(record);
+
+        record = new()
+        {
+            Type = RecordType.Variant,
+            SubTag = "viennese",
+            Added = DateFromString("2025-06-22"),
+            SuppressScript = "",
+            Scope = "",
+            MacroLanguage = "",
+            Deprecated = DateFromString("0001-01-01"),
+            PreferredValue = "",
+            Tag = "",
+        };
+
+        // The Viennese dialect of German
+        record.Description.Add(FromEncodedString("VGhlIFZpZW5uZXNlIGRpYWxlY3Qgb2YgR2VybWFu"));
+
+        record.Prefix.Add("de");
 
         RecordList.Add(record);
 
