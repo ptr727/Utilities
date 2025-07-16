@@ -9,7 +9,7 @@ public partial class Rfc5646
         RecordList.Clear();
         Record record;
 
-        FileDate = DateFromString("2025-06-23");
+        FileDate = DateFromString("2025-07-15");
 
         record = new()
         {
@@ -165038,6 +165038,26 @@ public partial class Rfc5646
         record = new()
         {
             Type = RecordType.Variant,
+            SubTag = "akhmimic",
+            Added = DateFromString("2025-07-14"),
+            SuppressScript = "",
+            Scope = "",
+            MacroLanguage = "",
+            Deprecated = DateFromString("0001-01-01"),
+            PreferredValue = "",
+            Tag = "",
+        };
+
+        // Akhmimic dialect of Coptic
+        record.Description.Add(FromEncodedString("QWtobWltaWMgZGlhbGVjdCBvZiBDb3B0aWM="));
+
+        record.Prefix.Add("cop");
+
+        RecordList.Add(record);
+
+        record = new()
+        {
+            Type = RecordType.Variant,
             SubTag = "akuapem",
             Added = DateFromString("2017-06-05"),
             SuppressScript = "",
@@ -165579,6 +165599,26 @@ public partial class Rfc5646
         record = new()
         {
             Type = RecordType.Variant,
+            SubTag = "bohairic",
+            Added = DateFromString("2025-07-14"),
+            SuppressScript = "",
+            Scope = "",
+            MacroLanguage = "",
+            Deprecated = DateFromString("0001-01-01"),
+            PreferredValue = "",
+            Tag = "",
+        };
+
+        // Bohairic dialect of Coptic
+        record.Description.Add(FromEncodedString("Qm9oYWlyaWMgZGlhbGVjdCBvZiBDb3B0aWM="));
+
+        record.Prefix.Add("cop");
+
+        RecordList.Add(record);
+
+        record = new()
+        {
+            Type = RecordType.Variant,
             SubTag = "bohoric",
             Added = DateFromString("2012-06-27"),
             SuppressScript = "",
@@ -165843,6 +165883,26 @@ public partial class Rfc5646
         );
 
         record.Prefix.Add("lld");
+
+        RecordList.Add(record);
+
+        record = new()
+        {
+            Type = RecordType.Variant,
+            SubTag = "fayyumic",
+            Added = DateFromString("2025-07-14"),
+            SuppressScript = "",
+            Scope = "",
+            MacroLanguage = "",
+            Deprecated = DateFromString("0001-01-01"),
+            PreferredValue = "",
+            Tag = "",
+        };
+
+        // Fayyumic dialect of Coptic
+        record.Description.Add(FromEncodedString("RmF5eXVtaWMgZGlhbGVjdCBvZiBDb3B0aWM="));
+
+        record.Prefix.Add("cop");
 
         RecordList.Add(record);
 
@@ -166722,6 +166782,28 @@ public partial class Rfc5646
         record = new()
         {
             Type = RecordType.Variant,
+            SubTag = "lycopol",
+            Added = DateFromString("2025-07-14"),
+            SuppressScript = "",
+            Scope = "",
+            MacroLanguage = "",
+            Deprecated = DateFromString("0001-01-01"),
+            PreferredValue = "",
+            Tag = "",
+        };
+
+        // Lycopolitan alias Subakhmimic dialect of Coptic
+        record.Description.Add(
+            FromEncodedString("THljb3BvbGl0YW4gYWxpYXMgU3ViYWtobWltaWMgZGlhbGVjdCBvZiBDb3B0aWM=")
+        );
+
+        record.Prefix.Add("cop");
+
+        RecordList.Add(record);
+
+        record = new()
+        {
+            Type = RecordType.Variant,
             SubTag = "mdcegyp",
             Added = DateFromString("2025-02-06"),
             SuppressScript = "",
@@ -166764,6 +166846,28 @@ public partial class Rfc5646
         );
 
         record.Prefix.Add("egy");
+
+        RecordList.Add(record);
+
+        record = new()
+        {
+            Type = RecordType.Variant,
+            SubTag = "mesokem",
+            Added = DateFromString("2025-07-14"),
+            SuppressScript = "",
+            Scope = "",
+            MacroLanguage = "",
+            Deprecated = DateFromString("0001-01-01"),
+            PreferredValue = "",
+            Tag = "",
+        };
+
+        // Mesokemic alias Oxyrhynchite dialect of Coptic
+        record.Description.Add(
+            FromEncodedString("TWVzb2tlbWljIGFsaWFzIE94eXJoeW5jaGl0ZSBkaWFsZWN0IG9mIENvcHRpYw==")
+        );
+
+        record.Prefix.Add("cop");
 
         RecordList.Add(record);
 
@@ -167370,6 +167474,26 @@ public partial class Rfc5646
         );
 
         record.Prefix.Add("rm");
+
+        RecordList.Add(record);
+
+        record = new()
+        {
+            Type = RecordType.Variant,
+            SubTag = "sahidic",
+            Added = DateFromString("2025-07-14"),
+            SuppressScript = "",
+            Scope = "",
+            MacroLanguage = "",
+            Deprecated = DateFromString("0001-01-01"),
+            PreferredValue = "",
+            Tag = "",
+        };
+
+        // Sahidic dialect of Coptic
+        record.Description.Add(FromEncodedString("U2FoaWRpYyBkaWFsZWN0IG9mIENvcHRpYw=="));
+
+        record.Prefix.Add("cop");
 
         RecordList.Add(record);
 
