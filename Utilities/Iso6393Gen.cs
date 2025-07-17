@@ -18189,7 +18189,7 @@ public partial class Iso6393
             Part1 = "",
             Scope = "I",
             LanguageType = "L",
-            RefName = "Clallam",
+            RefName = "Klallam",
             Comment = "",
         };
 
@@ -22291,7 +22291,7 @@ public partial class Iso6393
             Part1 = "dv",
             Scope = "I",
             LanguageType = "L",
-            RefName = "Dhivehi",
+            RefName = "Divehi",
             Comment = "",
         };
 
@@ -32581,7 +32581,7 @@ public partial class Iso6393
             Part1 = "",
             Scope = "I",
             LanguageType = "L",
-            RefName = "Han",
+            RefName = "Hän",
             Comment = "",
         };
 
@@ -47491,7 +47491,7 @@ public partial class Iso6393
             Part1 = "",
             Scope = "I",
             LanguageType = "L",
-            RefName = "Kwakiutl",
+            RefName = "Kwak'wala",
             Comment = "",
         };
 
@@ -53160,7 +53160,7 @@ public partial class Iso6393
             Part2T = "",
             Part1 = "",
             Scope = "I",
-            LanguageType = "L",
+            LanguageType = "E",
             RefName = "Lushootseed",
             Comment = "",
         };
@@ -56185,7 +56185,7 @@ public partial class Iso6393
             Part1 = "",
             Scope = "I",
             LanguageType = "L",
-            RefName = "Mócheno",
+            RefName = "Mòcheno",
             Comment = "",
         };
 
@@ -68855,7 +68855,7 @@ public partial class Iso6393
             Part1 = "ny",
             Scope = "I",
             LanguageType = "L",
-            RefName = "Nyanja",
+            RefName = "Chichewa",
             Comment = "",
         };
 
@@ -109707,7 +109707,7 @@ public partial class Iso6393
             Part1 = "",
             Scope = "I",
             LanguageType = "L",
-            RefName = "Mpuono",
+            RefName = "Mbuun",
             Comment = "",
         };
 
