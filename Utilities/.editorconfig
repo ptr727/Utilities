@@ -5,7 +5,3 @@ root = false
 
 # Allow Ex
 dotnet_diagnostic.CA1711.severity = none
-
-# T4 generated files
-[*Gen.cs]
-charset = utf-8
