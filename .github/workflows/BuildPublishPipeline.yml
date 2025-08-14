@@ -13,9 +13,31 @@ concurrency:
 
 jobs:
 
+  test:
+    name: Test release
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # https://github.com/marketplace/actions/setup-net-core-sdk
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.x
+
+      # https://github.com/marketplace/actions/checkout
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      # https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-test
+      - name: Run unit tests
+        run: dotnet test ./UtilitiesTests/UtilitiesTests.csproj
+
+
   build:
     name: Build and publish release
     runs-on: ubuntu-latest
+    needs: test
 
     steps:
 
@@ -35,10 +57,6 @@ jobs:
       - name: Run Nerdbank.GitVersioning
         id: nbgv
         uses: dotnet/nbgv@master
-
-      # https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-test
-      - name: Run unit tests
-        run: dotnet test ./UtilitiesTests/UtilitiesTests.csproj
 
       # https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-build
       - name: Build project
