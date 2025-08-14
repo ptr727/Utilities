@@ -1,3 +1,14 @@
+// dotnet new tool-manifest
+// dotnet tool install csharpier
+// dotnet tool install husky
+// dotnet husky install
+// dotnet husky add pre-commit -c "dotnet husky run"
+// winget install nektos.act
+
+// dotnet tool update --all
+// winget upgrade nektos.act
+
+
 {
     "version": "2.0.0",
     "tasks": [
@@ -27,141 +38,6 @@
             }
         },
         {
-            "label": ".NET Install T4",
-            "type": "process",
-            "command": "dotnet",
-            "args": [
-                "tool",
-                "install",
-                "-g",
-                "dotnet-t4"
-            ],
-            "problemMatcher": [],
-            "presentation": {
-                "showReuseMessage": false,
-                "clear": false
-            }
-        },
-        {
-            "label": "Updata iso-639-2 data",
-            "type": "process",
-            "command": "wget",
-            "args": [
-                "-O",
-                "${workspaceFolder}/Data/ISO-639-2_utf-8.txt",
-                "https://www.loc.gov/standards/iso639-2/ISO-639-2_utf-8.txt"
-            ],
-            "problemMatcher": [],
-            "presentation": {
-                "showReuseMessage": false,
-                "clear": false
-            }
-        },
-        {
-            "label": "Build iso-639-2 data",
-            "type": "process",
-            "command": "t4",
-            "args": [
-                "-P=${workspaceFolder}/Utilities/bin/Release/net9.0/publish",
-                "--out=${workspaceFolder}/Utilities/Iso6392Gen.cs",
-                "${workspaceFolder}/Utilities/Iso6392Gen.tt"
-            ],
-            "dependsOn": [
-                "Updata iso-639-2 data"
-            ],
-            "dependsOrder": "sequence",
-            "problemMatcher": [],
-            "presentation": {
-                "showReuseMessage": false,
-                "clear": false
-            }
-        },
-        {
-            "label": "Updata iso-639-3 data",
-            "type": "process",
-            "command": "wget",
-            "args": [
-                "-O",
-                "${workspaceFolder}/Data/iso-639-3.tab",
-                "https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab"
-            ],
-            "problemMatcher": [],
-            "presentation": {
-                "showReuseMessage": false,
-                "clear": false
-            }
-        },
-        {
-            "label": "Build iso-639-3 data",
-            "type": "process",
-            "command": "t4",
-            "args": [
-                "-P=${workspaceFolder}/Utilities/bin/Release/net9.0/publish",
-                "--out=${workspaceFolder}/Utilities/Iso6393Gen.cs",
-                "${workspaceFolder}/Utilities/Iso6393Gen.tt"
-            ],
-            "dependsOn": [
-                "Updata iso-639-3 data"
-            ],
-            "dependsOrder": "sequence",
-            "problemMatcher": [],
-            "presentation": {
-                "showReuseMessage": false,
-                "clear": false
-            }
-        },
-        {
-            "label": "Updata rfc-5646 data",
-            "type": "process",
-            "command": "wget",
-            "args": [
-                "-O",
-                "${workspaceFolder}/Data/language-subtag-registry",
-                "https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry"
-            ],
-            "problemMatcher": [],
-            "presentation": {
-                "showReuseMessage": false,
-                "clear": false
-            }
-        },
-        {
-            "label": "Build rfc-5646 data",
-            "type": "process",
-            "command": "t4",
-            "args": [
-                "-P=${workspaceFolder}/Utilities/bin/Release/net9.0/publish",
-                "--out=${workspaceFolder}/Utilities/Rfc5646Gen.cs",
-                "${workspaceFolder}/Utilities/Rfc5646Gen.tt"
-            ],
-            "dependsOn": [
-                "Updata rfc-5646 data"
-            ],
-            "dependsOrder": "sequence",
-            "problemMatcher": [],
-            "presentation": {
-                "showReuseMessage": false,
-                "clear": false
-            }
-        },
-        {
-            "label": "Build language files",
-            "dependsOn": [
-                ".NET Install T4",
-                ".NET Publish",
-                "Build iso-639-2 data",
-                "Build iso-639-3 data",
-                "Build rfc-5646 data",
-                "CSharpier Format"
-            ],
-            "dependsOrder": "sequence",
-            "problemMatcher": [],
-            "presentation": {
-                "showReuseMessage": false,
-                "clear": false
-            }
-        },
-        {
             "label": ".NET Format",
             "type": "process",
             "command": "dotnet",
@@ -182,10 +58,45 @@
         {
             "label": "CSharpier Format",
             "type": "process",
-            "command": "csharpier",
+            "command": "dotnet",
             "args": [
+                "csharpier",
                 "format",
+                "--log-level=debug",
                 "."
+            ],
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "presentation": {
+                "showReuseMessage": false,
+                "clear": false
+            }
+        },
+        {
+            "label": ".Net Tool Update",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "tool",
+                "update",
+                "--all"
+            ],
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "presentation": {
+                "showReuseMessage": false,
+                "clear": false
+            }
+        },
+        {
+            "label": "Husky.Net Run",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "husky",
+                "run"
             ],
             "problemMatcher": [
                 "$msCompile"
