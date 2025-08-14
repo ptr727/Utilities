@@ -30,7 +30,7 @@ jobs:
 
       # https://github.com/marketplace/actions/checkout
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Download language data files
         run: |
@@ -74,7 +74,7 @@ jobs:
 
       # https://github.com/marketplace/actions/checkout
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # https://cli.github.com/manual/gh_workflow_run
       - name: Trigger workflow
