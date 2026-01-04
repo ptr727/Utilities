@@ -1,5 +1,6 @@
 using System;
 using System.IO.Compression;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
@@ -70,7 +71,7 @@ public static class Extensions
         /// <returns>Always returns false to allow exception to propagate.</returns>
         public bool LogAndPropagate(
             Exception exception,
-            [System.Runtime.CompilerServices.CallerMemberName] string function = "unknown"
+            [CallerMemberName] string function = "unknown"
         )
         {
             logger.Error(exception, "{Function}", function);
@@ -85,7 +86,7 @@ public static class Extensions
         /// <returns>Always returns true to indicate exception was handled.</returns>
         public bool LogAndHandle(
             Exception exception,
-            [System.Runtime.CompilerServices.CallerMemberName] string function = "unknown"
+            [CallerMemberName] string function = "unknown"
         )
         {
             logger.Error(exception, "{Function}", function);
