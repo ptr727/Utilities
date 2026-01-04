@@ -2,19 +2,29 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace InsaneGenius.Utilities;
 
+/// <summary>
+/// Provides extended file and directory operation utilities with retry logic and cancellation support.
+/// </summary>
 public static class FileEx
 {
-    // Settings for file operations
+    /// <summary>
+    /// Settings for file operations including retry behavior and cancellation.
+    /// </summary>
     public static readonly FileExOptions Options = new();
 
-    // Delete file, and retry in case of failure
+    /// <summary>
+    /// Deletes a file with retry logic in case of failure.
+    /// </summary>
+    /// <param name="fileName">The file to delete.</param>
+    /// <returns>True if successful, false otherwise.</returns>
     public static bool DeleteFile(string fileName)
     {
         // Test
@@ -43,8 +53,7 @@ public static class FileEx
                 result = true;
                 break;
             }
-            catch (IOException e)
-                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
             {
                 // Retry
                 LogOptions.Logger.Information(
@@ -55,8 +64,7 @@ public static class FileEx
                 );
                 _ = Options.RetryWaitForCancel();
             }
-            catch (Exception e)
-                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
             {
                 break;
             }
@@ -65,7 +73,65 @@ public static class FileEx
         return result;
     }
 
-    // Delete directory, and retry in case of failure
+    /// <summary>
+    /// Deletes a file asynchronously with retry logic in case of failure.
+    /// </summary>
+    /// <param name="fileName">The file to delete.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>True if successful, false otherwise.</returns>
+    public static async Task<bool> DeleteFileAsync(
+        string fileName,
+        CancellationToken cancellationToken = default
+    )
+    {
+        if (Options.TestNoModify)
+        {
+            return true;
+        }
+
+        bool result = false;
+        for (int retryCount = 0; retryCount < Options.RetryCount; retryCount++)
+        {
+            if (Options.Cancel.IsCancellationRequested || cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
+
+            try
+            {
+                if (File.Exists(fileName))
+                {
+                    File.Delete(fileName);
+                }
+
+                result = true;
+                break;
+            }
+            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
+            {
+                LogOptions.Logger.Information(
+                    "Deleting ({RetryCount} / {OptionsRetryCount}) : {FileName}",
+                    retryCount,
+                    Options.RetryCount,
+                    fileName
+                );
+                await Task.Delay(Options.RetryWaitTime * 1000, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+            {
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Deletes a directory with retry logic in case of failure.
+    /// </summary>
+    /// <param name="directory">The directory to delete.</param>
+    /// <returns>True if successful, false otherwise.</returns>
     public static bool DeleteDirectory(string directory)
     {
         // Test
@@ -94,8 +160,7 @@ public static class FileEx
                 result = true;
                 break;
             }
-            catch (IOException e)
-                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
             {
                 // TODO : Do not retry if folder is not empty, it will never succeed
 
@@ -108,8 +173,7 @@ public static class FileEx
                 );
                 _ = Options.RetryWaitForCancel();
             }
-            catch (Exception e)
-                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
             {
                 break;
             }
@@ -118,7 +182,66 @@ public static class FileEx
         return result;
     }
 
-    // Recursively delete the directory and files
+    /// <summary>
+    /// Deletes a directory asynchronously with retry logic in case of failure.
+    /// </summary>
+    /// <param name="directory">The directory to delete.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>True if successful, false otherwise.</returns>
+    public static async Task<bool> DeleteDirectoryAsync(
+        string directory,
+        CancellationToken cancellationToken = default
+    )
+    {
+        if (Options.TestNoModify)
+        {
+            return true;
+        }
+
+        bool result = false;
+        for (int retryCount = 0; retryCount < Options.RetryCount; retryCount++)
+        {
+            if (Options.Cancel.IsCancellationRequested || cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
+
+            try
+            {
+                if (Directory.Exists(directory))
+                {
+                    Directory.Delete(directory);
+                }
+
+                result = true;
+                break;
+            }
+            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
+            {
+                LogOptions.Logger.Information(
+                    "Deleting ({RetryCount} / {OptionsRetryCount}) : {Directory}",
+                    retryCount,
+                    Options.RetryCount,
+                    directory
+                );
+                await Task.Delay(Options.RetryWaitTime * 1000, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+            {
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Recursively deletes a directory and all its contents.
+    /// </summary>
+    /// <param name="directory">The directory to delete.</param>
+    /// <param name="recursive">If true, recursively deletes all contents before deleting the directory.</param>
+    /// <returns>True if successful, false otherwise.</returns>
     public static bool DeleteDirectory(string directory, bool recursive)
     {
         // Just delete the directory, will fail if not empty
@@ -131,7 +254,29 @@ public static class FileEx
         return DeleteInsideDirectory(directory) && DeleteDirectory(directory);
     }
 
-    // Rename file, and retry in case of failure
+    /// <summary>
+    /// Recursively deletes a directory and all its contents asynchronously.
+    /// </summary>
+    /// <param name="directory">The directory to delete.</param>
+    /// <param name="recursive">If true, recursively deletes all contents before deleting the directory.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>True if successful, false otherwise.</returns>
+    public static async Task<bool> DeleteDirectoryAsync(
+        string directory,
+        bool recursive,
+        CancellationToken cancellationToken = default
+    ) =>
+        !recursive
+            ? await DeleteDirectoryAsync(directory, cancellationToken).ConfigureAwait(false)
+            : await DeleteInsideDirectoryAsync(directory, cancellationToken).ConfigureAwait(false)
+                && await DeleteDirectoryAsync(directory, cancellationToken).ConfigureAwait(false);
+
+    /// <summary>
+    /// Renames or moves a file with retry logic in case of failure.
+    /// </summary>
+    /// <param name="originalName">The original file path.</param>
+    /// <param name="newName">The new file path.</param>
+    /// <returns>True if successful, false otherwise.</returns>
     public static bool RenameFile(string originalName, string newName)
     {
         // Test
@@ -141,10 +286,24 @@ public static class FileEx
         }
 
         // Split path components so we can use them for pretty printing
-        string originalDirectory = Path.GetDirectoryName(originalName);
+        string? originalDirectory = Path.GetDirectoryName(originalName);
         string originalFile = Path.GetFileName(originalName);
-        string newDirectory = Path.GetDirectoryName(newName);
+        string? newDirectory = Path.GetDirectoryName(newName);
         string newFile = Path.GetFileName(newName);
+        if (
+            string.IsNullOrEmpty(originalDirectory)
+            || string.IsNullOrEmpty(originalFile)
+            || string.IsNullOrEmpty(newDirectory)
+            || string.IsNullOrEmpty(newFile)
+        )
+        {
+            LogOptions.Logger.Error(
+                "Renaming file failed due to invalid path(s) : {OriginalName} to {NewName}",
+                originalName,
+                newName
+            );
+            return false;
+        }
 
         bool result = false;
         for (int retryCount = 0; retryCount < Options.RetryCount; retryCount++)
@@ -168,14 +327,12 @@ public static class FileEx
                 result = true;
                 break;
             }
-            catch (FileNotFoundException e)
-                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (FileNotFoundException e) when (LogOptions.Logger.LogAndHandle(e))
             {
                 // File not found
                 break;
             }
-            catch (IOException e)
-                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
             {
                 // Retry
                 if (originalDirectory.Equals(newDirectory, StringComparison.OrdinalIgnoreCase))
@@ -202,8 +359,7 @@ public static class FileEx
 
                 _ = Options.RetryWaitForCancel();
             }
-            catch (Exception e)
-                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
             {
                 break;
             }
@@ -212,7 +368,110 @@ public static class FileEx
         return result;
     }
 
-    // Rename or move the folder, and retry in case of failure
+    /// <summary>
+    /// Renames or moves a file asynchronously with retry logic in case of failure.
+    /// </summary>
+    /// <param name="originalName">The original file path.</param>
+    /// <param name="newName">The new file path.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>True if successful, false otherwise.</returns>
+    public static async Task<bool> RenameFileAsync(
+        string originalName,
+        string newName,
+        CancellationToken cancellationToken = default
+    )
+    {
+        if (Options.TestNoModify)
+        {
+            return true;
+        }
+
+        string? originalDirectory = Path.GetDirectoryName(originalName);
+        string originalFile = Path.GetFileName(originalName);
+        string? newDirectory = Path.GetDirectoryName(newName);
+        string newFile = Path.GetFileName(newName);
+        if (
+            string.IsNullOrEmpty(originalDirectory)
+            || string.IsNullOrEmpty(originalFile)
+            || string.IsNullOrEmpty(newDirectory)
+            || string.IsNullOrEmpty(newFile)
+        )
+        {
+            LogOptions.Logger.Error(
+                "Renaming file failed due to invalid path(s) : {OriginalName} to {NewName}",
+                originalName,
+                newName
+            );
+            return false;
+        }
+
+        bool result = false;
+        for (int retryCount = 0; retryCount < Options.RetryCount; retryCount++)
+        {
+            if (Options.Cancel.IsCancellationRequested || cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
+
+            try
+            {
+                if (File.Exists(newName))
+                {
+                    File.Delete(newName);
+                }
+
+                File.Move(originalName, newName);
+                result = true;
+                break;
+            }
+            catch (FileNotFoundException e) when (LogOptions.Logger.LogAndHandle(e))
+            {
+                // File not found
+                break;
+            }
+            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
+            {
+                // Retry
+                if (originalDirectory.Equals(newDirectory, StringComparison.OrdinalIgnoreCase))
+                {
+                    LogOptions.Logger.Information(
+                        "Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalDirectory} : {OriginalFile} to {NewFile}",
+                        retryCount,
+                        Options.RetryCount,
+                        originalDirectory,
+                        originalFile,
+                        newFile
+                    );
+                }
+                else
+                {
+                    LogOptions.Logger.Information(
+                        "Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalName} to {NewName}",
+                        retryCount,
+                        Options.RetryCount,
+                        originalName,
+                        newName
+                    );
+                }
+
+                await Task.Delay(Options.RetryWaitTime * 1000, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+            {
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Renames or moves a folder with retry logic in case of failure.
+    /// </summary>
+    /// <param name="originalName">The original folder path.</param>
+    /// <param name="newName">The new folder path.</param>
+    /// <returns>True if successful, false otherwise.</returns>
     public static bool RenameFolder(string originalName, string newName)
     {
         // Test
@@ -242,14 +501,12 @@ public static class FileEx
                 result = true;
                 break;
             }
-            catch (FileNotFoundException e)
-                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (FileNotFoundException e) when (LogOptions.Logger.LogAndHandle(e))
             {
                 // File not found
                 break;
             }
-            catch (IOException e)
-                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
             {
                 // Retry
                 LogOptions.Logger.Information(
@@ -261,8 +518,7 @@ public static class FileEx
                 );
                 _ = Options.RetryWaitForCancel();
             }
-            catch (Exception e)
-                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
             {
                 break;
             }
@@ -271,7 +527,77 @@ public static class FileEx
         return result;
     }
 
-    // Recursively delete empty directories in the directory
+    /// <summary>
+    /// Renames or moves a folder asynchronously with retry logic in case of failure.
+    /// </summary>
+    /// <param name="originalName">The original folder path.</param>
+    /// <param name="newName">The new folder path.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>True if successful, false otherwise.</returns>
+    public static async Task<bool> RenameFolderAsync(
+        string originalName,
+        string newName,
+        CancellationToken cancellationToken = default
+    )
+    {
+        if (Options.TestNoModify)
+        {
+            return true;
+        }
+
+        bool result = false;
+        for (int retryCount = 0; retryCount < Options.RetryCount; retryCount++)
+        {
+            if (Options.Cancel.IsCancellationRequested || cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
+
+            try
+            {
+                if (Directory.Exists(newName))
+                {
+                    _ = await DeleteDirectoryAsync(newName, true, cancellationToken)
+                        .ConfigureAwait(false);
+                }
+
+                Directory.Move(originalName, newName);
+                result = true;
+                break;
+            }
+            catch (FileNotFoundException e) when (LogOptions.Logger.LogAndHandle(e))
+            {
+                // File not found
+                break;
+            }
+            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
+            {
+                // Retry
+                LogOptions.Logger.Information(
+                    "Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalName} to {NewName}",
+                    retryCount,
+                    Options.RetryCount,
+                    originalName,
+                    newName
+                );
+                await Task.Delay(Options.RetryWaitTime * 1000, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+            {
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Recursively deletes empty directories within a directory.
+    /// </summary>
+    /// <param name="directory">The directory to process.</param>
+    /// <param name="deleted">Reference to a counter that will be incremented for each deleted directory.</param>
+    /// <returns>True if successful, false otherwise.</returns>
     public static bool DeleteEmptyDirectories(string directory, ref int deleted)
     {
         // Find all directories in this directory, not all subdirectories, we will call recursively
@@ -306,7 +632,11 @@ public static class FileEx
         return true;
     }
 
-    // Recursively delete all the files and directories inside the directory
+    /// <summary>
+    /// Recursively deletes all files and directories inside a directory, but not the directory itself.
+    /// </summary>
+    /// <param name="directory">The directory to clean.</param>
+    /// <returns>True if successful, false otherwise.</returns>
     public static bool DeleteInsideDirectory(string directory)
     {
         // Skip if directory does not exist
@@ -346,7 +676,66 @@ public static class FileEx
         return true;
     }
 
-    // Try to open the file for read access
+    /// <summary>
+    /// Recursively deletes all files and directories inside a directory asynchronously, but not the directory itself.
+    /// </summary>
+    /// <param name="directory">The directory to clean.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>True if successful, false otherwise.</returns>
+    public static async Task<bool> DeleteInsideDirectoryAsync(
+        string directory,
+        CancellationToken cancellationToken = default
+    )
+    {
+        if (!Directory.Exists(directory))
+        {
+            return true;
+        }
+
+        DirectoryInfo parentInfo = new(directory);
+
+        // Delete all files in this directory
+        foreach (FileInfo fileInfo in parentInfo.GetFiles())
+        {
+            if (!await DeleteFileAsync(fileInfo.FullName, cancellationToken).ConfigureAwait(false))
+            {
+                return false;
+            }
+        }
+
+        // Find all directories in this directory, not all subdirectories, we will call recursively
+        foreach (
+            DirectoryInfo dirInfo in parentInfo.EnumerateDirectories(
+                "*",
+                SearchOption.TopDirectoryOnly
+            )
+        )
+        {
+            if (
+                !await DeleteInsideDirectoryAsync(dirInfo.FullName, cancellationToken)
+                    .ConfigureAwait(false)
+            )
+            {
+                return false;
+            }
+
+            if (
+                !await DeleteDirectoryAsync(dirInfo.FullName, cancellationToken)
+                    .ConfigureAwait(false)
+            )
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Checks if a file is readable.
+    /// </summary>
+    /// <param name="fileName">The file path to check.</param>
+    /// <returns>True if the file can be opened for reading, false otherwise.</returns>
     public static bool IsFileReadable(string fileName)
     {
         try
@@ -354,15 +743,18 @@ public static class FileEx
             FileInfo fileInfo = new(fileName);
             return IsFileReadable(fileInfo);
         }
-        catch (Exception e)
-            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
         {
             return false;
         }
     }
 
-    // Wait for the file to become readable
-    public static bool WaitFileReadAble(string fileName)
+    /// <summary>
+    /// Waits for a file to become readable with retry logic.
+    /// </summary>
+    /// <param name="fileName">The file path to wait for.</param>
+    /// <returns>True if the file became readable, false otherwise.</returns>
+    public static bool WaitFileReadable(string fileName)
     {
         bool result = false;
         for (int retryCount = 0; retryCount < Options.RetryCount; retryCount++)
@@ -382,12 +774,10 @@ public static class FileEx
                     FileAccess.Read,
                     FileShare.ReadWrite
                 );
-                stream.Close();
                 result = true;
                 break;
             }
-            catch (IOException e)
-                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
             {
                 // Retry
                 LogOptions.Logger.Information(
@@ -398,8 +788,7 @@ public static class FileEx
                 );
                 _ = Options.RetryWaitForCancel();
             }
-            catch (Exception e)
-                when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
             {
                 break;
             }
@@ -408,23 +797,77 @@ public static class FileEx
         return result;
     }
 
-    // Try to open the file for read access
+    /// <summary>
+    /// Waits for a file to become readable asynchronously with retry logic.
+    /// </summary>
+    /// <param name="fileName">The file path to wait for.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>True if the file became readable, false otherwise.</returns>
+    public static async Task<bool> WaitFileReadableAsync(
+        string fileName,
+        CancellationToken cancellationToken = default
+    )
+    {
+        bool result = false;
+        for (int retryCount = 0; retryCount < Options.RetryCount; retryCount++)
+        {
+            if (Options.Cancel.IsCancellationRequested || cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
+
+            // Try to access the file
+            try
+            {
+                FileInfo fileInfo = new(fileName);
+                await using FileStream stream = fileInfo.Open(
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.ReadWrite
+                );
+                result = true;
+                break;
+            }
+            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
+            {
+                // Retry
+                LogOptions.Logger.Information(
+                    "Waiting for file to become readable ({RetryCount} / {OptionsRetryCount}) : {Name}",
+                    retryCount,
+                    Options.RetryCount,
+                    fileName
+                );
+                await Task.Delay(Options.RetryWaitTime * 1000, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+            {
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Checks if a file is readable.
+    /// </summary>
+    /// <param name="fileInfo">The FileInfo object to check.</param>
+    /// <returns>True if the file can be opened for reading, false otherwise.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="fileInfo"/> is null.</exception>
     public static bool IsFileReadable(FileInfo fileInfo)
     {
         ArgumentNullException.ThrowIfNull(fileInfo);
 
         try
         {
-            // Try to open the file for read access
             using FileStream stream = fileInfo.Open(
                 FileMode.Open,
                 FileAccess.Read,
                 FileShare.ReadWrite
             );
-            stream.Close();
         }
-        catch (Exception e)
-            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
         {
             return false;
         }
@@ -432,23 +875,25 @@ public static class FileEx
         return true;
     }
 
-    // Try to open the file for write access
+    /// <summary>
+    /// Checks if a file is writeable.
+    /// </summary>
+    /// <param name="fileInfo">The FileInfo object to check.</param>
+    /// <returns>True if the file can be opened for writing, false otherwise.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="fileInfo"/> is null.</exception>
     public static bool IsFileWriteable(FileInfo fileInfo)
     {
         ArgumentNullException.ThrowIfNull(fileInfo);
 
         try
         {
-            // Try to open the file for write access
             using FileStream stream = fileInfo.Open(
                 FileMode.Open,
                 FileAccess.Write,
                 FileShare.ReadWrite
             );
-            stream.Close();
         }
-        catch (Exception e)
-            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
         {
             return false;
         }
@@ -456,23 +901,25 @@ public static class FileEx
         return true;
     }
 
-    // Try to open the file for read and write access
+    /// <summary>
+    /// Checks if a file is both readable and writeable.
+    /// </summary>
+    /// <param name="fileInfo">The FileInfo object to check.</param>
+    /// <returns>True if the file can be opened for reading and writing, false otherwise.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="fileInfo"/> is null.</exception>
     public static bool IsFileReadWriteable(FileInfo fileInfo)
     {
         ArgumentNullException.ThrowIfNull(fileInfo);
 
         try
         {
-            // Try to open the file for read-write access
             using FileStream stream = fileInfo.Open(
                 FileMode.Open,
                 FileAccess.ReadWrite,
                 FileShare.ReadWrite
             );
-            stream.Close();
         }
-        catch (Exception e)
-            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
         {
             return false;
         }
@@ -480,7 +927,11 @@ public static class FileEx
         return true;
     }
 
-    // Test if all files in the directory are readable
+    /// <summary>
+    /// Tests if all files in a directory are readable.
+    /// </summary>
+    /// <param name="directory">The directory to check.</param>
+    /// <returns>True if all files are readable, false otherwise.</returns>
     public static bool AreFilesInDirectoryReadable(string directory)
     {
         try
@@ -489,14 +940,17 @@ public static class FileEx
             DirectoryInfo dirInfo = new(directory);
             return dirInfo.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly).All(IsFileReadable);
         }
-        catch (Exception e)
-            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
         {
             return false;
         }
     }
 
-    // Create directory if it does not already exists
+    /// <summary>
+    /// Creates a directory if it does not already exist.
+    /// </summary>
+    /// <param name="directory">The directory path to create.</param>
+    /// <returns>True if successful, false otherwise.</returns>
     public static bool CreateDirectory(string directory)
     {
         try
@@ -506,8 +960,7 @@ public static class FileEx
                 _ = Directory.CreateDirectory(directory);
             }
         }
-        catch (Exception e)
-            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
         {
             return false;
         }
@@ -515,7 +968,14 @@ public static class FileEx
         return true;
     }
 
-    // Combine paths and convert relative to absolute
+    /// <summary>
+    /// Combines three paths and converts the result to an absolute path.
+    /// </summary>
+    /// <param name="path1">The first path component.</param>
+    /// <param name="path2">The second path component.</param>
+    /// <param name="path3">The third path component.</param>
+    /// <returns>The combined absolute path.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when any parameter is null.</exception>
     public static string CombinePath(string path1, string path2, string path3)
     {
         ArgumentNullException.ThrowIfNull(path1);
@@ -546,6 +1006,13 @@ public static class FileEx
         return path;
     }
 
+    /// <summary>
+    /// Combines two paths and converts the result to an absolute path.
+    /// </summary>
+    /// <param name="path1">The first path component.</param>
+    /// <param name="path2">The second path component.</param>
+    /// <returns>The combined absolute path.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when any parameter is null.</exception>
     public static string CombinePath(string path1, string path2)
     {
         ArgumentNullException.ThrowIfNull(path1);
@@ -554,8 +1021,14 @@ public static class FileEx
         return CombinePath(path1, path2, "");
     }
 
-    // Enumerate all files and directories in the list of source directories
-    // The source directories will be added to the directory list
+    /// <summary>
+    /// Enumerates all files and directories in the specified source directories.
+    /// </summary>
+    /// <param name="sourceList">The list of source directories to enumerate.</param>
+    /// <param name="fileList">Output list of all files found.</param>
+    /// <param name="directoryList">Output list of all directories found (includes source directories).</param>
+    /// <returns>True if successful, false otherwise.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="sourceList"/> is null.</exception>
     public static bool EnumerateDirectories(
         List<string> sourceList,
         out List<FileInfo> fileList,
@@ -589,8 +1062,7 @@ public static class FileEx
                 fileList.AddRange(dirInfo.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly));
             }
         }
-        catch (Exception e)
-            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
         {
             return false;
         }
@@ -598,8 +1070,13 @@ public static class FileEx
         return true;
     }
 
-    // Enumerate all files and directories in the directory
-    // This directory  will be added to the directory list
+    /// <summary>
+    /// Enumerates all files and directories in the specified directory.
+    /// </summary>
+    /// <param name="directory">The directory to enumerate.</param>
+    /// <param name="fileList">Output list of all files found.</param>
+    /// <param name="directoryList">Output list of all directories found (includes the specified directory).</param>
+    /// <returns>True if successful, false otherwise.</returns>
     public static bool EnumerateDirectory(
         string directory,
         out List<FileInfo> fileList,
@@ -610,8 +1087,16 @@ public static class FileEx
         return EnumerateDirectories(sourceList, out fileList, out directoryList);
     }
 
-    // Reset permissions on the directory
-    // Grant everyone full control
+    /// <summary>
+    /// Resets directory permissions to grant everyone full control (Windows only).
+    /// </summary>
+    /// <param name="directory">The directory to reset permissions on.</param>
+    /// <returns>True if successful, false otherwise.</returns>
+    /// <remarks>
+    /// ⚠️ WARNING: This grants Everyone full control to the directory.
+    /// Only use this for temporary directories or when you understand the security implications.
+    /// This method only executes on Windows platforms.
+    /// </remarks>
     public static bool ResetDirectoryPermissions(string directory)
     {
         // Test
@@ -640,8 +1125,7 @@ public static class FileEx
             directorySecurity.AddAccessRule(accessRule);
             directoryInfo.SetAccessControl(directorySecurity);
         }
-        catch (Exception e)
-            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
         {
             return false;
         }
@@ -649,17 +1133,33 @@ public static class FileEx
         return true;
     }
 
-    // Prefix the filename with a timestamp
+    /// <summary>
+    /// Prefixes a file name with the current UTC timestamp.
+    /// </summary>
+    /// <param name="filePath">The original file path.</param>
+    /// <returns>The file path with timestamp prefix.</returns>
     public static string TimeStampFileName(string filePath) =>
         TimeStampFileName(filePath, DateTime.UtcNow);
 
+    /// <summary>
+    /// Prefixes a file name with a specified timestamp.
+    /// </summary>
+    /// <param name="filePath">The original file path.</param>
+    /// <param name="timeStamp">The timestamp to use for prefixing.</param>
+    /// <returns>The file path with timestamp prefix.</returns>
     public static string TimeStampFileName(string filePath, DateTime timeStamp)
     {
-        string directory = Path.GetDirectoryName(filePath);
+        string? directory = Path.GetDirectoryName(filePath);
         string fileName = $"{timeStamp:yyyyMMddTHHmmss}_{Path.GetFileName(filePath)}";
-        return Path.Combine(directory, fileName);
+        return Path.Combine(directory!, fileName);
     }
 
+    /// <summary>
+    /// Creates a file filled with random data.
+    /// </summary>
+    /// <param name="name">The file path to create.</param>
+    /// <param name="size">The size of the file in bytes.</param>
+    /// <returns>True if successful, false otherwise.</returns>
     public static bool CreateRandomFilledFile(string name, long size)
     {
         try
@@ -697,8 +1197,7 @@ public static class FileEx
             // Close
             stream.Close();
         }
-        catch (Exception e)
-            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
         {
             return false;
         }
@@ -706,6 +1205,60 @@ public static class FileEx
         return true;
     }
 
+    /// <summary>
+    /// Creates a file filled with random data asynchronously.
+    /// </summary>
+    /// <param name="name">The file path to create.</param>
+    /// <param name="size">The size of the file in bytes.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>True if successful, false otherwise.</returns>
+    public static async Task<bool> CreateRandomFilledFileAsync(
+        string name,
+        long size,
+        CancellationToken cancellationToken = default
+    )
+    {
+        try
+        {
+            await using FileStream stream = File.Open(
+                name,
+                FileMode.Create,
+                FileAccess.ReadWrite,
+                FileShare.ReadWrite
+            );
+
+            stream.SetLength(size);
+            _ = stream.Seek(0, SeekOrigin.Begin);
+
+            const int bufferSize = 2 * Format.MiB;
+            byte[] buffer = new byte[bufferSize];
+            Random rand = new();
+
+            long remaining = size;
+            while (remaining > 0)
+            {
+                rand.NextBytes(buffer);
+                long writeSize = Math.Min(remaining, Convert.ToInt64(buffer.Length));
+                await stream
+                    .WriteAsync(buffer.AsMemory(0, Convert.ToInt32(writeSize)), cancellationToken)
+                    .ConfigureAwait(false);
+                remaining -= writeSize;
+            }
+        }
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Creates a sparse file of the specified size.
+    /// </summary>
+    /// <param name="name">The file path to create.</param>
+    /// <param name="size">The size of the file in bytes.</param>
+    /// <returns>True if successful, false otherwise.</returns>
     public static bool CreateSparseFile(string name, long size)
     {
         try
@@ -720,12 +1273,35 @@ public static class FileEx
 
             // Set length
             stream.SetLength(size);
-
-            // Close
-            stream.Close();
         }
-        catch (Exception e)
-            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Creates a sparse file of the specified size asynchronously.
+    /// </summary>
+    /// <param name="name">The file path to create.</param>
+    /// <param name="size">The size of the file in bytes.</param>
+    /// <returns>True if successful, false otherwise.</returns>
+    public static async Task<bool> CreateSparseFileAsync(string name, long size)
+    {
+        try
+        {
+            await using FileStream stream = File.Open(
+                name,
+                FileMode.OpenOrCreate,
+                FileAccess.ReadWrite,
+                FileShare.ReadWrite
+            );
+
+            stream.SetLength(size);
+        }
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
         {
             return false;
         }
