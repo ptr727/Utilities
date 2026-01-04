@@ -77,7 +77,7 @@ public class DownloadAsyncTests(UtilitiesTests fixture) : IClassFixture<Utilitie
         using CancellationTokenSource cts = new();
         cts.CancelAfter(TimeSpan.FromMilliseconds(100)); // Cancel after 100ms
 
-        (bool Success, string Value) = await Download.DownloadStringAsync(uri, cts.Token);
+        (bool Success, string _) = await Download.DownloadStringAsync(uri, cts.Token);
 
         // Should either throw cancellation or return false due to cancellation
         Assert.False(Success);
