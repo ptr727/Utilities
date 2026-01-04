@@ -16,6 +16,12 @@ public static class Download
     private static readonly Lazy<HttpClient> s_httpClient = new(CreateHttpClient);
 
     /// <summary>
+    /// Gets or sets the HTTP client timeout in seconds. Default is 180 seconds.
+    /// Changes to this property only take effect before the first HTTP request is made.
+    /// </summary>
+    public static int TimeoutSeconds { get; set; } = 180;
+
+    /// <summary>
     /// Gets content information (size and last modified time) from a URI.
     /// </summary>
     /// <param name="uri">The URI to get content information from.</param>
@@ -224,7 +230,7 @@ public static class Download
 
     private static HttpClient CreateHttpClient()
     {
-        HttpClient client = new() { Timeout = TimeSpan.FromSeconds(180) };
+        HttpClient client = new() { Timeout = TimeSpan.FromSeconds(TimeoutSeconds) };
 
         Assembly assembly = Assembly.GetExecutingAssembly();
         string productName = assembly.GetName().Name ?? "InsaneGenius.Utilities";
