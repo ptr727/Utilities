@@ -58,14 +58,14 @@ public static class Format
     /// </remarks>
     public static string BytesToKibi(long value, string units = "B")
     {
-        if (value < 0)
+        switch (value)
         {
-            return "-" + BytesToKibi(Math.Abs(value), units);
-        }
-
-        if (value == 0)
-        {
-            return $"0{units}";
+            case < 0:
+                return "-" + BytesToKibi(Math.Abs(value), units);
+            case 0:
+                return $"0{units}";
+            default:
+                break;
         }
 
         int magnitude = Convert.ToInt32(Math.Floor(Math.Log(value, KiB)));
