@@ -1,0 +1,25 @@
+<Solution>
+    <Folder Name="/Solution Items/">
+        <File Path=".editorconfig" />
+        <File Path=".gitattributes" />
+        <File Path=".github/dependabot.yml" />
+        <File Path=".gitignore" />
+        <File Path="LICENSE" />
+        <File Path="README.md" />
+        <File Path="version.json" />
+    </Folder>
+    <Folder Name="/Solution Items/Data/">
+        <File Path="Data/ISO-639-2_utf-8.txt" />
+        <File Path="Data/iso-639-3.tab" />
+        <File Path="Data/language-subtag-registry" />
+    </Folder>
+    <Folder Name="/Solution Items/GitHub Actions/">
+        <File Path=".github/dependabot.yml" />
+        <File Path=".github/workflows/BuildPublishPipeline.yml" />
+    </Folder>
+    <Project Path="Sandbox/Sandbox.csproj" />
+    <Project Path="Utilities/Utilities.csproj" />
+    <Project Path="UtilitiesTests/UtilitiesTests.csproj">
+        <BuildDependency Project="Utilities/Utilities.csproj" />
+    </Project>
+</Solution>
