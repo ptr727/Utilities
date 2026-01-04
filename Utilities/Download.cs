@@ -3,30 +3,50 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace InsaneGenius.Utilities;
 
+/// <summary>
+/// Provides HTTP download utilities for files and strings.
+/// </summary>
 public static class Download
 {
+    private static readonly Lazy<HttpClient> s_httpClient = new(CreateHttpClient);
+
+    /// <summary>
+    /// Gets or sets the HTTP client timeout in seconds. Default is 180 seconds.
+    /// Changes to this property only take effect before the first HTTP request is made.
+    /// </summary>
+    public static int TimeoutSeconds { get; set; } = 180;
+
+    /// <summary>
+    /// Gets content information (size and last modified time) from a URI.
+    /// </summary>
+    /// <param name="uri">The URI to get content information from.</param>
+    /// <param name="size">The content size in bytes.</param>
+    /// <param name="modifiedTime">The last modified time.</param>
+    /// <returns>True if successful, false otherwise.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="uri"/> is null.</exception>
     public static bool GetContentInfo(Uri uri, out long size, out DateTime modifiedTime)
     {
+        ArgumentNullException.ThrowIfNull(uri);
+
         size = 0;
         modifiedTime = DateTime.MinValue;
         try
         {
-            // Send GET to URL
             using HttpResponseMessage httpResponse = GetHttpClient()
-                .GetAsync(uri)
+                .GetAsync(uri, HttpCompletionOption.ResponseHeadersRead)
                 .GetAwaiter()
                 .GetResult()
                 .EnsureSuccessStatusCode();
 
-            // Get response
-            size = (long)httpResponse.Content.Headers.ContentLength;
-            modifiedTime = (DateTime)httpResponse.Content.Headers.LastModified?.DateTime;
+            size = httpResponse.Content.Headers.ContentLength ?? 0;
+            modifiedTime = httpResponse.Content.Headers.LastModified?.DateTime ?? DateTime.MinValue;
         }
-        catch (Exception e)
-            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
         {
             return false;
         }
@@ -34,21 +54,57 @@ public static class Download
         return true;
     }
 
-    public static bool DownloadFile(Uri uri, string fileName)
+    /// <summary>
+    /// Gets content information (size and last modified time) from a URI asynchronously.
+    /// </summary>
+    /// <param name="uri">The URI to get content information from.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A tuple containing success status, size, and modified time.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="uri"/> is null.</exception>
+    public static async Task<(bool Success, long Size, DateTime ModifiedTime)> GetContentInfoAsync(
+        Uri uri,
+        CancellationToken cancellationToken = default
+    )
     {
+        ArgumentNullException.ThrowIfNull(uri);
+
         try
         {
-            // Get HTTP stream
-            Stream httpStream = GetHttpClient().GetStreamAsync(uri).GetAwaiter().GetResult();
+            using HttpResponseMessage httpResponse = await GetHttpClient()
+                .GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+                .ConfigureAwait(false);
+            _ = httpResponse.EnsureSuccessStatusCode();
 
-            // Get file stream
+            long size = httpResponse.Content.Headers.ContentLength ?? 0;
+            DateTime modifiedTime =
+                httpResponse.Content.Headers.LastModified?.DateTime ?? DateTime.MinValue;
+            return (true, size, modifiedTime);
+        }
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        {
+            return (false, 0, DateTime.MinValue);
+        }
+    }
+
+    /// <summary>
+    /// Downloads a file from a URI to a local file.
+    /// </summary>
+    /// <param name="uri">The URI to download from.</param>
+    /// <param name="fileName">The local file path to save to.</param>
+    /// <returns>True if successful, false otherwise.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="uri"/> or <paramref name="fileName"/> is null.</exception>
+    public static bool DownloadFile(Uri uri, string fileName)
+    {
+        ArgumentNullException.ThrowIfNull(uri);
+        ArgumentNullException.ThrowIfNull(fileName);
+
+        try
+        {
+            using Stream httpStream = GetHttpClient().GetStreamAsync(uri).GetAwaiter().GetResult();
             using FileStream fileStream = File.OpenWrite(fileName);
-
-            // Write HTTP to file
             httpStream.CopyTo(fileStream);
         }
-        catch (Exception e)
-            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
         {
             return false;
         }
@@ -56,15 +112,56 @@ public static class Download
         return true;
     }
 
+    /// <summary>
+    /// Downloads a file from a URI to a local file asynchronously.
+    /// </summary>
+    /// <param name="uri">The URI to download from.</param>
+    /// <param name="fileName">The local file path to save to.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>True if successful, false otherwise.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="uri"/> or <paramref name="fileName"/> is null.</exception>
+    public static async Task<bool> DownloadFileAsync(
+        Uri uri,
+        string fileName,
+        CancellationToken cancellationToken = default
+    )
+    {
+        ArgumentNullException.ThrowIfNull(uri);
+        ArgumentNullException.ThrowIfNull(fileName);
+
+        try
+        {
+            await using Stream httpStream = await GetHttpClient()
+                .GetStreamAsync(uri, cancellationToken)
+                .ConfigureAwait(false);
+            await using FileStream fileStream = File.OpenWrite(fileName);
+            await httpStream.CopyToAsync(fileStream, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Downloads a string from a URI.
+    /// </summary>
+    /// <param name="uri">The URI to download from.</param>
+    /// <param name="value">The downloaded string content.</param>
+    /// <returns>True if successful, false otherwise.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="uri"/> is null.</exception>
     public static bool DownloadString(Uri uri, out string value)
     {
-        value = null;
+        ArgumentNullException.ThrowIfNull(uri);
+
+        value = string.Empty;
         try
         {
             value = GetHttpClient().GetStringAsync(uri).GetAwaiter().GetResult();
         }
-        catch (Exception e)
-            when (LogOptions.Logger.LogAndHandle(e, MethodBase.GetCurrentMethod()?.Name))
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
         {
             return false;
         }
@@ -72,34 +169,51 @@ public static class Download
         return true;
     }
 
-    public static HttpClient GetHttpClient()
+    /// <summary>
+    /// Downloads a string from a URI asynchronously.
+    /// </summary>
+    /// <param name="uri">The URI to download from.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A tuple containing success status and the downloaded string.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="uri"/> is null.</exception>
+    public static async Task<(bool Success, string Value)> DownloadStringAsync(
+        Uri uri,
+        CancellationToken cancellationToken = default
+    )
     {
-        // TODO: How does static init and synchronization work?
-        if (!s_httpInit)
+        ArgumentNullException.ThrowIfNull(uri);
+
+        try
         {
-            // Default timeout
-            s_httpClient.Timeout = TimeSpan.FromSeconds(30);
-
-            // Some services only work if a user agent is set, use the assembly info
-            // TODO: Set only once, not sure if Add() will keep adding the same value multiple times?
-            s_httpClient.DefaultRequestHeaders.UserAgent.Add(
-                new ProductInfoHeaderValue(
-                    Assembly.GetExecutingAssembly().GetName().Name,
-                    Assembly.GetExecutingAssembly().GetName().Version.ToString()
-                )
-            );
-
-            s_httpInit = true;
+            string value = await GetHttpClient()
+                .GetStringAsync(uri, cancellationToken)
+                .ConfigureAwait(false);
+            return (true, value);
         }
-
-        // Reuse the HTTP client per best practices
-        // Not able to "easily" use IHttpClientFactory
-        return s_httpClient;
+        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        {
+            return (false, string.Empty);
+        }
     }
 
-    public static Uri CreateUri(string url, string userName, string password)
+    /// <summary>
+    /// Gets the shared HttpClient instance.
+    /// </summary>
+    /// <returns>The HttpClient instance.</returns>
+    public static HttpClient GetHttpClient() => s_httpClient.Value;
+
+    /// <summary>
+    /// Creates a URI with optional username and password credentials.
+    /// </summary>
+    /// <param name="url">The base URL.</param>
+    /// <param name="userName">The username (optional).</param>
+    /// <param name="password">The password (optional).</param>
+    /// <returns>The constructed URI.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="url"/> is null.</exception>
+    public static Uri CreateUri(string url, string? userName = null, string? password = null)
     {
-        // Create Uri
+        ArgumentNullException.ThrowIfNull(url);
+
         UriBuilder uriBuilder = new(url);
         if (!string.IsNullOrEmpty(userName))
         {
@@ -114,6 +228,18 @@ public static class Download
         return uriBuilder.Uri;
     }
 
-    private static bool s_httpInit;
-    private static readonly HttpClient s_httpClient = new();
+    private static HttpClient CreateHttpClient()
+    {
+        HttpClient client = new() { Timeout = TimeSpan.FromSeconds(TimeoutSeconds) };
+
+        Assembly assembly = Assembly.GetExecutingAssembly();
+        string productName = assembly.GetName().Name ?? "InsaneGenius.Utilities";
+        string productVersion = assembly.GetName().Version?.ToString() ?? "1.0.0";
+
+        client.DefaultRequestHeaders.UserAgent.Add(
+            new ProductInfoHeaderValue(productName, productVersion)
+        );
+
+        return client;
+    }
 }

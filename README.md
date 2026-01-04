@@ -1,6 +1,6 @@
 # Utilities
 
-Generally useful and not so useful C# .NET utility classes.
+Some useful and not so useful C# .NET utility classes.
 
 ## Build Status
 
@@ -13,9 +13,14 @@ Code and Pipeline is on [GitHub](https://github.com/ptr727/Utilities)\
 Packages published on [NuGet](https://www.nuget.org/packages/InsaneGenius.Utilities/)\
 ![NuGet](https://img.shields.io/nuget/v/InsaneGenius.Utilities?logo=nuget)
 
-## Notes
+## Version History
 
-- Language tags moved to a dedicated [repo](https://github.com/ptr727/LanguageTags).
+- v3.4:
+  - .NET 10 and AOT support.
+  - Removed `ProcessEx` process wrapper classes, use [CliWrap](https://github.com/Tyrrrz/CliWrap) instead.
+  - Code cleanup with help from Copilot.
+- v3.3:
+  - Language tags moved to a dedicated [repo](https://github.com/ptr727/LanguageTags).
 
 ## License
 
