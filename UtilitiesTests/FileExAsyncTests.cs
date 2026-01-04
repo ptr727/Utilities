@@ -34,7 +34,7 @@ public class FileExAsyncTests(UtilitiesTests fixture) : IClassFixture<UtilitiesT
     [Fact]
     public async Task DeleteDirectoryAsync_WithExistingDirectory_ShouldReturnTrue()
     {
-        string tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string tempDir = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}");
         _ = Directory.CreateDirectory(tempDir);
 
         try
@@ -56,7 +56,7 @@ public class FileExAsyncTests(UtilitiesTests fixture) : IClassFixture<UtilitiesT
     [Fact]
     public async Task DeleteDirectoryAsync_Recursive_ShouldDeleteAllContents()
     {
-        string tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string tempDir = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}");
         _ = Directory.CreateDirectory(tempDir);
         string subDir = Path.Combine(tempDir, "subdir");
         _ = Directory.CreateDirectory(subDir);
@@ -83,7 +83,7 @@ public class FileExAsyncTests(UtilitiesTests fixture) : IClassFixture<UtilitiesT
     public async Task RenameFileAsync_WithValidPaths_ShouldRenameFile()
     {
         string tempFile = Path.GetTempFileName();
-        string newPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".txt");
+        string newPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.txt");
 
         try
         {
@@ -109,9 +109,9 @@ public class FileExAsyncTests(UtilitiesTests fixture) : IClassFixture<UtilitiesT
     [Fact]
     public async Task RenameFolderAsync_WithValidPaths_ShouldRenameFolder()
     {
-        string tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string tempDir = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}");
         _ = Directory.CreateDirectory(tempDir);
-        string newPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string newPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}");
 
         try
         {
@@ -159,7 +159,7 @@ public class FileExAsyncTests(UtilitiesTests fixture) : IClassFixture<UtilitiesT
     [Fact]
     public async Task CreateRandomFilledFileAsync_ShouldCreateFile()
     {
-        string tempFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".dat");
+        string tempFile = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.dat");
         long fileSize = 1024 * 1024; // 1MB
 
         try
@@ -182,7 +182,7 @@ public class FileExAsyncTests(UtilitiesTests fixture) : IClassFixture<UtilitiesT
     [Fact]
     public async Task CreateSparseFileAsync_ShouldCreateFile()
     {
-        string tempFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".dat");
+        string tempFile = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.dat");
         long fileSize = 1024 * 1024; // 1MB
 
         try
@@ -229,7 +229,7 @@ public class FileExAsyncTests(UtilitiesTests fixture) : IClassFixture<UtilitiesT
     [Fact]
     public async Task DeleteInsideDirectoryAsync_ShouldDeleteContentsOnly()
     {
-        string tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string tempDir = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}");
         _ = Directory.CreateDirectory(tempDir);
         string testFile = Path.Combine(tempDir, "test.txt");
         await File.WriteAllTextAsync(testFile, "test content");
