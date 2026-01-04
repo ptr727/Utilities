@@ -1,7 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
+    <PublishAot>true</PublishAot>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <VerifyReferenceAotCompatibility>true</VerifyReferenceAotCompatibility>
+    <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Authors>Pieter Viljoen</Authors>
     <Company>Pieter Viljoen</Company>
     <Copyright>Pieter Viljoen</Copyright>
@@ -28,18 +35,17 @@
   <ItemGroup>
     <None Include="..\README.md" Pack="true" PackagePath="" />
   </ItemGroup>
-  <ItemGroup>
-    <None Update="Iso6392Gen.tt">
-      <Generator></Generator>
-    </None>
-    <None Update="Iso6393Gen.tt">
-      <Generator></Generator>
-    </None>
-    <None Update="Rfc5646Gen.tt">
-      <Generator></Generator>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
-  </ItemGroup>
+  <Target Name="Husky" BeforeTargets="Restore;CollectPackageReferences" Condition="'$(HUSKY)' != 0">
+    <Exec
+      Command="dotnet tool restore"
+      StandardOutputImportance="Low"
+      StandardErrorImportance="High"
+    />
+    <Exec
+      Command="dotnet husky install"
+      StandardOutputImportance="Low"
+      StandardErrorImportance="High"
+      WorkingDirectory=".."
+    />
+  </Target>
 </Project>
