@@ -28,7 +28,6 @@ public static class StringCompression
     {
         ArgumentNullException.ThrowIfNull(uncompressedString);
 
-        byte[] compressedBytes;
         using MemoryStream uncompressedStream = new(Encoding.UTF8.GetBytes(uncompressedString));
         using MemoryStream compressedStream = new();
         using (
@@ -41,7 +40,7 @@ public static class StringCompression
         {
             uncompressedStream.CopyTo(compressorStream);
         }
-        compressedBytes = compressedStream.ToArray();
+        byte[] compressedBytes = compressedStream.ToArray();
 
         return Convert.ToBase64String(compressedBytes);
     }
@@ -62,7 +61,6 @@ public static class StringCompression
     {
         ArgumentNullException.ThrowIfNull(uncompressedString);
 
-        byte[] compressedBytes;
         using MemoryStream uncompressedStream = new(Encoding.UTF8.GetBytes(uncompressedString));
         using MemoryStream compressedStream = new();
         await using (
@@ -77,7 +75,7 @@ public static class StringCompression
                 .CopyToAsync(compressorStream, cancellationToken)
                 .ConfigureAwait(false);
         }
-        compressedBytes = compressedStream.ToArray();
+        byte[] compressedBytes = compressedStream.ToArray();
 
         return Convert.ToBase64String(compressedBytes);
     }
@@ -94,14 +92,13 @@ public static class StringCompression
     {
         ArgumentNullException.ThrowIfNull(compressedString);
 
-        byte[] decompressedBytes;
         using MemoryStream compressedStream = new(Convert.FromBase64String(compressedString));
         using MemoryStream decompressedStream = new();
         using (DeflateStream decompressorStream = new(compressedStream, CompressionMode.Decompress))
         {
             decompressorStream.CopyTo(decompressedStream);
         }
-        decompressedBytes = decompressedStream.ToArray();
+        byte[] decompressedBytes = decompressedStream.ToArray();
 
         return Encoding.UTF8.GetString(decompressedBytes);
     }
@@ -122,7 +119,6 @@ public static class StringCompression
     {
         ArgumentNullException.ThrowIfNull(compressedString);
 
-        byte[] decompressedBytes;
         using MemoryStream compressedStream = new(Convert.FromBase64String(compressedString));
         using MemoryStream decompressedStream = new();
         await using (
@@ -133,7 +129,7 @@ public static class StringCompression
                 .CopyToAsync(decompressedStream, cancellationToken)
                 .ConfigureAwait(false);
         }
-        decompressedBytes = decompressedStream.ToArray();
+        byte[] decompressedBytes = decompressedStream.ToArray();
 
         return Encoding.UTF8.GetString(decompressedBytes);
     }
