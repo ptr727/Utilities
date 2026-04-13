@@ -95,7 +95,7 @@ jobs:
       # https://github.com/marketplace/actions/gh-release
       - name: Create GitHub release
         if: ${{ github.event_name != 'pull_request' }}
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           generate_release_notes: true
           tag_name: ${{ steps.nbgv.outputs.SemVer2 }}
