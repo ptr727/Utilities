@@ -23,7 +23,7 @@ jobs:
         id: date
         run: |
           set -euo pipefail
-          echo "date=$(date)" >> $GITHUB_OUTPUT
+          echo "date=$(date)" >> "$GITHUB_OUTPUT"
 
       - name: Build BYOB date badge step
         if: ${{ inputs.branch == 'main' }}
