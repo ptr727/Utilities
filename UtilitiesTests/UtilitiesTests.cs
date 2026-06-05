@@ -1,5 +1,3 @@
-using System;
-
 namespace InsaneGenius.Utilities.Tests;
 
 public class UtilitiesTests : IDisposable
