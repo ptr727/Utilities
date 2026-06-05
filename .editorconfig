@@ -38,6 +38,11 @@ indent_size = 2
 [*.sh]
 end_of_line = lf
 
+# Husky git hooks are POSIX shell scripts (extensionless) and must be LF so the
+# shebang execs on Linux/WSL; otherwise [*] = crlf would break them.
+[.husky/pre-commit]
+end_of_line = lf
+
 # Windows scripts
 [*.{cmd,bat,ps1}]
 end_of_line = crlf
