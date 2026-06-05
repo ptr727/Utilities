@@ -6,7 +6,7 @@ Some useful and not so useful C# .NET utility classes.
 
 Code and Pipeline is on [GitHub](https://github.com/ptr727/Utilities)\
 ![GitHub Last Commit](https://img.shields.io/github/last-commit/ptr727/Utilities?logo=github)\
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ptr727/Utilities/BuildPublishPipeline.yml?logo=github)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ptr727/Utilities/publish-release.yml?logo=github)
 
 ## NuGet Package
 
