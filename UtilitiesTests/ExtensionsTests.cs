@@ -1,7 +1,4 @@
-using System;
 using System.IO.Compression;
-using System.Threading;
-using System.Threading.Tasks;
 using Serilog;
 using Serilog.Core;
 using Xunit;
@@ -91,7 +88,7 @@ public class ExtensionsTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTe
     {
         string? nullString = null;
 
-        _ = Assert.Throws<ArgumentNullException>(() => nullString!.Compress());
+        _ = Assert.Throws<ArgumentNullException>(() => nullString.Compress());
     }
 
     #endregion
@@ -204,7 +201,7 @@ public class ExtensionsTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTe
         string? nullString = null;
 
         _ = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
-            await nullString!.CompressAsync()
+            await nullString.CompressAsync()
         );
     }
 
@@ -214,7 +211,7 @@ public class ExtensionsTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTe
         string? nullString = null;
 
         _ = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
-            await nullString!.DecompressAsync()
+            await nullString.DecompressAsync()
         );
     }
 
