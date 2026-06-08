@@ -43,7 +43,7 @@ dotnet format --verify-no-changes
   // ✅ CORRECT
   string text = "hello";
   List<int> numbers = [];
-  
+
   // ❌ WRONG
   var text = "hello";
   var numbers = new List<int>();
