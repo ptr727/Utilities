@@ -54,6 +54,50 @@ The repo uses a **two-phase model by default**: PRs build fast, publishing is ba
 - Don't add `Co-Authored-By:` lines unless the developer explicitly asks.
 - Use US English spelling.
 
+## PR Review Etiquette
+
+The repo runs a review loop on every PR: local agent iteration plus remote automated review (GitHub Copilot is the configured reviewer). Treat this as a contract regardless of which local agent authored the changes.
+
+### Expected Review Loop
+
+1. Push changes to the PR branch.
+2. Re-request a review for the **current head SHA**. Auto-trigger is unreliable, so request it explicitly via the `requestReviews` GraphQL mutation (now reliable end-to-end - see the runbook); the UI is only a fallback.
+3. Wait for review activity on that head.
+4. Triage findings.
+5. Apply fixes or write a rationale for declines.
+6. Reply to each thread and resolve what was addressed.
+7. Re-run the loop after every fix push until no actionable findings remain.
+
+`mergeStateStatus: CLEAN` only checks required statuses; it does not block on bot review comments. Drive the loop to green - review confirmed on the latest head SHA and every actionable finding closed - and then **wait for the maintainer's explicit permission to merge**. The agent does not merge on its own (consistent with "default to staging"; merging is maintainer-authorized).
+
+For provider-specific mechanics (how to request review, query review state, post replies, resolve threads), see the **GitHub Copilot Review Runbook** in [.github/copilot-instructions.md](./.github/copilot-instructions.md). This file owns the contract; that file owns the mechanics.
+
+### Triaging Review Comments
+
+For each comment, classify before responding:
+
+- **Bug** - wrong behavior, missing test coverage, or a real divergence between code and docs. Fix it. Reply with the fixing commit SHA when done.
+- **Style/convention** - the comment cites a rule from this file or a language-specific style guide. Two cases:
+  - The cited rule matches what the existing codebase already does -> fix the offending code.
+  - The cited rule contradicts what's in the tree, or industry norm -> **update the rule instead of the code**. The rule is wrong, not the code. Bouncing the same code across rounds is the symptom of a wrong rule. Heuristic: three rounds on the same style category means the rule needs adjusting and the user should authorize the rule change.
+- **Architectural opinion** - the comment proposes a different design ("constrain this to disabled-by-default", "move it elsewhere", "add a runtime guardrail"). This is judgement, not a bug. Surface it to the user with a recommendation; don't apply unilaterally.
+
+### Responding and Resolution Expectations
+
+Reply inline with either the fixing commit SHA (for accepted issues) or a concise rationale (for declines). Resolve review threads when addressed or intentionally declined with rationale. Issue-level comments (those at `repos/.../issues/<N>/comments` rather than tied to a specific line) have no resolution action - acknowledge with a reply if needed and move on.
+
+After the final push on a PR, sweep older threads from earlier rounds whose code paths no longer exist; otherwise stale unresolved markers remain in the review UI.
+
+### Escalating to the User
+
+Bring the user in when:
+
+- **Genuine design trade-off** surfaces (fail-open vs fail-closed, narrow vs broad refactor scope, "should we add a guardrail or trust the docstring"). Triage, recommend, ask.
+- **Repeated friction** across rounds without convergence - that's the rule-needs-updating signal. Stop, summarize the pattern, and let the user authorize the rule change.
+- **Architectural redesign** is requested rather than a bug fix. Surface with a recommendation; never apply unilaterally.
+
+Anti-pattern: don't keep flipping the code on the same style point. Flip the rule once and stick to the rule.
+
 ## Maintainer Setup (GitHub)
 
 - **Secrets**: `NUGET_API_KEY` (NuGet.org push); `CODEGEN_APP_CLIENT_ID` + `CODEGEN_APP_PRIVATE_KEY` for the merge-bot's GitHub App token — add these to **both** the Actions and Dependabot secret stores.
