@@ -139,6 +139,10 @@ Use: `dotnet test`
 
 ## Commit Guidelines
 
+### Versioning
+
+`develop` leads `main` by a minor. After a `develop -> main` release lands and main's publish completes, bump the minor in [version.json](../version.json) on `develop` via an isolated `bump-version-X.Y` PR, so develop's NBGV prereleases sort above main's last stable. A `develop -> main` promotion that carries only maintenance (dependency bumps, CI/doc fixes, template re-syncs) holds main's version instead — `git checkout main -- version.json` on the promotion branch. See [AGENTS.md "Release Model"](../AGENTS.md#release-model).
+
 ### Pre-Commit Process (Automated by Husky.Net)
 
 The following happens automatically on every commit:
