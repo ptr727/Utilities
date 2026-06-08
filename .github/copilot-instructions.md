@@ -7,6 +7,7 @@ This is a .NET utility library that provides generally useful C# classes and ext
 ## Code Style and Standards
 
 ### General Guidelines
+
 - Follow C# coding conventions and .NET best practices
 - Use meaningful variable and method names
 - Keep methods focused and single-purpose
@@ -22,6 +23,7 @@ This is a .NET utility library that provides generally useful C# classes and ext
 2. **dotnet format** is run second for style enforcement
 
 #### Formatting Workflow
+
 ```bash
 # Always format with CSharpier FIRST after editing code
 dotnet csharpier .
@@ -34,7 +36,9 @@ dotnet format --verify-no-changes
 ```
 
 #### Key Formatting Rules (from .editorconfig)
+
 - **No `var` keyword**: Use explicit types everywhere
+
   ```csharp
   // ✅ CORRECT
   string text = "hello";
@@ -44,6 +48,7 @@ dotnet format --verify-no-changes
   var text = "hello";
   var numbers = new List<int>();
   ```
+
 - **Indentation**: 4 spaces (not tabs)
 - **Line endings**: CRLF (Windows)
 - **Charset**: UTF-8
@@ -53,13 +58,16 @@ dotnet format --verify-no-changes
 - **Collection expressions**: Preferred `[]` over `new List<T>()`
 
 #### Pre-Commit Hook
+
 The Husky.Net pre-commit hook automatically runs:
+
 1. `dotnet csharpier .` - Code formatting
 2. `dotnet format` - Style enforcement
 
 **Commits will be rejected if formatting fails!**
 
 ### .NET 10 and AOT Considerations
+
 - The project targets .NET 10 with PublishAot enabled
 - Avoid reflection where possible (not AOT-friendly)
 - Use source generators instead of runtime reflection when applicable
@@ -105,12 +113,15 @@ The Husky.Net pre-commit hook automatically runs:
 ## Common Tasks
 
 ### Building
+
 Run the ".NET Build" task or use: `dotnet build`
 
 ### Publishing
+
 Run the ".NET Publish" task or use: `dotnet publish`
 
 ### Formatting (REQUIRED before commit)
+
 ```bash
 # Step 1: Format with CSharpier
 dotnet csharpier .
@@ -123,19 +134,24 @@ dotnet format --verify-no-changes
 ```
 
 ### Running Tests
+
 Use: `dotnet test`
 
 ## Commit Guidelines
 
 ### Pre-Commit Process (Automated by Husky.Net)
+
 The following happens automatically on every commit:
+
 1. ✅ CSharpier formats all C# files
 2. ✅ dotnet format applies .editorconfig rules
 3. ✅ Commit proceeds if formatting passes
 4. ❌ Commit is rejected if formatting fails
 
 ### Manual Pre-Commit Checklist
+
 Before committing, ensure:
+
 - [ ] Code formatted with CSharpier (`dotnet csharpier .`)
 - [ ] Style rules applied (`dotnet format`)
 - [ ] No formatting issues (`dotnet format --verify-no-changes`)
@@ -146,15 +162,19 @@ Before committing, ensure:
 - [ ] Commit message is clear and descriptive
 
 ### Commit Message Format
+
 Follow conventional commit format:
-```
+
+```text
 <type>(<scope>): <description>
 
 [optional body]
 
 [optional footer]
 ```
+
 Examples:
+
 - `feat(download): add async download methods`
 - `fix(fileex): correct boundary condition in DeleteDirectory`
 - `docs(readme): update async method examples`
@@ -165,7 +185,7 @@ Examples:
 - **Package ID**: InsaneGenius.Utilities
 - **Namespace**: InsaneGenius.Utilities
 - **License**: MIT
-- **Repository**: https://github.com/ptr727/Utilities
+- **Repository**: <https://github.com/ptr727/Utilities>
 - **Target Framework**: .NET 10
 - **C# Version**: 14.0
 - **Version**: 3.5 (managed by Nerdbank.GitVersioning)
@@ -186,6 +206,7 @@ Examples:
 ## Code Generation Preferences
 
 ### Modern C# Features (C# 14)
+
 - Prefer modern C# language features (pattern matching, records, file-scoped namespaces, etc.)
 - Use nullable reference types consistently with `ArgumentNullException.ThrowIfNull()`
 - Leverage expression-bodied members where appropriate
@@ -195,6 +216,7 @@ Examples:
 - Use primary constructors where appropriate
 
 ### Async/Await Patterns
+
 - **Always use `ConfigureAwait(false)` in library code**
 - Provide async versions of I/O-bound methods
 - Use `CancellationToken` parameters (default to `default`)
@@ -204,17 +226,20 @@ Examples:
 - Use `Memory<T>` and `Span<T>` for async I/O operations
 
 ### Input Validation
+
 - Use `ArgumentNullException.ThrowIfNull()` for null checks
 - Validate parameters early in methods
 - Document all exceptions in XML comments
 
 ### Resource Management
+
 - Use `using` statements for proper disposal
 - Use `await using` for async disposal
 - Avoid explicit `.Close()` calls (using handles it)
 - Use `leaveOpen` parameter when appropriate
 
 ### Thread Safety
+
 - Use `Lazy<T>` for thread-safe initialization
 - Use `Lock` (C# 13+) instead of `object` for locks
 - Avoid static mutable state
@@ -243,6 +268,7 @@ Examples:
 ## Common Patterns in This Project
 
 ### Error Handling
+
 ```csharp
 try
 {
@@ -259,18 +285,21 @@ catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
 ```
 
 ### Retry Logic
+
 - Use `Options.RetryCount` for retry attempts
 - Use `Options.Cancel.IsCancellationRequested` for cancellation
 - Use `Task.Delay()` for async waits
 - Log retry attempts with `LogOptions.Logger.Information()`
 
 ### Method Signatures
+
 - I/O methods return `bool` for success/failure
 - Async methods have `Async` suffix
 - Async methods include optional `CancellationToken cancellationToken = default`
 - Use `out` parameters for additional return values
 
 ### XML Documentation
+
 - Always include `<summary>` for all public members
 - Document all `<param>` with descriptions
 - Document `<returns>` with descriptions
@@ -295,24 +324,28 @@ catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
 ## File-Specific Notes
 
 ### Download.cs
+
 - Uses thread-safe `Lazy<HttpClient>` initialization
 - Provides both sync and async versions
 - Returns tuples from async methods for multiple values
 - Uses `HttpCompletionOption.ResponseHeadersRead` for efficiency
 
 ### FileEx.cs
+
 - All I/O methods have async versions
 - Uses `Options` for retry configuration
 - Returns `bool` for success/failure
 - Supports cancellation via `Options.Cancel` and method parameter
 
 ### StringCompression.cs
+
 - Supports configurable compression levels
 - Has both sync and async versions
 - Uses `leaveOpen` for stream management
 - Proper error documentation
 
 ### Extensions.cs
+
 - Uses C# 14 `extension` keyword
 - Must be inside static class
 - Provides extension methods for string compression and logger error handling
@@ -320,6 +353,7 @@ catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
 ## Development Workflow
 
 ### Making Changes
+
 1. Edit code
 2. **Run CSharpier**: `dotnet csharpier .`
 3. **Run dotnet format**: `dotnet format`
@@ -328,6 +362,7 @@ catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
 6. Commit (Husky.Net pre-commit hook will verify formatting)
 
 ### Before Committing
+
 ```bash
 # Format code (REQUIRED ORDER)
 dotnet csharpier .
@@ -345,6 +380,7 @@ git commit -m "feat: your message"
 ```
 
 ### If Pre-Commit Hook Fails
+
 ```bash
 # Hook will show formatting errors
 # Re-run formatters
@@ -365,6 +401,7 @@ git commit -m "feat: your message"
 ## EditorConfig Integration
 
 The project uses `.editorconfig` for style enforcement. Key rules:
+
 - `csharp_style_var_*` = **false** (no var keyword)
 - `csharp_style_namespace_declarations` = **file_scoped**
 - `csharp_prefer_system_threading_lock` = **true**
