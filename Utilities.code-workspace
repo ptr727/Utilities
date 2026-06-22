@@ -1,31 +1,31 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {
-		"cSpell.words": [
-			"csdevkit",
-			"davidanson",
-			"dotnettools",
-			"extlang",
-			"gruntfuggly",
-			"Jernej",
-			"macrolanguage",
-			"nbgv",
-			"Nerdbank",
-			"nupkg",
-			"Serilog",
-			"Simoncic",
-			"softprops",
-			"stefanzweifel",
-			"subtag",
-			"templating",
-			"triggerbuild",
-			"winget"
-		],
-		"dotnet.defaultSolution": "Utilities.sln",
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "cSpell.words": [
+            "csdevkit",
+            "davidanson",
+            "dotnettools",
+            "extlang",
+            "fanaticpythoner",
+            "Jernej",
+            "macrolanguage",
+            "nbgv",
+            "Nerdbank",
+            "nupkg",
+            "Serilog",
+            "Simoncic",
+            "softprops",
+            "stefanzweifel",
+            "subtag",
+            "templating",
+            "triggerbuild",
+            "winget"
+        ],
+        "dotnet.defaultSolution": "Utilities.slnx",
         "files.trimTrailingWhitespace": true,
         "[markdown]": {
             "files.trimTrailingWhitespace": false
@@ -43,15 +43,15 @@
         "csharp.debug.symbolOptions.searchNuGetOrgSymbolServer": true,
         "csharp.debug.symbolOptions.searchMicrosoftSymbolServer": true,
         "files.encoding": "utf8"
-	},
-	"extensions": {
-		"recommendations": [
+    },
+    "extensions": {
+        "recommendations": [
             "davidanson.vscode-markdownlint",
-            "gruntfuggly.todo-tree",
             "ms-dotnettools.csdevkit",
             "streetsidesoftware.code-spell-checker",
             "editorconfig.editorconfig",
-            "csharpier.csharpier-vscode"
-		]
-	}
+            "csharpier.csharpier-vscode",
+            "fanaticpythoner.better-todo-tree"
+        ]
+    }
 }
