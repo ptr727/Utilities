@@ -63,8 +63,10 @@ jobs:
       # commit than the one the release tag (also GitCommitId) points at.
       ref: ${{ needs.get-version.outputs.GitCommitId }}
       branch: ${{ inputs.branch }}
-      # Conditional push to NuGet.org — never on a smoke build.
+      # Conditional push to NuGet.org - never on a smoke build.
       push: ${{ inputs.nuget && !inputs.smoke }}
+      # Skip the release-asset upload on smoke (nothing consumes it on a PR).
+      smoke: ${{ inputs.smoke }}
 
   github-release:
     name: Publish GitHub release job
@@ -95,7 +97,7 @@ jobs:
       # NBGV can produce a SemVer2 that was already released. GitHub release
       # creation has no built-in skip-duplicate (unlike NuGet's
       # `--skip-duplicate`), and re-publishing an unchanged version is exactly
-      # the churn the two-phase model avoids — so skip the release step when a
+      # the churn the two-phase model avoids - so skip the release step when a
       # release for this tag already exists.
       - name: Check for existing release step
         id: release-exists
@@ -118,7 +120,7 @@ jobs:
       # `target_commitish` MUST be set explicitly: softprops doesn't pass a
       # default through, and GitHub's REST API then defaults the new tag to
       # the repository's default branch (main). We pin it to NBGV's
-      # `GitCommitId` — the exact commit the version was computed from. This
+      # `GitCommitId` - the exact commit the version was computed from. This
       # avoids two bugs: `github.sha` would be wrong (the publisher's branch
       # matrix builds `develop` from a run whose `github.sha` is main's tip),
       # and `inputs.branch` would be a moving ref (a commit landing mid-run
