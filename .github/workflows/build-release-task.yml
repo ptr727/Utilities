@@ -65,6 +65,8 @@ jobs:
       branch: ${{ inputs.branch }}
       # Conditional push to NuGet.org — never on a smoke build.
       push: ${{ inputs.nuget && !inputs.smoke }}
+      # Skip the release-asset upload on smoke (nothing consumes it on a PR).
+      smoke: ${{ inputs.smoke }}
 
   github-release:
     name: Publish GitHub release job

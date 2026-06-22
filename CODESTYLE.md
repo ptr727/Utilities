@@ -1,78 +1,98 @@
-# Code Style and Formatting Rules - .NET
+# Code Style and Formatting Rules
 
-This file is the style guide for the .NET projects in this repo: [`Utilities/`](./Utilities/) (the published library), [`Sandbox/`](./Sandbox/) (a console app for experimentation), and [`UtilitiesTests/`](./UtilitiesTests/) (xUnit tests).
+This is the single code-style guide for the repo. The **General** section applies repo-wide and is always carried. The **.NET** section is the language section for this repo's C# projects, self-contained like the `.editorconfig` `[*.cs]` block. (The upstream [ProjectTemplate](https://github.com/ptr727/ProjectTemplate) also ships a Python section; this NuGet-only repo drops it.)
 
-Cross-cutting rules (PR titles, branching, US English, markdown style, workflow YAML, PR review etiquette) live in [AGENTS.md](./AGENTS.md) and apply across the repo. This file only documents what's specific to C# / .NET.
+Cross-cutting *process* rules (PR titles, branching, US English, markdown style, comments philosophy, workflow YAML, PR review etiquette) live in [AGENTS.md](./AGENTS.md) and are not repeated here.
 
-## Build Requirements
+## General
 
-### Zero Warnings Policy
+These rules apply to every language in the repo.
+
+### Tooling Names and Casing
+
+Use each tool's official casing in task labels, docs, and prose - `.NET` (not `.Net`), `CSharpier`. Don't invent personal variants.
+
+### Clean-Compile Verification
+
+Each language defines a **clean-compile** verification - the combination of build, formatter, linter, and code-analysis tools that must report clean before a commit. It is exposed as one or more **named** VS Code tasks (or, where a language ships no tasks, documented commands), and those definitions are **carried verbatim** across derived repos. The concrete names live in the language section below.
+
+- **Run it after every code change.** The clean-compile must pass before you commit; CI runs the same checks as a backstop, and this repo's Husky.Net pre-commit hook runs them locally too.
+- **The named task definition is the canonical spec** - its exact command sequence, arguments, and strictness. You may run it through the VS Code task **or** by invoking the equivalent native commands directly; either is fine **only if the sequence, arguments, and strictness match exactly**. No shortcuts and no more-lenient options (for example, never drop `--verify-no-changes` or loosen a `--severity`).
+
+### Analyzer Diagnostics and Suppressions
+
+- **A new port is not a license to silence diagnostics.** Brownfield / just-ported status never justifies relaxing analyzer or linter severities or muting newly surfaced warnings - fix them. (The only brownfield allowance in this template is the one-time git-signing / line-ending migration described in [AGENTS.md](./AGENTS.md) and [README.md](./README.md), which has nothing to do with code analysis.)
+- **Suppress only genuine false-positives or deliberate, documented exceptions**, always at the **narrowest scope that fits**, in this order of preference:
+  1. An **in-code annotation on the specific symbol**, with a justification - the language's attribute/comment form, never a blanket pragma spanning a region.
+  2. The **owning project's local config** when the exception is project-wide for one project (e.g. a test project's own `.editorconfig`).
+  3. The **root / shared config** only when the suppression is genuinely applicable to **every** project in the repo.
+- **Never blanket-relax a batch of rules project-wide** to get a port to build. The per-language mechanics (which attribute, which config key) are in the language section.
+
+### Markdown and Spelling
+
+These apply repo-wide, in every directory:
+
+1. **Markdown linting**: All `.md` files must be lint-clean (error and warning free) via the VS Code `markdownlint` extension. [`.markdownlint-cli2.jsonc`](./.markdownlint-cli2.jsonc) at the repo root is the single source of truth - the davidanson `markdownlint` extension and a command-line `markdownlint-cli2` run both read it, so the IDE and CLI stay in lock-step. Rules it deliberately disables (e.g. `MD013` line-length, `MD033` inline HTML) are **intentional** - do not "fix" them. This file is carried verbatim by every derived repo (see [AGENTS.md "Files and Sections Derived Repos Must Carry Verbatim"](./AGENTS.md#files-and-sections-derived-repos-must-carry-verbatim)). Fix violations at the source rather than disabling rules.
+2. **Spelling**: All spelling must be clean via the CSpell VS Code integration; words must be correctly spelled in **US English** (the repo-wide convention - see [AGENTS.md](./AGENTS.md)). Project-specific terms go in the workspace CSpell config.
+
+## .NET
+
+This is the style guide for the .NET projects in this repo: [`Utilities/`](./Utilities/) (the published library), [`Sandbox/`](./Sandbox/) (a console app for experimentation), and [`UtilitiesTests/`](./UtilitiesTests/) (xUnit tests).
+
+### Build Requirements
+
+#### Zero Warnings Policy
 
 **CRITICAL**: All builds must complete without warnings. The project enforces this through:
 
-1. **VS Code tasks**
-   - `CSharpier Format` -> `.NET Build` -> `.NET Format`
-   - `.NET Format` must pass with `--verify-no-changes` before commit
-   - Command: `dotnet format --verify-no-changes --severity=info --verbosity=detailed`
+1. **The `.NET Format` clean-compile task** (see [Clean-Compile Verification](#clean-compile-verification))
+   - The .NET clean-compile is the **`.NET Format`** VS Code task, which chains `CSharpier Format` -> `.NET Build` -> `dotnet format style --verify-no-changes`. These three task definitions are carried verbatim in [`.vscode/tasks.json`](./.vscode/tasks.json).
+   - After any code change it must pass before commit. Run the `.NET Format` task. To run it natively instead, reproduce that task chain from [`.vscode/tasks.json`](./.vscode/tasks.json) exactly - `CSharpier Format`, then `.NET Build`, then the `dotnet format style --verify-no-changes --severity=info ...` verify - without dropping or loosening any argument (tasks.json is the canonical command spec). Bare `dotnet format` alone, skipping CSharpier or the build, is not sufficient.
 
-2. **Analyzer configuration**
+2. **Analyzer configuration** (in [`Directory.Build.props`](./Directory.Build.props))
    - `<AnalysisLevel>latest-all</AnalysisLevel>`
    - `<AnalysisMode>All</AnalysisMode>`
-   - `<TreatWarningsAsErrors>true</TreatWarningsAsErrors>`
-   - Because this is a pre-existing (brownfield) library, a specific set of rules are relaxed back to suggestion in [`.editorconfig`](./.editorconfig) (each relaxation documented inline); prefer fixing new violations over adding new relaxations.
+   - `<EnableNETAnalyzers>true</EnableNETAnalyzers>`
+   - `<TreatWarningsAsErrors>true</TreatWarningsAsErrors>` - all warnings must be addressed, not relaxed; see [Analyzer Diagnostics and Suppressions](#analyzer-diagnostics-and-suppressions).
 
 3. **Pre-commit hooks**
    - Husky.Net pre-commit hooks are wired in this repo (`.husky/` ships) and run CSharpier and `dotnet format` on every commit; commits are rejected if formatting fails.
 
-### Build Tasks
+#### Build Tasks
 
-Available VS Code tasks (use via `run_task` tool):
+Available VS Code tasks (run them from VS Code's task runner - **Terminal -> Run Task** - or an agent's task-running tool). The first three are the clean-compile set, carried verbatim; the rest are convenience/project-specific tasks:
 
-- `.NET Build`: Build the solution
-- `.NET Publish`: Publish the library (exercises AOT)
-- `.NET Format`: Verify formatting and style (must pass)
-- `CSharpier Format`: Auto-format code with CSharpier
-- `.Net Tool Update`: Update dotnet tools
-- `Husky.Net Run`: Run the pre-commit hook tasks on demand
+- `.NET Build`: Build with diagnostic verbosity *(clean-compile)*
+- `CSharpier Format`: Auto-format code with CSharpier *(clean-compile)*
+- `.NET Format`: Run CSharpier and build, then verify formatting and style with `--verify-no-changes` *(clean-compile; the task to run after edits)*
+- `.NET Tool Update`: Update dotnet tools *(convenience)*
+- `.NET Publish`: Publish the library, exercising AOT *(project-specific)*
+- `Husky.Net Run`: Run the pre-commit hook tasks on demand *(convenience)*
 
-## Tooling and Editor
+### Tooling and Editor
 
-### Code Formatting and Tooling
+#### Code Formatting and Tooling
 
 1. **CSharpier**: Primary code formatter
-   - Run before committing: `dotnet csharpier format --log-level=debug .`
-
+   - Invoked by the `CSharpier Format` task / `dotnet csharpier format --log-level=debug .`
 2. **dotnet format**: Style verification
-   - Verify no changes: `dotnet format --verify-no-changes --severity=info --verbosity=detailed`
-
+   - Verify no changes: `dotnet format style --verify-no-changes --severity=info --verbosity=detailed`
 3. **Other tools**
    - Husky.Net: pre-commit git-hook runner (installed as a dotnet tool)
-   - Nerdbank.GitVersioning: version management
+   - Nerdbank.GitVersioning: Version management
 
-The required order is **CSharpier first, then dotnet format**. The Husky.Net pre-commit hook runs `dotnet husky run`, which applies the same checks; restore the tools with `dotnet tool restore` before the first commit.
+Restore the tools with `dotnet tool restore` before the first commit.
 
-### Editor Baseline
+#### Editor Baseline
 
 1. **Required VS Code extensions**: CSharpier, EditorConfig, markdownlint, CSpell
 2. **VS Code settings**: Use the workspace settings without overrides
 
-### Markdown Files
-
-1. **Linting**: All `.md` files must be linted with the VS Code `markdownlint` extension (local only; no CI)
-2. **Zero warnings**: Markdown linting must be error and warning free
-3. **Authoritative config**: [`.markdownlint-cli2.jsonc`](./.markdownlint-cli2.jsonc) at the repo root is the single source of truth - the davidanson `markdownlint` extension and a command-line `markdownlint-cli2` run both read it, so the IDE and CLI stay in lock-step. Rules the config deliberately disables (e.g. `MD013` line-length, `MD033` inline HTML) are **intentional** - do not "fix" them.
-
-### Spelling
-
-1. **CSpell**: All spelling checks must be error free using the CSpell VS Code integration
-2. **Accepted spellings**: Words must be correctly spelled in US or UK English
-3. **Allowed exceptions**: Project-specific terms must be added to the workspace CSpell config
-
-## Coding Standards and Conventions
+### Coding Standards and Conventions
 
 Note: Code snippets are illustrative examples only. Replace namespaces/types to match the project.
 
-### C# Language Features
+#### C# Language Features
 
 1. **File-scoped namespaces**
 
@@ -107,7 +127,7 @@ Note: Code snippets are illustrative examples only. Replace namespaces/types to 
    var name = "test";
    ```
 
-### Naming Conventions
+#### Naming Conventions
 
 1. **Private fields**: underscore prefix with camelCase
 
@@ -128,7 +148,7 @@ Note: Code snippets are illustrative examples only. Replace namespaces/types to 
    private const int MaxRetries = 3;
    ```
 
-### Code Structure
+#### Code Structure
 
 1. **Global usings**: Use `GlobalUsings.cs` for common namespaces
 
@@ -166,7 +186,7 @@ Note: Code snippets are illustrative examples only. Replace namespaces/types to 
 6. **`#region`**: Do not use regions. Prefer logical file/folder/namespace organization.
 7. **Member ordering (StyleCop SA1201)**: const -> static readonly -> static fields -> instance readonly fields -> instance fields -> constructors -> public (events -> properties -> indexers -> methods -> operators) -> non-public in same order -> nested types
 
-### Comments and Documentation
+#### Comments and Documentation
 
 1. **XML documentation**
    - `<GenerateDocumentationFile>true</GenerateDocumentationFile>`
@@ -192,20 +212,25 @@ Note: Code snippets are illustrative examples only. Replace namespaces/types to 
    public async Task<bool> DoWorkAsync(CancellationToken cancellationToken) {}
    ```
 
-2. **Code analysis suppressions**
-   - Do not use `#pragma` sections to disable analyzers
-   - For one-off cases, use suppression attributes with justifications
-   - For project-wide suppressions, add rules to `.editorconfig`
+#### Analyzer Suppressions (.NET)
 
-   ```csharp
-   [System.Diagnostics.CodeAnalysis.SuppressMessage(
-       "Design",
-       "CA1034:Nested types should not be visible",
-       Justification = "https://github.com/dotnet/sdk/issues/51681"
-   )]
-   ```
+Follow the scope hierarchy in [Analyzer Diagnostics and Suppressions](#analyzer-diagnostics-and-suppressions). .NET mechanics, narrowest first:
 
-### Error Handling and Logging
+- **Never use `#pragma warning disable`** to silence an analyzer.
+- **Symbol-scoped**: a `[System.Diagnostics.CodeAnalysis.SuppressMessage(...)]` attribute with a `Justification`, on the specific member or type:
+
+  ```csharp
+  [System.Diagnostics.CodeAnalysis.SuppressMessage(
+      "Design",
+      "CA1034:Nested types should not be visible",
+      Justification = "https://github.com/dotnet/sdk/issues/51681"
+  )]
+  ```
+
+- **Project-scoped** (e.g. the test project): a `dotnet_diagnostic.<RULE>.severity` entry in *that project's own* `.editorconfig`, with a comment explaining why. This repo's library exceptions live in [`Utilities/.editorconfig`](./Utilities/.editorconfig) and its test exceptions in [`UtilitiesTests/.editorconfig`](./UtilitiesTests/.editorconfig).
+- **Repo-wide**: a `dotnet_diagnostic.<RULE>.severity` entry in the root `.editorconfig`, only when the rule is genuinely not applicable to any project. Relaxing a batch of `CA*` rules (or `dotnet_analyzer_diagnostic.severity`) to push a brownfield port through the build is exactly what this forbids.
+
+#### Error Handling and Logging
 
 1. **Serilog logging**: Use structured logging
 
@@ -237,18 +262,7 @@ Note: Code snippets are illustrative examples only. Replace namespaces/types to 
 
 5. **Exceptions**: Do not swallow exceptions; log and rethrow or translate to a domain-specific exception
 
-   ```csharp
-   try
-   {
-       // Operation
-   }
-   catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
-   {
-       // Retry or return false
-   }
-   ```
-
-### Code Patterns
+#### Code Patterns
 
 1. **Guard clauses**: Prefer early returns for validation; use `ArgumentNullException.ThrowIfNull()` for null checks
 2. **Async all the way**: Avoid blocking calls (`.Result`, `.Wait()`, `.GetAwaiter().GetResult()`); use `async`/`await`
@@ -264,7 +278,7 @@ Note: Code snippets are illustrative examples only. Replace namespaces/types to 
 11. **Thread safety**: Use `Lazy<T>` for static thread-safe instantiation; use `Lock` (C# 13+) instead of `object` for locks; avoid static mutable state and document thread-safety guarantees
 12. **Performance**: Use `Span<T>`/`Memory<T>` for performance-critical I/O; use `ValueTask` for async methods that may complete synchronously; use `StringBuilder` for string concatenation in loops
 
-### Testing Conventions
+#### Testing Conventions
 
 1. **Framework**: xUnit
 
@@ -288,7 +302,7 @@ Note: Code snippets are illustrative examples only. Replace namespaces/types to 
 4. **Theory tests**: Use `[Theory]` with `[InlineData]`
 5. **Async coverage**: Add tests for every new async method
 
-## Project Configuration
+### Project Configuration
 
 1. **Target framework**: .NET 10.0 (`<TargetFramework>net10.0</TargetFramework>`)
 
@@ -310,6 +324,6 @@ Note: Code snippets are illustrative examples only. Replace namespaces/types to 
    </ItemGroup>
    ```
 
-## Best Practices
+### Best Practices
 
 1. **Code reviews**: All changes go through pull requests

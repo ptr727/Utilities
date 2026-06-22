@@ -1,6 +1,6 @@
 # Instructions for AI Coding Agents
 
-**Utilities** is a C# .NET NuGet library (published as `InsaneGenius.Utilities`). The library ships under [`Utilities/`](./Utilities/), with a `Sandbox/` console app for experimentation and `UtilitiesTests/` for xUnit tests. This file is the cross-cutting source of truth for process rules and this repo's project-specific conventions and public-API contracts; the C# style guidance lives in [`CODESTYLE.md`](./CODESTYLE.md).
+**Utilities** is a C# .NET NuGet library (published as `InsaneGenius.Utilities`). The library ships under [`Utilities/`](./Utilities/), with a `Sandbox/` console app for experimentation and `UtilitiesTests/` for xUnit tests. This file is the cross-cutting source of truth for process rules and this repo's project-specific conventions and public-API contracts; the code-style rules live in [`CODESTYLE.md`](./CODESTYLE.md) at the repo root - one guide with a General section that applies repo-wide plus a droppable .NET language section.
 
 This repo tracks the [ptr727/ProjectTemplate](https://github.com/ptr727/ProjectTemplate) two-phase release model. It is a **NuGet-only** derivation: it has no Docker, executable, PyPI, or codegen targets, so the template's `build-docker-task.yml`, `build-executable-task.yml`, `build-pypilibrary-task.yml`, and `run-codegen-*.yml` workflows are intentionally absent, and the merge-bot carries only the Dependabot path. Keep the remaining workflow filenames and structure aligned with the template so upstream changes apply as minimal deltas.
 
@@ -181,10 +181,12 @@ When pulling a public image fails on a Docker-Desktop/WSL credential-helper erro
   - `Utilities/` - the reusable .NET NuGet library (published as `InsaneGenius.Utilities`)
   - `Sandbox/` - console app for experimentation
   - `UtilitiesTests/` - xUnit tests
-  - **Style guide: [`CODESTYLE.md`](./CODESTYLE.md)**.
+  - **Style guide: [`CODESTYLE.md`](./CODESTYLE.md) ".NET" section**.
 - **Cross-cutting**:
   - `.github/` - workflows, Dependabot, Copilot instructions
-  - `.vscode/` - debug configs and tasks
+  - `.vscode/` - debug configs and tasks; the `.NET` clean-compile task group is carried verbatim (see [`CODESTYLE.md`](./CODESTYLE.md))
+
+After editing code, the `.NET` clean-compile (the `.NET Format` task) must pass before commit, and brownfield status never licenses relaxing analyzer severities or silencing newly surfaced diagnostics - both rules live in [`CODESTYLE.md`](./CODESTYLE.md) "General".
 
 ## Library API Conventions
 
@@ -205,10 +207,12 @@ These artifacts are the template's cross-cutting contract; this repo carries eac
 - **[`.github/copilot-instructions.md`](./.github/copilot-instructions.md)** - the whole file is a drop-in; its "GitHub Copilot Review Runbook" carries the provider mechanics. Only the `<owner>` / `<repo>` placeholders are adapted (to `ptr727` / `Utilities`). Keep it **narrow** - provider mechanics plus the inline commit/PR-title summary; project-specific conventions and API contracts belong in this file instead.
 - **[`.markdownlint-cli2.jsonc`](./.markdownlint-cli2.jsonc)** - the shared lint config read by both the davidanson `markdownlint` IDE extension and CLI `markdownlint-cli2`, so the IDE and command line stay in lock-step. Carried verbatim (it is repo-agnostic).
 - **[`.editorconfig`](./.editorconfig) and [`.gitattributes`](./.gitattributes)** - line-ending governance. The defaults + per-extension EOL block is always-verbatim; the `[*.cs]` + ReSharper style block at the end is .NET-only (the file marks the boundary).
+- **[`CODESTYLE.md`](./CODESTYLE.md)** - the single code-style guide. Its **General** section is always carried; each language section is droppable (this repo keeps the .NET section and drops the template's Python section). **Repo-root placement is load-bearing** - `AGENTS.md` links it as `./CODESTYLE.md` and `.github/copilot-instructions.md` as `../CODESTYLE.md`, so moving it breaks those links. Adapt the in-section repo-specific bits: the .NET project-folder list, the `InternalsVisibleTo` project names, and the VS Code task labels.
+- **[`.vscode/tasks.json`](./.vscode/tasks.json)** - carry the **named clean-compile definitions verbatim**: the `.NET Build`, `CSharpier Format`, and `.NET Format` tasks. Their names are owned by the `CODESTYLE.md` ".NET" section and their command sequence + arguments are the canonical clean-compile spec. Convenience tasks (`.NET Tool Update`, `.NET Publish`, `Husky.Net Run`) are the adapt zone.
 
 ## Staying in Sync and Reporting Drift Upstream
 
-This repo re-syncs against [`ptr727/ProjectTemplate`](https://github.com/ptr727/ProjectTemplate) periodically, not just at creation: pull the current version of each verbatim-carry artifact above and re-apply it (adapting only the noted placeholders). For [`CODESTYLE.md`](./CODESTYLE.md), re-sync from the template's .NET aggregate and adapt it to this repo's projects.
+This repo re-syncs against [`ptr727/ProjectTemplate`](https://github.com/ptr727/ProjectTemplate) periodically, not just at creation: pull the current version of each verbatim-carry artifact above and re-apply it (adapting only the noted placeholders). For [`CODESTYLE.md`](./CODESTYLE.md), re-sync the whole file from the template and then drop the language section(s) this repo doesn't ship (always keeping the General section) - replacing the file wholesale and trimming whole sections is simpler to keep current than hand-editing snippets.
 
 **Drift flows back upstream as an issue, not a private fix.** When re-syncing, if you find a discrepancy that should be fixed in the **template itself** - a gap, an outdated instruction, a missing rule, something that bit this repo and would bite the next derived repo too - **open an issue in [`ptr727/ProjectTemplate`](https://github.com/ptr727/ProjectTemplate)** describing it, rather than only patching it locally. A local fix realigns *this* repo; an upstream issue (then fix) corrects it for every future derived repo and keeps the template the single source of truth. This upstream-issue rule is this repo's sole cross-repo obligation: do not name sibling or downstream repos in this repo's docs, comments, or AGENTS - a reader here cares only about this project.
 
