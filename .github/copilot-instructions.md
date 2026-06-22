@@ -1,427 +1,36 @@
-# GitHub Copilot Instructions for Utilities Project
+# Copilot Instructions
 
-## Project Overview
+Repository conventions for GitHub Copilot (and any other AI agent reading this file).
 
-This is a .NET utility library that provides generally useful C# classes and extensions. The project targets .NET 10 and includes AOT (Ahead-of-Time) compilation support for optimized runtime performance.
+The **canonical guide is [AGENTS.md](../AGENTS.md)** at the repo root - read it first, including the [PR Review Etiquette](../AGENTS.md#pr-review-etiquette) review-loop contract this file's runbook implements. This file is intentionally narrow: commit/PR-title conventions (summarized inline so VS Code's commit-message and PR-title generators have them) plus the GitHub Copilot Review Runbook.
 
-## Code Style and Standards
+For code-style rules, see [`CODESTYLE.md`](../CODESTYLE.md) at the repo root - one guide with a General section plus a .NET language section.
 
-### General Guidelines
+Do not duplicate language-specific rules here. **Project-specific conventions and API/behavioral contracts also belong in [AGENTS.md](../AGENTS.md), not here** - this file is intentionally limited to the inline commit/PR-title summary and the GitHub Copilot Review Runbook. Non-Copilot agents (Claude Code, Codex, Cursor, ...) are not directed to this file and don't read it by default, so any rule a reviewer must honor has to live in `AGENTS.md` to be provider-independent.
 
-- Follow C# coding conventions and .NET best practices
-- Use meaningful variable and method names
-- Keep methods focused and single-purpose
-- **Add comprehensive XML documentation comments for ALL public APIs** (required)
-- Maintain consistency with existing code style
-- Follow the existing patterns in the codebase
+## Commit Messages and Pull Request Titles
 
-### Formatting Requirements
+Summarized for VS Code's generators; the full rules, rationale, and examples are in [AGENTS.md "Pull Request Title and Commit Message Conventions"](../AGENTS.md#pull-request-title-and-commit-message-conventions).
 
-**IMPORTANT:** This project uses **Husky.Net** pre-commit hooks that automatically enforce formatting:
-
-1. **CSharpier** is run first for code formatting
-2. **dotnet format** is run second for style enforcement
-
-#### Formatting Workflow
-
-```bash
-# Always format with CSharpier FIRST after editing code
-dotnet csharpier .
-
-# Then run dotnet format to apply .editorconfig rules
-dotnet format
-
-# Verify no changes needed
-dotnet format --verify-no-changes
-```
-
-#### Key Formatting Rules (from .editorconfig)
-
-- **No `var` keyword**: Use explicit types everywhere
-
-  ```csharp
-  // ✅ CORRECT
-  string text = "hello";
-  List<int> numbers = [];
-
-  // ❌ WRONG
-  var text = "hello";
-  var numbers = new List<int>();
-  ```
-
-- **Indentation**: 4 spaces (not tabs)
-- **Line endings**: CRLF (Windows)
-- **Charset**: UTF-8
-- **Final newline**: Required
-- **Trailing whitespace**: Not allowed
-- **File-scoped namespaces**: Required
-- **Collection expressions**: Preferred `[]` over `new List<T>()`
-
-#### Pre-Commit Hook
-
-The Husky.Net pre-commit hook automatically runs:
-
-1. `dotnet csharpier .` - Code formatting
-2. `dotnet format` - Style enforcement
-
-**Commits will be rejected if formatting fails!**
-
-### .NET 10 and AOT Considerations
-
-- The project targets .NET 10 with PublishAot enabled
-- Avoid reflection where possible (not AOT-friendly)
-- Use source generators instead of runtime reflection when applicable
-- Be mindful of trim warnings and compatibility
-- Ensure all code is AOT-compatible
-- Test AOT compatibility with `dotnet publish`
-
-## Project Structure
-
-- **Utilities/**: Main library project containing utility classes
-  - `CommandLineEx.cs`: Command-line argument parsing utilities
-  - `ConsoleEx.cs`: Console interaction helpers with color support
-  - `Download.cs`: HTTP download utilities (sync and async)
-  - `Extensions.cs`: Extension methods (string compression, logger error handling)
-  - `FileEx.cs`: File and directory operation utilities with retry logic (sync and async)
-  - `FileExOptions.cs`: Configuration options for FileEx operations
-  - `Format.cs`: Byte size formatting utilities (binary and decimal)
-  - `LogOptions.cs`: Global logging configuration
-  - `StringCompression.cs`: String compression/decompression using Deflate (sync and async)
-  - `StringHistory.cs`: Bounded string history buffer
-
-- **Sandbox/**: Console application for testing and experimentation
-- **UtilitiesTests/**: Unit tests using xUnit
-
-## Testing
-
-- Use xUnit for all tests
-- Follow AAA pattern (Arrange, Act, Assert)
-- Test file names should match the class being tested with "Tests" suffix
-- Run tests frequently during development
-- Maintain good test coverage for public APIs
-- **Add tests for all new async methods**
-- Consider edge cases and error conditions in tests
-
-## Dependencies
-
-- **Serilog**: Logging framework (required for LogOptions and error handling)
-- **Microsoft.SourceLink.GitHub**: Source linking for debugging
-- **xUnit**: Testing framework
-- Keep dependencies minimal and well-justified
-- Update package references to latest stable versions when appropriate
-
-## Common Tasks
-
-### Building
-
-Run the ".NET Build" task or use: `dotnet build`
-
-### Publishing
-
-Run the ".NET Publish" task or use: `dotnet publish`
-
-### Formatting (REQUIRED before commit)
-
-```bash
-# Step 1: Format with CSharpier
-dotnet csharpier .
-
-# Step 2: Apply dotnet format rules
-dotnet format
-
-# Step 3: Verify (this is what pre-commit hook checks)
-dotnet format --verify-no-changes
-```
-
-### Running Tests
-
-Use: `dotnet test`
-
-## Commit Guidelines
-
-### Versioning
-
-`develop` leads `main` by a minor. After a `develop -> main` release lands and main's publish completes, bump the minor in [version.json](../version.json) on `develop` via an isolated `bump-version-X.Y` PR (X.Y = the new minor, e.g. `bump-version-3.5`; this version-setting PR is the one place a version belongs in a PR title), so develop's NBGV prereleases sort above main's last stable. A `develop -> main` promotion that carries only maintenance (dependency bumps, CI/doc fixes, template re-syncs) holds main's version instead - `git checkout main -- version.json` on the promotion branch. See [AGENTS.md "Release Model"](../AGENTS.md#release-model).
-
-### Pre-Commit Process (Automated by Husky.Net)
-
-The following happens automatically on every commit:
-
-1. ✅ CSharpier formats all C# files
-2. ✅ dotnet format applies .editorconfig rules
-3. ✅ Commit proceeds if formatting passes
-4. ❌ Commit is rejected if formatting fails
-
-### Manual Pre-Commit Checklist
-
-Before committing, ensure:
-
-- [ ] Code formatted with CSharpier (`dotnet csharpier .`)
-- [ ] Style rules applied (`dotnet format`)
-- [ ] No formatting issues (`dotnet format --verify-no-changes`)
-- [ ] All tests passing (`dotnet test`)
-- [ ] Build successful (`dotnet build`)
-- [ ] No `var` keywords used
-- [ ] XML documentation complete
-- [ ] Commit message is clear and descriptive
-
-### Commit Message Format
-
-Follow conventional commit format:
-
-```text
-<type>(<scope>): <description>
-
-[optional body]
-
-[optional footer]
-```
-
-Examples:
-
-- `feat(download): add async download methods`
-- `fix(fileex): correct boundary condition in DeleteDirectory`
-- `docs(readme): update async method examples`
-- `test(compression): add async compression tests`
-
-## Package Information
-
-- **Package ID**: InsaneGenius.Utilities
-- **Namespace**: InsaneGenius.Utilities
-- **License**: MIT
-- **Repository**: <https://github.com/ptr727/Utilities>
-- **Target Framework**: .NET 10
-- **C# Version**: 14.0
-- **Version**: 3.5 (managed by Nerdbank.GitVersioning)
-
-## When Adding New Features
-
-1. **Consider AOT compatibility from the start**
-2. **Add comprehensive XML documentation** (required for all public APIs)
-3. **Create corresponding unit tests** (including async versions)
-4. Update README.md if adding significant functionality
-5. Ensure backward compatibility when modifying existing APIs
-6. Consider performance implications
-7. **Use async/await for I/O-bound operations** with proper cancellation token support
-8. Handle exceptions appropriately with logging via LogOptions.Logger
-9. **Follow existing patterns** (e.g., retry logic, bool return values, exception handling)
-10. **Format with CSharpier before running dotnet format**
-
-## Code Generation Preferences
-
-### Modern C# Features (C# 14)
-
-- Prefer modern C# language features (pattern matching, records, file-scoped namespaces, etc.)
-- Use nullable reference types consistently with `ArgumentNullException.ThrowIfNull()`
-- Leverage expression-bodied members where appropriate
-- Use collection expressions `[]` for initialization
-- Use `extension` keyword for extension methods (inside static class)
-- Prefer LINQ for data transformations
-- Use primary constructors where appropriate
-
-### Async/Await Patterns
-
-- **Always use `ConfigureAwait(false)` in library code**
-- Provide async versions of I/O-bound methods
-- Use `CancellationToken` parameters (default to `default`)
-- Use `await using` for async disposal
-- Replace blocking calls (`.GetAwaiter().GetResult()`) with proper async
-- Use `Task.Delay()` instead of `Thread.Sleep()` in async methods
-- Use `Memory<T>` and `Span<T>` for async I/O operations
-
-### Input Validation
-
-- Use `ArgumentNullException.ThrowIfNull()` for null checks
-- Validate parameters early in methods
-- Document all exceptions in XML comments
-
-### Resource Management
-
-- Use `using` statements for proper disposal
-- Use `await using` for async disposal
-- Avoid explicit `.Close()` calls (using handles it)
-- Use `leaveOpen` parameter when appropriate
-
-### Thread Safety
-
-- Use `Lazy<T>` for thread-safe initialization
-- Use `Lock` (C# 13+) instead of `object` for locks
-- Avoid static mutable state
-- Document thread-safety guarantees
-
-## Security Considerations
-
-- Validate all user inputs
-- Use secure defaults
-- Avoid hardcoding sensitive information
-- Follow principle of least privilege
-- Use secure random number generation when needed
-- Be careful with file path manipulation
-
-## Performance Guidelines
-
-- Profile before optimizing
-- Be mindful of allocations
-- Use `Span<T>` and `Memory<T>` for performance-critical code
-- Consider using object pooling for frequently allocated objects
-- Use `ValueTask` for async methods that may complete synchronously
-- Leverage AOT benefits for startup time and memory usage
-- Avoid unnecessary string allocations
-- Use `StringBuilder` for string concatenation in loops
-
-## Common Patterns in This Project
-
-### Error Handling
-
-```csharp
-try
-{
-    // Operation
-}
-catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
-{
-    // Retry or return false
-}
-catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
-{
-    return false;
-}
-```
-
-### Retry Logic
-
-- Use `Options.RetryCount` for retry attempts
-- Use `Options.Cancel.IsCancellationRequested` for cancellation
-- Use `Task.Delay()` for async waits
-- Log retry attempts with `LogOptions.Logger.Information()`
-
-### Method Signatures
-
-- I/O methods return `bool` for success/failure
-- Async methods have `Async` suffix
-- Async methods include optional `CancellationToken cancellationToken = default`
-- Use `out` parameters for additional return values
-
-### XML Documentation
-
-- Always include `<summary>` for all public members
-- Document all `<param>` with descriptions
-- Document `<returns>` with descriptions
-- Document all possible `<exception>` types
-- Use `<remarks>` for additional context
-- Reference other types with `<see cref="Type"/>`
-
-## Anti-Patterns to Avoid
-
-❌ Sync-over-async: `.GetAwaiter().GetResult()`, `.Wait()`, `.Result`  
-❌ Missing `ConfigureAwait(false)` in library code  
-❌ Missing XML documentation on public APIs  
-❌ Not using `ArgumentNullException.ThrowIfNull()`  
-❌ Explicit `.Close()` calls when using `using`  
-❌ Missing cancellation token support in async methods  
-❌ Race conditions in static initialization  
-❌ Reflection (not AOT-compatible)  
-❌ Missing tests for async methods  
-❌ Using `var` keyword (explicit types required by .editorconfig)  
-❌ Forgetting to run CSharpier before dotnet format  
-
-## File-Specific Notes
-
-### Download.cs
-
-- Uses thread-safe `Lazy<HttpClient>` initialization
-- Provides both sync and async versions
-- Returns tuples from async methods for multiple values
-- Uses `HttpCompletionOption.ResponseHeadersRead` for efficiency
-
-### FileEx.cs
-
-- All I/O methods have async versions
-- Uses `Options` for retry configuration
-- Returns `bool` for success/failure
-- Supports cancellation via `Options.Cancel` and method parameter
-
-### StringCompression.cs
-
-- Supports configurable compression levels
-- Has both sync and async versions
-- Uses `leaveOpen` for stream management
-- Proper error documentation
-
-### Extensions.cs
-
-- Uses C# 14 `extension` keyword
-- Must be inside static class
-- Provides extension methods for string compression and logger error handling
-
-## Development Workflow
-
-### Making Changes
-
-1. Edit code
-2. **Run CSharpier**: `dotnet csharpier .`
-3. **Run dotnet format**: `dotnet format`
-4. Build: `dotnet build`
-5. Test: `dotnet test`
-6. Commit (Husky.Net pre-commit hook will verify formatting)
-
-### Before Committing
-
-```bash
-# Format code (REQUIRED ORDER)
-dotnet csharpier .
-dotnet format
-
-# Verify
-dotnet format --verify-no-changes
-dotnet build
-dotnet test
-
-# Commit
-git add .
-git commit -m "feat: your message"
-# Husky.Net hook runs automatically
-```
-
-### If Pre-Commit Hook Fails
-
-```bash
-# Hook will show formatting errors
-# Re-run formatters
-dotnet csharpier .
-dotnet format
-
-# Try commit again
-git commit -m "feat: your message"
-```
-
-## Tools Required
-
-- .NET 10 SDK
-- CSharpier (installed as dotnet tool)
-- Husky.Net (installed as dotnet tool)
-- Visual Studio 2022 or VS Code with C# extension
-
-## EditorConfig Integration
-
-The project uses `.editorconfig` for style enforcement. Key rules:
-
-- `csharp_style_var_*` = **false** (no var keyword)
-- `csharp_style_namespace_declarations` = **file_scoped**
-- `csharp_prefer_system_threading_lock` = **true**
-- `dotnet_style_prefer_collection_expression` = **when_types_loosely_match**
-
-Visual Studio and Rider automatically apply these settings. VS Code requires the EditorConfig extension.
+- Imperative subject, <= 72 characters, no trailing period; optional blank-line-separated body for the non-obvious *why*.
+- US English, title case with lowercase short bind words; no vague titles, no `Co-Authored-By:` unless asked, no release-bump magnitude (NBGV handles versioning). Dependabot's `Bump X from Y to Z` titles are fine.
+- develop PRs squash-merge (`gh pr merge --squash`), main PRs merge-commit (`--merge`); a mismatched flag is rejected by branch protection.
 
 ## GitHub Copilot Review Runbook
+
+> This runbook implements the [AGENTS.md "PR Review Etiquette"](../AGENTS.md#pr-review-etiquette) review-loop contract for GitHub Copilot. Without it in-repo, an agent has no pointer to the reliable Copilot mechanics and falls back to known-broken paths (the no-op `POST /requested_reviewers`, the wrong bot-login filter).
 
 Use this section for provider-specific mechanics. The expected review loop *contract* (request review on every push, verify head-SHA coverage, triage findings, reply + resolve, escalate when stuck) is defined in [AGENTS.md -> PR Review Etiquette](../AGENTS.md#pr-review-etiquette). This section only describes how to make GitHub Copilot reliably execute it.
 
 ### Triggering and Polling
 
-Auto-review on push is configured (via the branch ruleset's `copilot_code_review` rule with `review_on_push: true`) but fires inconsistently in practice - treat it as best-effort, not guaranteed. After every push, **re-request a review programmatically** via the GraphQL `requestReviews` mutation, passing the Copilot reviewer's bot node id in `botIds`. This now works reliably (it previously did not - a maintainer had to click "re-request review" in the UI; the agent can now drive the loop end-to-end without that hand-off).
+Auto-review on push is configured (via the branch ruleset's `copilot_code_review` rule with `review_on_push: true`) but fires inconsistently in practice - treat it as best-effort, not guaranteed. After every push, **re-request a review programmatically** via the GraphQL `requestReviews` mutation, passing the Copilot reviewer's bot node id in `botIds`. This drives the loop end-to-end without a UI hand-off.
 
-> **The reviewer login differs by API - this is intentional, not a typo.** In **GraphQL** (`gh api graphql` and `gh pr view --json reviews`, which is GraphQL-backed) the `Bot.login` is `copilot-pull-request-reviewer` - **no `[bot]` suffix**. In the **REST** API (`gh api repos/.../issues|pulls/...`) the same account's `user.login` is `copilot-pull-request-reviewer[bot]` - **with** the suffix. Each query below uses the correct form for its API; match the API, not a single spelling, when adapting them.
+**A review with no inline comments is still a completed review - not a failure, and not a reason to ask the maintainer to re-trigger.** Copilot very often posts a single formal review (GraphQL `state: COMMENTED`) whose body ends with "...reviewed N of N changed files ... and generated no comments" and adds **zero** inline threads. That review carries the head `commit.oid` and fully satisfies the loop - it is the clean-pass success case. Never read "no inline comments" as "the review didn't run," and never re-request or escalate to the maintainer because comments are absent.
+
+**Round 1 is normally auto-seeded - poll for it before trying to self-trigger.** Auto-review-on-open supplies the first review with no `botIds` call needed, but it can lag one to three minutes. After opening a PR (or the first push), **poll** for a Copilot review on the head SHA (see [Verify Review Covered Current Head](#verify-review-covered-current-head)) before concluding none ran. The `requestReviews` mutation below is for **re-requesting on later pushes** (a new head SHA); by then a prior review exists, so its bot node id is readable. A missing bot node id on round 1 therefore means "the auto-review has not landed yet - wait and poll," **not** "ask the maintainer to kick it off."
+
+> **The reviewer login differs by API.** In **GraphQL** (`gh api graphql` and `gh pr view --json reviews`, which is GraphQL-backed) the `Bot.login` is `copilot-pull-request-reviewer` - **no `[bot]` suffix**. In the **REST** API (`gh api repos/.../issues|pulls/...`) the same account's `user.login` is `copilot-pull-request-reviewer[bot]` - **with** the suffix. Each query below uses the correct form for its API; match the API, not a single spelling, when adapting them.
 
 ```sh
 # 1. PR node id + the Copilot reviewer's bot node id (read from any existing
@@ -447,7 +56,7 @@ mutation($pr: ID!, $bot: ID!) {
 }' -F pr="$PR_NODE" -F bot="$BOT_ID"
 ```
 
-The bot node id is read from an existing Copilot review, so step 1 needs at least one prior review on the PR - the auto-review-on-open normally supplies the first one. If no Copilot review exists yet and auto-review didn't fire, request `Copilot` once through the GitHub PR UI to seed it, then use the mutation for every subsequent re-request.
+The bot node id is read from an existing Copilot **formal** review (`pullRequest.reviews`), so step 1 needs at least one prior formal review on the PR - the auto-review-on-open normally supplies the first one (it may have **no inline comments**; that still counts, and its bot node id is still readable). Poll for it (give auto-review-on-open a few minutes) before deciding it is missing. If Copilot posted **only an issue comment** and no formal review, the head is covered but `reviews` yields no bot node id - read the id from the Copilot issue comment's author by querying the PR's issue comments in GraphQL (`pullRequest.comments` -> author `... on Bot { id }`), or request `Copilot` once through the GitHub PR UI to produce a formal review. Manual UI seeding is the fallback specifically when no formal review exists to read the id from; then use the mutation for every subsequent re-request.
 
 **Do NOT post `@Copilot review` as a PR comment.** That comment triggers the Copilot *coding agent* (`copilot-swe-agent[bot]`), which makes code changes rather than posting a review.
 
@@ -474,9 +83,11 @@ gh api repos/ptr727/Utilities/issues/<N>/comments --jq \
   '[.[] | select(.user.login=="copilot-pull-request-reviewer[bot]")] | last | {created_at, body: .body[:200]}'
 ```
 
-Coverage is confirmed when (1) exits 0. For issue comments (path 2), body content is the only reliable signal - `created_at` is not: `git log -1 --format=%cI` is the **commit** timestamp, not the push timestamp, so amended or rebased commits can have an earlier timestamp and an older Copilot comment could satisfy a time check even though Copilot never saw the current head. Treat path (2) as confirmed only when the comment body explicitly refers to the current changes.
+Coverage is confirmed when (1) exits 0 - **a formal review with no inline comments still satisfies path (1)**, because coverage is about the head SHA, not the comment count. For issue comments (path 2), body content is the only reliable signal - `created_at` is not: `git log -1 --format=%cI` is the **commit** timestamp, not the push timestamp, so amended or rebased commits can have an earlier timestamp and an older Copilot comment could satisfy a time check even though Copilot never saw the current head. Treat path (2) as confirmed only when the comment body explicitly refers to the current changes.
 
 ### Bounded Retry Workflow
+
+This path is only for a **genuinely missing** review - no Copilot review (formal *or* issue comment) covers the current head SHA after polling. A review that covered the head but produced no comments is a clean pass, not a missing review; do not enter this retry path for it.
 
 If a review did not run on the current head, retry:
 
@@ -531,7 +142,13 @@ Issue-level Copilot comments (those in `issues/<N>/comments`) have no resolution
 Reply-body conventions:
 
 - Accepted bug/style fix: include fixing commit SHA and a one-line summary.
-- Declined style comment: cite the rule (AGENTS.md or language CODESTYLE) and the existing-tree precedent.
+- Declined style comment: cite the rule (AGENTS.md or the CODESTYLE.md language section) and the existing-tree precedent.
 - Declined architecture proposal: one-sentence rationale.
 
 After the final push, sweep-resolve stale older threads for removed code paths.
+
+## When in Doubt
+
+Read [AGENTS.md](../AGENTS.md) for this repo's conventions. For code-style rules, [`CODESTYLE.md`](../CODESTYLE.md) (its General section plus the .NET section) is authoritative. Don't restate any of these files' rules in commit bodies or PR descriptions - keep those focused on the change itself.
+
+**In a derived repo:** if you find a discrepancy that should be fixed in the template itself (this file or AGENTS.md is out of date, a rule is missing, something bit this repo and would bite the next), open an issue upstream in [`ptr727/ProjectTemplate`](https://github.com/ptr727/ProjectTemplate) rather than only fixing it locally - see the template's [AGENTS.md "Staying in Sync and Reporting Drift Upstream"](https://github.com/ptr727/ProjectTemplate/blob/main/AGENTS.md#staying-in-sync-and-reporting-drift-upstream).
