@@ -91,3 +91,4 @@ jobs:
         with:
           name: nugetlibrary-build-${{ inputs.branch }}
           path: ${{ runner.temp }}/${{ env.PROJECT_ARTIFACT }}
+          retention-days: 1

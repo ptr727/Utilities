@@ -10,7 +10,7 @@
 			"davidanson",
 			"dotnettools",
 			"extlang",
-			"gruntfuggly",
+			"fanaticpythoner",
 			"Jernej",
 			"macrolanguage",
 			"nbgv",
@@ -47,11 +47,11 @@
 	"extensions": {
 		"recommendations": [
             "davidanson.vscode-markdownlint",
-            "gruntfuggly.todo-tree",
-            "ms-dotnettools.csdevkit",
+			"ms-dotnettools.csdevkit",
             "streetsidesoftware.code-spell-checker",
             "editorconfig.editorconfig",
-            "csharpier.csharpier-vscode"
+			"csharpier.csharpier-vscode",
+			"fanaticpythoner.better-todo-tree"
 		]
 	}
 }

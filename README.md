@@ -13,14 +13,16 @@ Code and Pipeline is on [GitHub](https://github.com/ptr727/Utilities)\
 Packages published on [NuGet](https://www.nuget.org/packages/InsaneGenius.Utilities/)\
 ![NuGet](https://img.shields.io/nuget/v/InsaneGenius.Utilities?logo=nuget)
 
-## Version History
+## Release Notes
 
-- v3.4:
-  - .NET 10 and AOT support.
-  - Removed `ProcessEx` process wrapper classes, use [CliWrap](https://github.com/Tyrrrz/CliWrap) instead.
-  - Code cleanup with help from Copilot.
-- v3.3:
-  - Language tags moved to a dedicated [repo](https://github.com/ptr727/LanguageTags).
+**Version: 3.5**:
+
+**Summary**:
+
+- Re-synced the repository structure and agent documentation with the upstream ProjectTemplate.
+- Swapped the recommended Todo VS Code add-on from Todo Tree to Better Todo Tree.
+
+See [Release History](./HISTORY.md) for complete release notes and older versions.
 
 ## License
 
