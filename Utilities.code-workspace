@@ -46,10 +46,10 @@
 	},
 	"extensions": {
 		"recommendations": [
-            "davidanson.vscode-markdownlint",
+			"davidanson.vscode-markdownlint",
 			"ms-dotnettools.csdevkit",
-            "streetsidesoftware.code-spell-checker",
-            "editorconfig.editorconfig",
+			"streetsidesoftware.code-spell-checker",
+			"editorconfig.editorconfig",
 			"csharpier.csharpier-vscode",
 			"fanaticpythoner.better-todo-tree"
 		]

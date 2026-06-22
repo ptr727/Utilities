@@ -13,6 +13,6 @@ Some useful and not so useful C# .NET utility classes.
   - Removed `ProcessEx` process wrapper classes, use [CliWrap](https://github.com/Tyrrrz/CliWrap) instead.
   - Code cleanup with help from Copilot.
 - v3.3:
-  - Language tags moved to a dedicated [repo](https://github.com/ptr727/LanguageTags).
+  - Language tags split out into a separate dedicated library.
 - v3.2 and earlier:
   - Utility classes for downloads, file and directory operations with retry logic, string compression, byte-size formatting, console helpers, and command-line parsing.
