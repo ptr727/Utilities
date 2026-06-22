@@ -25,7 +25,7 @@
             "triggerbuild",
             "winget"
         ],
-        "dotnet.defaultSolution": "Utilities.sln",
+        "dotnet.defaultSolution": "Utilities.slnx",
         "files.trimTrailingWhitespace": true,
         "[markdown]": {
             "files.trimTrailingWhitespace": false
