@@ -19,8 +19,8 @@ Packages published on [NuGet](https://www.nuget.org/packages/InsaneGenius.Utilit
 
 **Summary**:
 
-- Re-synced the repository structure and agent documentation with the upstream ProjectTemplate.
-- Swapped the recommended Todo VS Code add-on from Todo Tree to Better Todo Tree.
+- Repository structure and agent documentation follow the upstream ProjectTemplate.
+- Better Todo Tree is the recommended Todo VS Code add-on.
 
 See [Release History](./HISTORY.md) for complete release notes and older versions.
 
