@@ -69,8 +69,8 @@ Available VS Code tasks (run them from VS Code's task runner - **Terminal -> Run
 - `CSharpier Format`: Auto-format code with CSharpier *(clean-compile)*
 - `.NET Format`: Run CSharpier and build, then verify formatting and style with `--verify-no-changes` *(clean-compile; the task to run after edits)*
 - `.NET Tool Update`: Update dotnet tools *(convenience)*
-- `.NET Outdated Upgrade`: Upgrade outdated NuGet dependencies, interactive prompt *(convenience)*
-- `.NET Benchmark`: Run BenchmarkDotNet *(project-specific; present only if a Benchmarks project exists)*
+- `.NET Publish`: Publish the library *(convenience)*
+- `Husky.Net Run`: Run the Husky.Net hooks *(convenience)*
 
 ### Tooling and Editor
 
