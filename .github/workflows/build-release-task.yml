@@ -87,10 +87,31 @@ jobs:
         with:
           ref: ${{ needs.get-version.outputs.GitCommitId }}
 
-      - name: Download library build artifacts step
+      # Backstop (main only): a public release must not carry a prerelease '-', guarding against NBGV mis-versioning the
+      # public ref (e.g. a dispatch on a non-default ref) into a malformed "Latest" release. Strip '+buildmetadata'
+      # first - a '-' there is legitimate; only a '-' in the core/prerelease segment marks a prerelease.
+      - name: Verify public release version step
+        if: ${{ inputs.branch == 'main' }}
+        env:
+          SEMVER2: ${{ needs.get-version.outputs.SemVer2 }}
+        run: |
+          set -euo pipefail
+          CORE_AND_PRE="${SEMVER2%%+*}"   # drop +buildmetadata; a '-' here is the genuine prerelease separator
+          if [[ "$CORE_AND_PRE" == *-* ]]; then
+            echo "::error::Public (main) release version '$SEMVER2' carries a prerelease suffix; refusing to publish."
+            exit 1
+          fi
+
+      # Collect assets by the `release-asset-<branch>-*` pattern so this step is target-agnostic: subset releases by
+      # deleting the target, not `enable_*: false` (a skipped `needs` job would skip this release job too). The release
+      # step guards `fail_on_unmatched_files: true`, so at least one `release-asset-*` must match; a repo that drops
+      # every file-producing target (e.g. a Docker-only repo, whose release carries only source zip + README + LICENSE)
+      # relaxes that guard.
+      - name: Download release asset artifacts step
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          artifact-ids: ${{ needs.build-nugetlibrary.outputs.artifact-id }}
+          pattern: release-asset-${{ inputs.branch }}-*
+          merge-multiple: true
           path: ./Publish
 
       # The weekly publisher re-runs even when a branch has no new commits, so
@@ -117,17 +138,13 @@ jobs:
             echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
 
-      # `target_commitish` MUST be set explicitly: softprops doesn't pass a
-      # default through, and GitHub's REST API then defaults the new tag to
-      # the repository's default branch (main). We pin it to NBGV's
-      # `GitCommitId` - the exact commit the version was computed from. This
-      # avoids two bugs: `github.sha` would be wrong (the publisher's branch
-      # matrix builds `develop` from a run whose `github.sha` is main's tip),
-      # and `inputs.branch` would be a moving ref (a commit landing mid-run
-      # could tag the release on a newer commit than the one that was built).
-      # Skip the no-op weekly republish when the tag already exists, but always
-      # allow a manual `workflow_dispatch` through so it can repair/refresh a
-      # partially-created release for the same tag.
+      # `target_commitish` must be set explicitly: otherwise GitHub's REST API tags the release on the default branch.
+      # Pin it to `GitCommitId` so the tag is on the exact built commit, consistent with the SemVer2 tag and artifacts.
+      # Skip when the release already exists, but always let a manual `workflow_dispatch` through to refresh it.
+      # Every release (any branch, any target) is a tag on the built commit plus the auto-attached source zip, README,
+      # and LICENSE; targets amend it by uploading `release-asset-*` files (binaries/packages) or pushing elsewhere
+      # (image/registry). `fail_on_unmatched_files: true` fails loudly if a promised `release-asset-*` is missing or
+      # misnamed; a no-file-target repo relaxes it (see download step).
       - name: Create GitHub release step
         if: ${{ steps.release-exists.outputs.exists == 'false' || github.event_name == 'workflow_dispatch' }}
         uses: softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b # v3.0.1
@@ -136,6 +153,7 @@ jobs:
           tag_name: ${{ needs.get-version.outputs.SemVer2 }}
           target_commitish: ${{ needs.get-version.outputs.GitCommitId }}
           prerelease: ${{ inputs.branch != 'main' }}
+          fail_on_unmatched_files: true
           files: |
             LICENSE
             README.md
