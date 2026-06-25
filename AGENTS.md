@@ -1,14 +1,24 @@
 # Instructions for AI Coding Agents
 
-**Utilities** is a C# .NET NuGet library (published as `InsaneGenius.Utilities`). The library ships under [`Utilities/`](./Utilities/), with a `Sandbox/` console app for experimentation and `UtilitiesTests/` for xUnit tests. This file is the cross-cutting source of truth for process rules and this repo's project-specific conventions and public-API contracts; the code-style rules live in [`CODESTYLE.md`](./CODESTYLE.md) at the repo root - one guide with a General section that applies repo-wide plus a droppable .NET language section.
+**Utilities** is a C# .NET NuGet library (published as `InsaneGenius.Utilities`). The library ships under [`Utilities/`](./Utilities/), with a `Sandbox/` console app for experimentation and `UtilitiesTests/` for xUnit tests. This file is the cross-cutting source of truth for process rules and this repo's project-specific conventions and public-API contracts; the code-style rules live in [`CODESTYLE.md`](./CODESTYLE.md) at the repo root - one guide with a General section that applies repo-wide plus a .NET language section, carried whole.
 
 This repo tracks the [ptr727/ProjectTemplate](https://github.com/ptr727/ProjectTemplate) two-phase release model. It is a **NuGet-only** derivation: it has no Docker, executable, PyPI, or codegen targets, so the template's `build-docker-task.yml`, `build-executable-task.yml`, `build-pypilibrary-task.yml`, and `run-codegen-*.yml` workflows are intentionally absent, and the merge-bot carries only the Dependabot path. Keep the remaining workflow filenames and structure aligned with the template so upstream changes apply as minimal deltas.
 
+## Template Adaptations
+
+Intentional, documented deviations from the template. Anything here differs on purpose; anything not here is expected to match the template.
+
+- **NuGet-only target set.** No Docker, executable, PyPI, or codegen targets, so the corresponding `build-*-task.yml` / `run-codegen-*.yml` workflows are absent and the merge-bot carries only the Dependabot path (see the repo overview above). `publish-release.yml` keeps its repo-specific `date-badge` per-branch matrix and omits the template's PyPI/Docker jobs accordingly.
+- **Husky-driven clean-compile is the CI style gate.** The template ships no hook runner and lints style only in CI. This repo wires Husky.Net (`.husky/` ships) as a local pre-commit gate, and the `test-pull-request.yml` `unit-test` job runs the same checks via `dotnet husky run` (`dotnet tool restore` -> `dotnet husky install` -> `dotnet husky run`) rather than invoking `dotnet csharpier check` + `dotnet format style --verify-no-changes` directly. This is the intentional equivalent of the template's CI style step - same CSharpier + `dotnet format` checks, driven through the repo's hook runner so the local gate and CI run identical commands. Keeping the working gate is sanctioned by [CODESTYLE.md](./CODESTYLE.md) "Clean-Compile Verification", not drift.
+- **`.husky/pre-commit` LF pin in `.editorconfig`.** The carried `.editorconfig` adds a `[.husky/pre-commit]` block pinning the extensionless hook to LF (the template's `[*.sh]` rule does not match it). Required because this repo ships the Husky hook.
+- **Brownfield analyzer relaxations.** A pre-existing set of analyzer rules are relaxed to suggestion in `.editorconfig` / project `.editorconfig`s (and `IL3058` via `NoWarn`) to keep the published public API stable; each is documented inline (see "Build Configuration").
+
 ## Git and Commit Rules
 
-- **Default to staging, not committing.** Stage changes with `git add` and leave `git commit` to the developer unless explicitly authorized for the current task. Authorization is scope-bound to that task.
-- **All commits must be cryptographically signed (SSH or GPG).** Branch protection enforces this on both branches; unsigned commits are rejected on push. Signing depends on environment configuration (`git config commit.gpgsign true`, a configured `user.signingkey`, and a working signing agent). If signing is not configured, **do not commit** - surface the missing config to the developer and stop at `git add`.
-- **Never force push** (`git push --force` / `--force-with-lease`) and **never run destructive git commands** (`git reset --hard`, `git checkout .`, `git restore .`, `git clean -f`) without explicit developer instruction.
+- **Default to staging, not committing.** Stage changes with `git add` and leave `git commit` to the developer unless the developer has explicitly authorized the agent to commit for the current ask ("commit this", "open a PR", etc.). Authorization is scope-bound - it covers the commits needed for that specific task, not a blanket commit license for the rest of the session.
+- **All commits must be cryptographically signed (SSH or GPG).** Branch protection enforces this on both branches; unsigned commits are rejected on push. Signing depends on environment configuration - `git config commit.gpgsign true`, a configured `user.signingkey`, and a working signing agent (loaded `ssh-agent` for SSH, or `gpg-agent` for GPG). If signing is not configured in the environment, **do not commit** - surface the missing config to the developer and stop at `git add`. Verify before any agent-authored commit (`git config --get commit.gpgsign && ssh-add -L` or the GPG equivalent). **Signing must be live before the *first* commit, not retrofitted.** Turning on `Require signed commits` against a branch that already has unsigned commits forces a rewrite of that entire history to re-sign it - changing every commit SHA and making whoever does the rewrite the committer and signer of every commit (a rebase preserves the `author` field but not the original signatures; you cannot sign another contributor's commits for them). During new-repo setup, never create commits until signing is verified.
+- **Never force push.** Do not run `git push --force` or `git push --force-with-lease` under any circumstances. Force pushing rewrites shared history and can cause data loss.
+- **Never run destructive git commands** (`git reset --hard`, `git checkout .`, `git restore .`, `git clean -f`) without explicit developer instruction.
 
 ## Branching Model
 
@@ -52,7 +62,7 @@ The repo uses a **two-phase model by default**: PRs build fast, publishing is ba
 - Don't write `update stuff`, `wip`, or other vague titles. (Dependabot's default `Bump X from Y to Z` titles are fine - keep them.)
 - Don't add `Co-Authored-By:` lines unless the developer explicitly asks.
 - Don't put release-bump magnitude in the title - no "minor", "patch", "release v3.5", etc. Nerdbank.GitVersioning computes the next release version from `version.json` + git history. Dependency versions in dependency-bump titles are fine and expected.
-- Use US English spelling and match the existing heading style of the file you're editing: title case with lowercase short bind words (a, an, the, and, but, or, of, in, on, at, to, by, for, from).
+- Use US English spelling and match the existing heading style of the file you're editing: title case with lowercase short bind words (a, an, the, and, but, or, of, in, on, at, to, by, for, from); hyphenated compounds capitalize both parts unless the second is a short preposition (*Built-in*, *EPA-Corrected*, *24-Hour*).
 
 ### Examples
 
@@ -100,19 +110,34 @@ Applies to code and workflow (`#`) comments alike.
 
 ## PR Review Etiquette
 
+> **Mandatory in every derived repo.** This entire "PR Review Etiquette" section is the provider-agnostic review-loop *contract* and must be carried **verbatim** into every repo derived from this template, alongside the [`.github/copilot-instructions.md`](./.github/copilot-instructions.md) "GitHub Copilot Review Runbook" that implements it. Without both in-repo, an agent working in the derived repo has no pointer to the reliable Copilot mechanics and falls back to ad-hoc (and known-broken) behavior.
+
 The repo runs a review loop on every PR: local agent iteration plus remote automated review (GitHub Copilot is the configured reviewer). Treat this as a contract regardless of which local agent authored the changes.
+
+### Merge Gate (read this first)
+
+**Do not merge - and do not enable auto-merge - unless ALL of these hold:**
+
+1. Required status checks are green (`mergeStateStatus: CLEAN`), **and**
+2. A Copilot review is confirmed on the **current head SHA** (not an earlier push), **and**
+3. **Every** Copilot finding on that head SHA is closed out - all review threads resolved, **and** any issue-level Copilot comments (which have no resolve action) triaged and replied to - so zero outstanding findings remain, **and**
+4. The maintainer has given **explicit** permission to merge.
+
+`mergeStateStatus: CLEAN` reflects **only** required statuses - it never reflects open bot review comments, so `CLEAN` alone is **never** sufficient to merge. A green/`CLEAN` PR with an unresolved Copilot finding fails this gate; treat it as "not mergeable" no matter what the merge-state field says. The agent never merges on its own (consistent with "default to staging"; merging is maintainer-authorized).
+
+**Merging is not releasing.** A merge to a release branch does **not** by itself publish; publishing is a separate, explicitly configured step in the repo's release pipeline (e.g. a scheduled run, a manual dispatch, or an opted-in publish-on-merge trigger), not an automatic consequence of merging. Never describe a merge as cutting a release, and never trigger a publish without explicit maintainer instruction.
 
 ### Expected Review Loop
 
 1. Push changes to the PR branch.
 2. Re-request a review for the **current head SHA**. Auto-trigger is unreliable, so request it explicitly via the `requestReviews` GraphQL mutation (now reliable end-to-end - see the runbook); the UI is only a fallback.
-3. Wait for review activity on that head.
+3. Wait for review activity on that head. A completed review that raises **no findings** is a valid terminal outcome for that head - proceed; do not re-trigger it or treat the absence of comments as a missing review.
 4. Triage findings.
 5. Apply fixes or write a rationale for declines.
 6. Reply to each thread and resolve what was addressed.
 7. Re-run the loop after every fix push until no actionable findings remain.
 
-`mergeStateStatus: CLEAN` only checks required statuses; it does not block on bot review comments. Drive the loop to green - review confirmed on the latest head SHA and every actionable finding closed - and then **wait for the maintainer's explicit permission to merge**. The agent does not merge on its own (consistent with "default to staging"; merging is maintainer-authorized).
+Drive the loop to green - review confirmed on the latest head SHA and every actionable finding closed - then stop and apply the **Merge Gate** above: all four preconditions must hold, and `mergeStateStatus: CLEAN` alone never satisfies it.
 
 For provider-specific mechanics (how to request review, query review state, post replies, resolve threads), see the **GitHub Copilot Review Runbook** in [.github/copilot-instructions.md](./.github/copilot-instructions.md). This file owns the contract; that file owns the mechanics.
 
@@ -207,12 +232,12 @@ These artifacts are the template's cross-cutting contract; this repo carries eac
 - **[`.github/copilot-instructions.md`](./.github/copilot-instructions.md)** - the whole file is a drop-in; its "GitHub Copilot Review Runbook" carries the provider mechanics. Only the `<owner>` / `<repo>` placeholders are adapted (to `ptr727` / `Utilities`). Keep it **narrow** - provider mechanics plus the inline commit/PR-title summary; project-specific conventions and API contracts belong in this file instead.
 - **[`.markdownlint-cli2.jsonc`](./.markdownlint-cli2.jsonc)** - the shared lint config read by both the davidanson `markdownlint` IDE extension and CLI `markdownlint-cli2`, so the IDE and command line stay in lock-step. Carried verbatim (it is repo-agnostic).
 - **[`.editorconfig`](./.editorconfig) and [`.gitattributes`](./.gitattributes)** - line-ending governance. The defaults + per-extension EOL block is always-verbatim; the `[*.cs]` + ReSharper style block at the end is .NET-only (the file marks the boundary).
-- **[`CODESTYLE.md`](./CODESTYLE.md)** - the single code-style guide. Its **General** section is always carried; each language section is droppable (this repo keeps the .NET section and drops the template's Python section). **Repo-root placement is load-bearing** - `AGENTS.md` links it as `./CODESTYLE.md` and `.github/copilot-instructions.md` as `../CODESTYLE.md`, so moving it breaks those links. Adapt the in-section repo-specific bits: the .NET project-folder list, the `InternalsVisibleTo` project names, and the VS Code task labels.
+- **[`CODESTYLE.md`](./CODESTYLE.md)** - the single code-style guide. Its **General** section is always carried, and this repo carries the file whole (General plus both the .NET and Python sections) so re-sync is a wholesale replace - only the .NET section is consumed here; the Python section is inert. **Repo-root placement is load-bearing** - `AGENTS.md` links it as `./CODESTYLE.md` and `.github/copilot-instructions.md` as `../CODESTYLE.md`, so moving it breaks those links. The file is genericized with neutral placeholders, so re-sync is a clean wholesale overwrite with nothing to hand-adapt.
 - **[`.vscode/tasks.json`](./.vscode/tasks.json)** - carry the **named clean-compile definitions verbatim**: the `.NET Build`, `CSharpier Format`, and `.NET Format` tasks. Their names are owned by the `CODESTYLE.md` ".NET" section and their command sequence + arguments are the canonical clean-compile spec. Convenience tasks (`.NET Tool Update`, `.NET Publish`, `Husky.Net Run`) are the adapt zone.
 
 ## Staying in Sync and Reporting Drift Upstream
 
-This repo re-syncs against [`ptr727/ProjectTemplate`](https://github.com/ptr727/ProjectTemplate) periodically, not just at creation: pull the current version of each verbatim-carry artifact above and re-apply it (adapting only the noted placeholders). For [`CODESTYLE.md`](./CODESTYLE.md), re-sync the whole file from the template and then drop the language section(s) this repo doesn't ship (always keeping the General section) - replacing the file wholesale and trimming whole sections is simpler to keep current than hand-editing snippets.
+This repo re-syncs against [`ptr727/ProjectTemplate`](https://github.com/ptr727/ProjectTemplate) periodically, not just at creation: pull the current version of each verbatim-carry artifact above and re-apply it (adapting only the noted placeholders). For [`CODESTYLE.md`](./CODESTYLE.md), re-sync the whole file from the template (carried whole; the language sections this repo doesn't ship stay inert) - a wholesale replace is simpler to keep current than hand-editing snippets.
 
 **Drift flows back upstream as an issue, not a private fix.** When re-syncing, if you find a discrepancy that should be fixed in the **template itself** - a gap, an outdated instruction, a missing rule, something that bit this repo and would bite the next derived repo too - **open an issue in [`ptr727/ProjectTemplate`](https://github.com/ptr727/ProjectTemplate)** describing it, rather than only patching it locally. A local fix realigns *this* repo; an upstream issue (then fix) corrects it for every future derived repo and keeps the template the single source of truth. This upstream-issue rule is this repo's sole cross-repo obligation: do not name sibling or downstream repos in this repo's docs, comments, or AGENTS - a reader here cares only about this project.
 
