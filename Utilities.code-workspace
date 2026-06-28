@@ -5,26 +5,6 @@
         }
     ],
     "settings": {
-        "cSpell.words": [
-            "csdevkit",
-            "davidanson",
-            "dotnettools",
-            "extlang",
-            "fanaticpythoner",
-            "Jernej",
-            "macrolanguage",
-            "nbgv",
-            "Nerdbank",
-            "nupkg",
-            "Serilog",
-            "Simoncic",
-            "softprops",
-            "stefanzweifel",
-            "subtag",
-            "templating",
-            "triggerbuild",
-            "winget"
-        ],
         "dotnet.defaultSolution": "Utilities.slnx",
         "files.trimTrailingWhitespace": true,
         "[markdown]": {

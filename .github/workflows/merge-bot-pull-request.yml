@@ -1,47 +1,22 @@
 name: Merge bot pull request action
 
-# Two-job model:
-#   1. `merge-dependabot` runs on `opened` and `reopened` events only. It
-#      enables auto-merge via `gh pr merge --auto` once per PR. Restricting
-#      to open/reopen (skipping `synchronize`) is what makes step 2 below
-#      stick — if this job re-ran on every `synchronize`, it'd undo a
-#      maintainer-triggered disable.
-#      The merge method (`--squash` vs `--merge`) is dispatched by a `case`
-#      statement on `pull_request.base.ref` so the form matches each branch's
-#      ruleset (develop = squash-only, main = merge-only, see AGENTS.md
-#      "Branching Model"). Dependabot opens parallel PRs against both branches;
-#      security updates always target `main` and flow through the same path.
-#   2. `disable-auto-merge-on-maintainer-push` runs on `synchronize` events
-#      against Dependabot-authored PRs when the event actor is NOT Dependabot
-#      — i.e. a maintainer pushed commits to a Dependabot PR. It calls
-#      `gh pr merge --disable-auto` so the maintainer's commits don't
-#      auto-merge along with the bot's content. The maintainer re-enables
-#      auto-merge manually (UI or `gh pr merge --auto`) when ready.
+# Enables auto-merge on Dependabot pull requests and disables it when a maintainer pushes to the bot
+# branch. Auto-merge completes only once the required checks pass, so a breaking update blocks itself.
+# Merge method follows the base: squash for develop, merge commit for main.
 #
-# Token strategy:
-#   Every job uses an App token (`actions/create-github-app-token`). The
-#   disable job needs an App token because, on a Dependabot PR, the workflow
-#   context runs with Dependabot's restricted secrets regardless of the event
-#   actor, so plain `GITHUB_TOKEN` would be read-only.
-
-# `pull_request_target` rather than `pull_request`: this workflow holds
-# the App private key in env (`GH_TOKEN`) and runs actions
-# (`create-github-app-token`, `fetch-metadata`) that consume it. Under
-# `pull_request` the workflow definition AND the action SHAs come from
-# the PR head — meaning a Dependabot bump of `actions/create-github-app-token`
-# (or any other action used here) would execute the new, unreviewed SHA
-# with full access to the App key. `pull_request_target` runs from the
-# base-branch workflow definition, so action-SHA changes only take effect
-# *after* they're merged. Safe because this workflow never checks out PR
-# code — it only calls `gh pr merge` against the PR by URL, so the usual
-# `pull_request_target` warning about untrusted PR code doesn't apply.
+# Every job mints an App token. The built-in GITHUB_TOKEN will not do: its merge commits do not trigger
+# downstream workflows (GitHub's recursion guard), and on a Dependabot pull request it is read-only.
+#
+# Trigger is pull_request_target, not pull_request, so action SHAs resolve from the base branch while the
+# jobs hold the App key. Safe because this workflow never checks out PR code, it only runs `gh pr merge`
+# against the PR URL.
 on:
   pull_request_target:
     types: [opened, reopened, synchronize]
 
-# Per-PR group: under `pull_request_target` `github.ref` is the base branch, which would serialize every bot PR
-# against that base; key on the PR number so each PR's events queue independently. `cancel-in-progress: false` so a
-# follow-up synchronize doesn't cancel an in-flight `opened` run before it enables auto-merge.
+# Key on the PR number, not github.ref (the base branch under pull_request_target, which would serialize
+# every bot PR). cancel-in-progress: false so a synchronize does not cancel an in-flight opened run before
+# it enables auto-merge.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
   cancel-in-progress: false
@@ -51,12 +26,8 @@ jobs:
   merge-dependabot:
     name: Merge dependabot pull request job
     runs-on: ubuntu-latest
-    # Restrict to Dependabot PRs that originate from this repository, not
-    # a fork. Only runs on `opened` / `reopened` events so the auto-merge
-    # enable happens once per PR; the `disable-auto-merge-on-maintainer-push`
-    # job below is what disables auto-merge when a maintainer pushes to a
-    # Dependabot branch. Skipping `synchronize` here is what keeps that
-    # disable sticky.
+    # In-repo Dependabot PRs only, on opened/reopened so the disable job stays sticky. Every tier
+    # auto-merges, semver-major included: the required checks are the gate, not the version bump.
     if: >-
       (github.event.action == 'opened' || github.event.action == 'reopened') &&
       github.event.pull_request.user.login == 'dependabot[bot]' &&
@@ -74,30 +45,15 @@ jobs:
           client-id: ${{ secrets.CODEGEN_APP_CLIENT_ID }}
           private-key: ${{ secrets.CODEGEN_APP_PRIVATE_KEY }}
 
-      - name: Get dependabot metadata step
-        id: metadata
-        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
-        with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
-
-      # Skip semver-major NuGet bumps: majors can build cleanly but break
-      # runtime behavior, so they should land via human review. Other
-      # ecosystems' majors (github-actions) are usually safe and merge.
       - name: Merge pull request step
-        if: >-
-          (steps.metadata.outputs.package-ecosystem != 'nuget') ||
-          (steps.metadata.outputs.update-type != 'version-update:semver-major')
         run: |
           set -euo pipefail
           case "${{ github.event.pull_request.base.ref }}" in
             develop) method=--squash ;;
             main) method=--merge ;;
-            *)
-              echo "::error::Unsupported base branch: ${{ github.event.pull_request.base.ref }}"
-              exit 1
-              ;;
+            *) echo "::error::Unsupported base branch: ${{ github.event.pull_request.base.ref }}"; exit 1 ;;
           esac
-          gh pr merge --auto "$method" "$PR_URL"
+          gh pr merge --auto --delete-branch "$method" "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
@@ -105,14 +61,8 @@ jobs:
   disable-auto-merge-on-maintainer-push:
     name: Disable auto-merge on maintainer push job
     runs-on: ubuntu-latest
-    # Fires on `synchronize` events against Dependabot-authored PRs when the
-    # event actor is NOT Dependabot — i.e. a maintainer pushed commits to the
-    # bot's branch. Disables auto-merge so the maintainer's commits don't
-    # auto-merge along with the bot's content. The maintainer re-enables
-    # auto-merge manually when ready (UI button, or `gh pr merge --auto <PR>`).
-    #
-    # `gh pr merge --disable-auto` is idempotent — calling it on a PR
-    # that already has auto-merge disabled is a no-op.
+    # A maintainer push to a bot branch (synchronize, actor is not the bot) disables auto-merge so the
+    # maintainer's commits do not merge with the bot's. Re-enable manually. The disable call is idempotent.
     if: >-
       github.event.action == 'synchronize' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
@@ -124,11 +74,6 @@ jobs:
     steps:
 
       - name: Generate GitHub App token step
-        # App token rather than GITHUB_TOKEN: on a Dependabot PR the
-        # workflow context runs with Dependabot's restricted secrets
-        # regardless of who triggered the event (GitHub gates by PR
-        # origin, not by event actor), and the restricted GITHUB_TOKEN
-        # is read-only. Same App token pattern as the merge job.
         id: app-token
         uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
