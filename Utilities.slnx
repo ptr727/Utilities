@@ -5,11 +5,14 @@
         <File Path=".github/dependabot.yml" />
         <File Path=".gitignore" />
         <File Path="AGENTS.md" />
+        <File Path="CODESTYLE.md" />
+        <File Path="cspell.json" />
         <File Path="Directory.Build.props" />
         <File Path="Directory.Packages.props" />
         <File Path="LICENSE" />
         <File Path="README.md" />
         <File Path="version.json" />
+        <File Path="WORKFLOW.md" />
     </Folder>
     <Folder Name="/Solution Items/Data/">
         <File Path="Data/ISO-639-2_utf-8.txt" />
@@ -18,13 +21,11 @@
     </Folder>
     <Folder Name="/Solution Items/GitHub Actions/">
         <File Path=".github/dependabot.yml" />
-        <File Path=".github/workflows/build-datebadge-task.yml" />
-        <File Path=".github/workflows/build-nugetlibrary-task.yml" />
         <File Path=".github/workflows/build-release-task.yml" />
-        <File Path=".github/workflows/get-version-task.yml" />
         <File Path=".github/workflows/merge-bot-pull-request.yml" />
         <File Path=".github/workflows/publish-release.yml" />
         <File Path=".github/workflows/test-pull-request.yml" />
+        <File Path=".github/workflows/validate-task.yml" />
     </Folder>
     <Project Path="Sandbox/Sandbox.csproj" />
     <Project Path="Utilities/Utilities.csproj" />
