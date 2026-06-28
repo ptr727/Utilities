@@ -1,0 +1,31 @@
+{
+  "version": "0.2",
+  "language": "en-US",
+  "words": [
+    "csdevkit",
+    "davidanson",
+    "dotnettools",
+    "extlang",
+    "fanaticpythoner",
+    "Jernej",
+    "macrolanguage",
+    "nbgv",
+    "Nerdbank",
+    "nupkg",
+    "Serilog",
+    "Simoncic",
+    "softprops",
+    "stefanzweifel",
+    "subtag",
+    "templating",
+    "triggerbuild",
+    "winget"
+  ],
+  "ignorePaths": [
+    "Data/**",
+    "**/bin/**",
+    "**/obj/**",
+    ".artifacts/**",
+    ".git/**"
+  ]
+}
