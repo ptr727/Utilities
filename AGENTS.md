@@ -4,6 +4,8 @@
 
 This file is the canonical reference for cross-cutting AI-agent rules. The CI/CD workflow contract and conventions live in [`WORKFLOW.md`](./WORKFLOW.md); C# code-style conventions live in [`CODESTYLE.md`](./CODESTYLE.md). Copilot review *mechanics* are owned by [`.github/copilot-instructions.md`](./.github/copilot-instructions.md) - this file delegates them there explicitly (see "PR Review Etiquette" below). High-level summaries in other docs (e.g. README's Contributing section) are allowed when they link back here; don't duplicate the rules themselves. The library's **project-specific conventions and public-API/behavioral contracts** also live here (the [Library API Conventions](#library-api-conventions) section), **not** in `.github/copilot-instructions.md` - that file targets GitHub Copilot / VS Code specifically, while this file is the agent-agnostic one every coding agent reads, so any rule a reviewer must honor has to live here to be provider-independent.
 
+**Where rules live.** A durable project, code, or style rule belongs in this file (or `WORKFLOW.md` / `CODESTYLE.md` as appropriate), so it is versioned and read by every session and every agent. An agent's own session memory or scratch state is private and lost on restart, so it is never the system of record for a rule: when you learn or are corrected on a rule, write it into the right doc in the same change. Memory may also note it, but the committed docs are the source of truth.
+
 ## Git and Commit Rules
 
 - **Default to staging, not committing.** Stage changes with `git add` and leave `git commit` to the developer unless the developer has explicitly authorized the agent to commit for the current ask ("commit this", "open a PR", etc.). Authorization is scope-bound - it covers the commits needed for that specific task, not a blanket commit license for the rest of the session.
@@ -26,8 +28,8 @@ The release and publish behavior - branch-scoped versioning (`main` = stable, `d
 
 Versioning is the one release rule that is a **human process**, not a workflow outcome, so it lives here ([`WORKFLOW.md`](./WORKFLOW.md) D3.3 defers to this):
 
-- The `version` (major.minor) in [`version.json`](./version.json) is the version floor; NBGV appends the git height (the SemVer patch position). `main` builds a stable `X.Y.<height>`; `develop` builds a prerelease `X.Y.<height>-g<sha>`. The maintainer edits `version.json`; dependency bumps, CI/workflow fixes, and doc edits leave it untouched.
-- **Bump `version.json` only for functional changes, by maintainer instruction.** Raise the major/minor when the work warrants a new semantic version - a new feature, a behavior or API change, a breaking change - in the PR that introduces it (typically on `develop`). Do not bump on a fixed cadence or mechanically after a release.
+- The `version` (major.minor) in [`version.json`](./version.json) is the version floor; NBGV appends the git height (the SemVer patch position). `main` builds a stable `X.Y.<height>`; `develop` builds a prerelease `X.Y.<height>-g<sha>`. The maintainer edits `version.json`; *routine* dependency bumps, CI/workflow fixes, and doc edits leave it untouched.
+- **Bump `version.json` only by maintainer instruction**, for a functional change (a new feature, a behavior or API change, a breaking change) or a significant one-time overhaul of the build/release process (such as a CI/CD migration), in the PR that introduces it (typically on `develop`). Do not bump on a fixed cadence, for routine CI/workflow or dependency or doc edits, or mechanically after a release.
 - **No post-release bump; no develop-ahead requirement.** NBGV advances the patch (git height) on every commit, so a release always gets a fresh build version with no `version.json` edit and there is no `bump-version-X.Y` PR after a release. A `develop -> main` promotion carries whatever `version.json` is current: a promotion with a functional bump releases that new version on `main`; a maintenance-only promotion (dependency bumps, CI/doc fixes) carries the unchanged `version.json` and `main` advances only its NBGV height.
 
 ## Pull Request Title and Commit Message Conventions
@@ -68,15 +70,17 @@ Clarify release model in README
 - Inline single-use relative links (e.g. `[CODESTYLE.md](./CODESTYLE.md)`) are fine.
 - One logical paragraph per line; no hard-wrap line-length limit. For an intentional hard line break within a block - stacked badges, status, or license lines - end the line with a trailing backslash (`\`); this explicit form is preferred over trailing whitespace and is not treated as a paragraph split.
 - Headings follow the title-case-with-short-bind-words rule from the PR-title section.
+- **Write docs in the current state, not as a change from a prior one.** The reader has no memory of the previous behavior, so describe what *is*: "X does Y", never "X *now* does Y", "X *no longer* does Z", or "changed/switched/restored to Y". Before/after framing belongs in changelogs, commit messages, and PR descriptions - not in `README.md` or other living docs.
 
 ### Comments
 
 Applies to code and workflow (`#`) comments alike.
 
-- Comment only when the code does not explain itself or the logic is genuinely complex. Self-evident code needs no comment.
+- Comment only when the code is non-obvious or important. Self-evident code needs no comment.
 - Judge "obvious" in context, not line by line. A note that reads as redundant on its own line can be essential in the larger flow - a comment marking a workflow step's exit condition, for example, even though the line itself plainly does a `return` or `exit`.
-- Write for the human reading *this* project's code now: state what the code does and only the non-obvious *why*. No cross-project references (do not name other repos), no historic or design narrative, no rule citations - governance lives in this file, not echoed inline.
-- Match the surrounding code's line length (typically ~120), not an 80-column wrap. For a multi-point comment, prefer short structured lines or `-` bullets over one long prose paragraph.
+- State the non-obvious *why*, not what the code already shows. No cross-project references (do not name other repos), no historic or design narrative, no rule citations - governance lives in this file, not echoed inline.
+- **One line if it fits in ~120 columns.** Do not wrap a comment at 75-80 columns; a short two-line comment that would fit on one line looks sloppy - collapse it. Go multi-line only when the content genuinely exceeds ~120, filling each line rather than narrow-wrapping. For a multi-point comment, prefer short structured lines or `-` bullets over one prose paragraph.
+- **Workflows: prefer one short summary description at the top of the file** over scattering rationale across steps; comment an individual step only when its purpose is non-obvious.
 - **Do not accumulate comments.** When you change code or a comment, rewrite the whole comment fresh; never bolt a new comment onto an existing one or layer explanations across edits. Comment volume should stay flat or shrink over time, not grow.
 - **Leave human-authored comments and emojis exactly as written** - do not reword, trim, reflow, or "clean" them, even if they seem to bend a rule. Revise only agent-authored comments, and match the surrounding voice when you do.
 
@@ -106,7 +110,7 @@ The repo runs a review loop on every PR: local agent iteration plus remote autom
 
 `mergeStateStatus: CLEAN` reflects **only** required statuses - it never reflects open bot review comments, so `CLEAN` alone is **never** sufficient to merge. A green/`CLEAN` PR with an unresolved Copilot finding fails this gate; treat it as "not mergeable" no matter what the merge-state field says. The agent never merges on its own (consistent with "default to staging"; merging is maintainer-authorized).
 
-**Merging a shipped change releases.** A merge to `main` or `develop` that changes a shipped input auto-publishes that branch (see [`WORKFLOW.md`](./WORKFLOW.md)); a merge confined to tests, tooling, docs, CI, or non-shipped dependencies does not. Releasing is a configured consequence of merging a shipped change, so weigh the release impact before merging to `main`. Never manually force a publish (`workflow_dispatch`) without explicit maintainer instruction.
+**Merging a shipped change releases.** A merge to `main` or `develop` that changes a shipped input - including a dependency bump (`Directory.Packages.props`), so the published package's dependencies stay current - auto-publishes that branch (see [`WORKFLOW.md`](./WORKFLOW.md)); a merge confined to tests, tooling, docs, CI, or GitHub-Actions bumps does not. Releasing is a configured consequence of merging a shipped change, so weigh the release impact before merging to `main`. Never manually force a publish (`workflow_dispatch`) without explicit maintainer instruction.
 
 ### Expected Review Loop
 
