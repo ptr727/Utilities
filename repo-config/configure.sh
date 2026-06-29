@@ -85,7 +85,8 @@ assert() {
 # caller's. Reads JSON from stdin.
 jq_has() { jq -e "$@" >/dev/null 2>&1; }
 
-# jq_lacks FILTER... - true iff the jq filter selects nothing. `jq -e` exits 1 (last output false/null) or 4
+# jq_lacks FILTER... - true iff the jq filter yields no truthy value (selects nothing, or only false/null).
+# `jq -e` exits 1 (last output false/null) or 4
 # (no output at all) for the "lacks" cases, 0 for a truthy match, and 2/3/5 for a real error (malformed filter
 # or input), which is propagated so the calling assert fails loudly. The `|| rc=$?` keeps jq in a list (exempt
 # from set -e) so a non-zero exit captures rc instead of aborting.
