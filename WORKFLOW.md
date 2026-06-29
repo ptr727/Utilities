@@ -392,7 +392,9 @@ applicable guarantee is not operational (section 1).
 
 ### D9 - Style, static, and dropped workflows (see section 2)
 
-- **D9.1** Every action SHA-pinned with a version comment (sole exception: `dotnet/nbgv@master`).
+- **D9.1** Every action SHA-pinned with a version comment (sole exception: `dotnet/nbgv@master`). A tool an
+  action *installs* (e.g. the actionlint binary behind `raven-actions/actionlint`) is not a `uses:` ref and is
+  left unpinned to track latest, so CI picks up new lint rules.
 - **D9.2** File/workflow/job/step names follow the suffix rules. A name also used as a ruleset
   required-check `context:` is codified in `repo-config/` and changed only in lockstep with the ruleset.
 - **D9.3** Bash `run:` blocks start `set -euo pipefail`; multi-line `if:` uses `>-`.
