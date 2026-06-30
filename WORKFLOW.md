@@ -78,8 +78,10 @@ violate section 4.
 
 - **Action pinning.** Pin every action to a commit SHA with a trailing `# vX.Y.Z` comment, so a tag swap
   cannot change executed code while Dependabot can still bump it. Use `# vX` only when the upstream
-  floating major tag has no specific patch SHA. The one documented no-pin exception is `dotnet/nbgv@master`,
-  whose tag stream lags `master` such that tag-tracking would downgrade.
+  floating major tag has no specific patch SHA. The SHA-pin rule applies to `uses:` action references; a
+  CLI tool an action downloads at runtime (e.g. the actionlint binary) is not a `uses:` ref and is out of
+  scope. The sole `uses:` no-pin exception is `dotnet/nbgv@master`, whose tag stream lags `master` such that
+  tag-tracking would downgrade.
 - **Filename.** Reusable workflows (`on: workflow_call`) end in `-task.yml`. Entry-point workflows end in
   what they do (`-pull-request.yml`, `-release.yml`). Lowercase, hyphen-separated. A `-task.yml` is
   invoked through a `uses:` reference, never triggered directly.
@@ -222,6 +224,89 @@ the GitHub release. There is no generic multi-target abstraction: no `enable_<ta
 leaves, no `expect_release_assets` toggle, no `release-asset-<branch>-*` glob. The single asset,
 `Utilities.7z`, is attached by its fixed name, so `releases/latest/download/Utilities.7z` is a stable
 download URL.
+
+### Flow diagrams
+
+Three diagrams trace the architecture above: the pull-request gate, the self-publisher, and the bot
+automation. They are the same outcomes section 4 contracts, drawn from the workflow YAML; if a diagram and
+a guarantee disagree, one of them is a defect. Triggers are blue, gates yellow, durable/published outputs
+green, and stop/skip outcomes red.
+
+**Pull request (CI) - `test-pull-request.yml`.** Every push head-resolves the reusable tasks, runs the
+validate gate and a non-publishing smoke build, and a single aggregator produces the ruleset-bound required
+check (D1, D6).
+
+```mermaid
+flowchart TD
+    T(["push: every branch<br/>(or workflow_dispatch)"]):::trig
+    T --> D{"github.event.deleted?"}
+    D -- "yes: branch deletion" --> X(["all jobs + aggregator skip<br/>no failed run, no pending check"]):::stop
+    D -- "no" --> V["validate job<br/>(validate-task.yml)"]
+    D -- "no" --> S["smoke-build job<br/>build-release-task.yml<br/>smoke: true, publish: false"]
+    subgraph VT ["validate-task.yml"]
+        U["unit-test job<br/>dotnet test, warnings-as-errors"]
+        L["lint job<br/>CSharpier, dotnet format,<br/>markdownlint, cspell, actionlint"]
+    end
+    V --> VT
+    S --> SB["build + pack library<br/>head-resolved, no push, no uploads"]
+    VT --> A
+    SB --> A
+    A{"Check pull request workflow status job<br/>validate AND smoke-build succeeded?"}:::gate
+    A -- "yes" --> G(["required check passes<br/>merge unblocked"]):::pub
+    A -- "no" --> R(["required check fails<br/>merge blocked"]):::stop
+    classDef trig fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    classDef gate fill:#fef9c3,stroke:#ca8a04,color:#713f12
+    classDef pub fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef stop fill:#fee2e2,stroke:#dc2626,color:#7f1d1d
+```
+
+**Publish - `publish-release.yml` -> `build-release-task.yml`.** A shipped-input push or a dispatch runs
+the same validate gate, then versions once with NBGV, asserts branch-vs-version, builds the pinned commit,
+pushes to NuGet via OIDC, and cuts the GitHub release (D2, D3, D4).
+
+```mermaid
+flowchart TD
+    P1(["push: main/develop<br/>paths = Utilities/**, version.json,<br/>Directory.Build.props, Directory.Packages.props"]):::trig --> VAL
+    P2(["workflow_dispatch"]):::trig --> VAL
+    VAL["validate job<br/>(validate-task.yml)"] --> PG{"publish guard<br/>push OR ref in (main, develop)"}:::gate
+    PG -- "no" --> PSKIP(["publish skipped"]):::stop
+    PG -- "yes" --> GV
+    subgraph BRT ["build-release-task.yml (publish: true)"]
+        GV["get-version job<br/>NBGV @master, runs once<br/>SemVer2 + GitCommitId"] --> VR{"validate-release<br/>branch matches version?"}:::gate
+        VR -- "mismatch" --> VRX(["fail ::error::"]):::stop
+        VR -- "agree" --> B["build job<br/>checkout GitCommitId<br/>build (main=Release, else Debug) + pack"]
+        B --> NP[("NuGet.org push<br/>OIDC key, skip-duplicate")]:::pub
+        B --> GR{"github-release<br/>tag new OR dispatch?"}:::gate
+        GR -- "exists, not dispatch" --> NOP(["skip create<br/>artifact reclaimed by backstop"]):::stop
+        GR -- "create" --> REL[("GitHub release<br/>tag = SemVer2 at GitCommitId<br/>prerelease = ref != main")]:::pub
+    end
+    classDef trig fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    classDef gate fill:#fef9c3,stroke:#ca8a04,color:#713f12
+    classDef pub fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef stop fill:#fee2e2,stroke:#dc2626,color:#7f1d1d
+```
+
+**Automation - Dependabot + merge-bot.** Dependabot opens in-repo bot PRs (nuget and github-actions, per
+target branch main/develop); the merge-bot enables auto-merge on a Dependabot PR (or disables it on a
+maintainer push); a merged shipped input then drives the publisher above (D8).
+
+```mermaid
+flowchart TD
+    DEP(["Dependabot opens PR<br/>nuget / github-actions,<br/>target main or develop"]):::trig --> MB
+    subgraph MBT ["merge-bot-pull-request.yml (pull_request_target)"]
+        MB{"event / author"}:::gate
+        MB -- "opened/reopened<br/>dependabot[bot] author" --> EN["enable auto-merge<br/>squash develop / merge main"]
+        MB -- "synchronize by maintainer" --> DIS["disable auto-merge"]
+    end
+    EN --> CK{"required checks pass?"}:::gate
+    CK -- "yes" --> MRG(["PR merges (App token)"]):::pub
+    CK -- "no" --> BLK(["merge blocked<br/>maintainer notified"]):::stop
+    MRG -. "shipped input changed<br/>(e.g. Directory.Packages.props)" .-> PUBR(["publisher auto-releases"]):::pub
+    classDef trig fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    classDef gate fill:#fef9c3,stroke:#ca8a04,color:#713f12
+    classDef pub fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef stop fill:#fee2e2,stroke:#dc2626,color:#7f1d1d
+```
 
 ## 4. Behavioral contract - expected outcomes
 
@@ -485,7 +570,7 @@ determined by NBGV from the checkout state in section 3.*
 | S12 | `version.json` floor bump merged to a branch | version floor is a shipped input -> **auto-publish** that branch at the new floor | D3.3, D4.1, D4.2 |
 | S13 | Dependabot **major** bump whose tests fail | required check fails -> auto-merge does **not** complete; no merge, no publish; maintainer notified | D8.2 |
 | S14 | `develop` -> `main` promotion (merge commit) carrying a shipped change | the merge commit's diff (`before..after`, `before` = prior `main` tip) includes the promoted shipped input -> `main` **auto-publishes the stable release**; a promotion carrying only non-shipped changes does not | D4.1, D4.2, D8.1 |
-| S16 | a branch is **deleted** (a push event with `github.sha` all-zeros) | the `!github.event.deleted` guard skips `validate`, `smoke-build`, and the aggregator -> no failed CI run, no pending required check | D1.1 |
+| S15 | a branch is **deleted** (a push event with `github.sha` all-zeros) | the `!github.event.deleted` guard skips `validate`, `smoke-build`, and the aggregator -> no failed CI run, no pending required check | D1.1 |
 
 ### 5C. Live probe (where warranted, never publishing)
 
