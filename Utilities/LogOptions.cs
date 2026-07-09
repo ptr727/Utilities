@@ -78,9 +78,11 @@ public static class LogOptions
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(categoryName);
 
-        // LoggerFactory -> NullLogger
-        return !ReferenceEquals(LoggerFactory, NullLoggerFactory.Instance)
-            ? LoggerFactory.CreateLogger(categoryName)
+        // Read the factory once so a concurrent swap cannot split the check
+        // and the create across two different instances. LoggerFactory -> NullLogger
+        ILoggerFactory factory = LoggerFactory;
+        return !ReferenceEquals(factory, NullLoggerFactory.Instance)
+            ? factory.CreateLogger(categoryName)
             : NullLogger.Instance;
     }
 }

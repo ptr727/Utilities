@@ -55,6 +55,27 @@ public sealed class LogOptionsTests
     }
 
     [Fact]
+    public void CreateLoggerGeneric_UsesTypeFullNameAsCategory()
+    {
+        ILoggerFactory originalFactory = LogOptions.LoggerFactory;
+        using TestLoggerFactory testFactory = new();
+
+        try
+        {
+            LogOptions.LoggerFactory = testFactory;
+
+            ILogger logger = LogOptions.CreateLogger<LogOptionsTests>();
+
+            _ = testFactory.LastCategory.Should().Be(typeof(LogOptionsTests).FullName);
+            _ = logger.Should().NotBeNull();
+        }
+        finally
+        {
+            LogOptions.LoggerFactory = originalFactory;
+        }
+    }
+
+    [Fact]
     public void CreateLogger_WithNullCategory_ThrowsArgumentNullException() =>
         _ = FluentActions
             .Invoking(() => LogOptions.CreateLogger(null!))
