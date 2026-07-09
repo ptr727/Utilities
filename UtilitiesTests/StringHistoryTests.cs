@@ -11,10 +11,10 @@ public class StringHistoryTests(UtilitiesTests fixture) : IClassFixture<Utilitie
     {
         StringHistory history = new();
 
-        Assert.NotNull(history);
-        Assert.Equal(0, history.MaxFirstLines);
-        Assert.Equal(0, history.MaxLastLines);
-        Assert.Empty(history.StringList);
+        _ = history.Should().NotBeNull();
+        _ = history.MaxFirstLines.Should().Be(0);
+        _ = history.MaxLastLines.Should().Be(0);
+        _ = history.StringList.Should().BeEmpty();
     }
 
     [Fact]
@@ -22,9 +22,9 @@ public class StringHistoryTests(UtilitiesTests fixture) : IClassFixture<Utilitie
     {
         StringHistory history = new(maxFirstLines: 5, maxLastLines: 3);
 
-        Assert.Equal(5, history.MaxFirstLines);
-        Assert.Equal(3, history.MaxLastLines);
-        Assert.Empty(history.StringList);
+        _ = history.MaxFirstLines.Should().Be(5);
+        _ = history.MaxLastLines.Should().Be(3);
+        _ = history.StringList.Should().BeEmpty();
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public class StringHistoryTests(UtilitiesTests fixture) : IClassFixture<Utilitie
             history.AppendLine($"Line {i}");
         }
 
-        Assert.Equal(10, history.StringList.Count);
+        _ = history.StringList.Count.Should().Be(10);
     }
 
     [Fact]
@@ -51,10 +51,10 @@ public class StringHistoryTests(UtilitiesTests fixture) : IClassFixture<Utilitie
         }
 
         // Should have 5 first + 3 last = 8 lines
-        Assert.Equal(8, history.StringList.Count);
-        Assert.Equal("Line 0", history.StringList[0]);
-        Assert.Equal("Line 4", history.StringList[4]);
-        Assert.Equal("Line 9", history.StringList[^1]);
+        _ = history.StringList.Count.Should().Be(8);
+        _ = history.StringList[0].Should().Be("Line 0");
+        _ = history.StringList[4].Should().Be("Line 4");
+        _ = history.StringList[^1].Should().Be("Line 9");
     }
 
     [Fact]
@@ -68,16 +68,16 @@ public class StringHistoryTests(UtilitiesTests fixture) : IClassFixture<Utilitie
         }
 
         // Should have 3 first + 2 last = 5 lines
-        Assert.Equal(5, history.StringList.Count);
+        _ = history.StringList.Count.Should().Be(5);
 
         // First 3 lines
-        Assert.Equal("Line 0", history.StringList[0]);
-        Assert.Equal("Line 1", history.StringList[1]);
-        Assert.Equal("Line 2", history.StringList[2]);
+        _ = history.StringList[0].Should().Be("Line 0");
+        _ = history.StringList[1].Should().Be("Line 1");
+        _ = history.StringList[2].Should().Be("Line 2");
 
         // Last 2 lines
-        Assert.Equal("Line 8", history.StringList[3]);
-        Assert.Equal("Line 9", history.StringList[4]);
+        _ = history.StringList[3].Should().Be("Line 8");
+        _ = history.StringList[4].Should().Be("Line 9");
     }
 
     [Fact]
@@ -85,7 +85,10 @@ public class StringHistoryTests(UtilitiesTests fixture) : IClassFixture<Utilitie
     {
         StringHistory history = new();
 
-        _ = Assert.Throws<ArgumentNullException>(() => history.AppendLine(null!));
+        _ = FluentActions
+            .Invoking(() => history.AppendLine(null!))
+            .Should()
+            .Throw<ArgumentNullException>();
     }
 
     [Fact]
@@ -95,7 +98,7 @@ public class StringHistoryTests(UtilitiesTests fixture) : IClassFixture<Utilitie
 
         string result = history.ToString();
 
-        Assert.Equal(string.Empty, result);
+        _ = result.Should().Be(string.Empty);
     }
 
     [Fact]
@@ -108,10 +111,10 @@ public class StringHistoryTests(UtilitiesTests fixture) : IClassFixture<Utilitie
 
         string result = history.ToString();
 
-        Assert.Contains("Line 1", result);
-        Assert.Contains("Line 2", result);
-        Assert.Contains("Line 3", result);
-        Assert.EndsWith(Environment.NewLine, result);
+        _ = result.Should().Contain("Line 1");
+        _ = result.Should().Contain("Line 2");
+        _ = result.Should().Contain("Line 3");
+        _ = result.Should().EndWith(Environment.NewLine);
     }
 
     [Fact]
@@ -119,8 +122,8 @@ public class StringHistoryTests(UtilitiesTests fixture) : IClassFixture<Utilitie
     {
         StringHistory history = new() { MaxFirstLines = 10, MaxLastLines = 5 };
 
-        Assert.Equal(10, history.MaxFirstLines);
-        Assert.Equal(5, history.MaxLastLines);
+        _ = history.MaxFirstLines.Should().Be(10);
+        _ = history.MaxLastLines.Should().Be(5);
     }
 
     [Fact]
@@ -131,25 +134,25 @@ public class StringHistoryTests(UtilitiesTests fixture) : IClassFixture<Utilitie
         // Add first batch
         history.AppendLine("A");
         history.AppendLine("B");
-        Assert.Equal(2, history.StringList.Count);
+        _ = history.StringList.Count.Should().Be(2);
 
         // Add more to trigger last lines
         history.AppendLine("C");
         history.AppendLine("D");
-        Assert.Equal(4, history.StringList.Count);
+        _ = history.StringList.Count.Should().Be(4);
 
         // Add more to trigger rolling
         history.AppendLine("E");
-        Assert.Equal(4, history.StringList.Count);
+        _ = history.StringList.Count.Should().Be(4);
 
         history.AppendLine("F");
-        Assert.Equal(4, history.StringList.Count);
+        _ = history.StringList.Count.Should().Be(4);
 
         // Should have: A, B, E, F
-        Assert.Equal("A", history.StringList[0]);
-        Assert.Equal("B", history.StringList[1]);
-        Assert.Equal("E", history.StringList[2]);
-        Assert.Equal("F", history.StringList[3]);
+        _ = history.StringList[0].Should().Be("A");
+        _ = history.StringList[1].Should().Be("B");
+        _ = history.StringList[2].Should().Be("E");
+        _ = history.StringList[3].Should().Be("F");
     }
 
     [Fact]
@@ -163,10 +166,10 @@ public class StringHistoryTests(UtilitiesTests fixture) : IClassFixture<Utilitie
         }
 
         // Should have 3 first lines only
-        Assert.Equal(3, history.StringList.Count);
-        Assert.Equal("Line 0", history.StringList[0]);
-        Assert.Equal("Line 1", history.StringList[1]);
-        Assert.Equal("Line 2", history.StringList[2]);
+        _ = history.StringList.Count.Should().Be(3);
+        _ = history.StringList[0].Should().Be("Line 0");
+        _ = history.StringList[1].Should().Be("Line 1");
+        _ = history.StringList[2].Should().Be("Line 2");
     }
 
     [Fact]
@@ -180,10 +183,10 @@ public class StringHistoryTests(UtilitiesTests fixture) : IClassFixture<Utilitie
         }
 
         // Should have 3 last lines only
-        Assert.Equal(3, history.StringList.Count);
-        Assert.Equal("Line 7", history.StringList[0]);
-        Assert.Equal("Line 8", history.StringList[1]);
-        Assert.Equal("Line 9", history.StringList[2]);
+        _ = history.StringList.Count.Should().Be(3);
+        _ = history.StringList[0].Should().Be("Line 7");
+        _ = history.StringList[1].Should().Be("Line 8");
+        _ = history.StringList[2].Should().Be("Line 9");
     }
 
     [Fact]
@@ -194,7 +197,7 @@ public class StringHistoryTests(UtilitiesTests fixture) : IClassFixture<Utilitie
 
         string result = history.ToString();
 
-        Assert.Equal("Single line" + Environment.NewLine, result);
+        _ = result.Should().Be("Single line" + Environment.NewLine);
     }
 
     [Fact]
@@ -204,8 +207,8 @@ public class StringHistoryTests(UtilitiesTests fixture) : IClassFixture<Utilitie
 
         history.AppendLine(string.Empty);
 
-        _ = Assert.Single(history.StringList);
-        Assert.Equal(string.Empty, history.StringList[0]);
+        _ = history.StringList.Should().ContainSingle();
+        _ = history.StringList[0].Should().Be(string.Empty);
     }
 
     [Fact]
@@ -216,7 +219,7 @@ public class StringHistoryTests(UtilitiesTests fixture) : IClassFixture<Utilitie
 
         history.AppendLine(specialLine);
 
-        Assert.Equal(specialLine, history.StringList[0]);
+        _ = history.StringList[0].Should().Be(specialLine);
     }
 
     [Fact]
@@ -227,6 +230,6 @@ public class StringHistoryTests(UtilitiesTests fixture) : IClassFixture<Utilitie
 
         history.AppendLine(unicodeLine);
 
-        Assert.Equal(unicodeLine, history.StringList[0]);
+        _ = history.StringList[0].Should().Be(unicodeLine);
     }
 }

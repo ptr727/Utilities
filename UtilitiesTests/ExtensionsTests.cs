@@ -1,6 +1,6 @@
 using System.IO.Compression;
-using Serilog;
-using Serilog.Core;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace InsaneGenius.Utilities.Tests;
@@ -18,9 +18,9 @@ public class ExtensionsTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTe
 
         string compressed = original.Compress();
 
-        Assert.NotNull(compressed);
-        Assert.NotEmpty(compressed);
-        Assert.NotEqual(original, compressed);
+        _ = compressed.Should().NotBeNull();
+        _ = compressed.Should().NotBeEmpty();
+        _ = compressed.Should().NotBe(original);
     }
 
     [Fact]
@@ -31,7 +31,7 @@ public class ExtensionsTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTe
 
         string decompressed = compressed.Decompress();
 
-        Assert.Equal(original, decompressed);
+        _ = decompressed.Should().Be(original);
     }
 
     [Theory]
@@ -45,7 +45,7 @@ public class ExtensionsTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTe
         string compressed = original.Compress(level);
         string decompressed = compressed.Decompress();
 
-        Assert.Equal(original, decompressed);
+        _ = decompressed.Should().Be(original);
     }
 
     [Fact]
@@ -55,9 +55,9 @@ public class ExtensionsTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTe
 
         string compressed = await original.CompressAsync();
 
-        Assert.NotNull(compressed);
-        Assert.NotEmpty(compressed);
-        Assert.NotEqual(original, compressed);
+        _ = compressed.Should().NotBeNull();
+        _ = compressed.Should().NotBeEmpty();
+        _ = compressed.Should().NotBe(original);
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class ExtensionsTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTe
 
         string decompressed = await compressed.DecompressAsync();
 
-        Assert.Equal(original, decompressed);
+        _ = decompressed.Should().Be(original);
     }
 
     [Fact]
@@ -78,9 +78,10 @@ public class ExtensionsTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTe
         cts.Cancel();
         string original = "Test string";
 
-        _ = await Assert.ThrowsAnyAsync<OperationCanceledException>(async () =>
-            await original.CompressAsync(cancellationToken: cts.Token)
-        );
+        _ = await FluentActions
+            .Awaiting(() => original.CompressAsync(cancellationToken: cts.Token))
+            .Should()
+            .ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -88,7 +89,10 @@ public class ExtensionsTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTe
     {
         string? nullString = null;
 
-        _ = Assert.Throws<ArgumentNullException>(() => nullString.Compress());
+        _ = FluentActions
+            .Invoking(() => nullString.Compress())
+            .Should()
+            .Throw<ArgumentNullException>();
     }
 
     #endregion
@@ -98,29 +102,29 @@ public class ExtensionsTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTe
     [Fact]
     public void LoggerExtension_LogAndHandle_ShouldReturnTrue()
     {
-        Logger logger = new LoggerConfiguration().CreateLogger();
+        ILogger logger = NullLogger.Instance;
         InvalidOperationException exception = new("Test exception");
 
         bool result = logger.LogAndHandle(exception);
 
-        Assert.True(result);
+        _ = result.Should().BeTrue();
     }
 
     [Fact]
     public void LoggerExtension_LogAndPropagate_ShouldReturnFalse()
     {
-        Logger logger = new LoggerConfiguration().CreateLogger();
+        ILogger logger = NullLogger.Instance;
         InvalidOperationException exception = new("Test exception");
 
         bool result = logger.LogAndPropagate(exception);
 
-        Assert.False(result);
+        _ = result.Should().BeFalse();
     }
 
     [Fact]
     public void LoggerExtension_LogAndHandle_CanBeUsedInCatchWhen()
     {
-        Logger logger = new LoggerConfiguration().CreateLogger();
+        ILogger logger = NullLogger.Instance;
         bool exceptionCaught;
 
         try
@@ -132,13 +136,13 @@ public class ExtensionsTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTe
             exceptionCaught = true;
         }
 
-        Assert.True(exceptionCaught);
+        _ = exceptionCaught.Should().BeTrue();
     }
 
     [Fact]
     public void LoggerExtension_LogAndPropagate_AllowsExceptionToBubble()
     {
-        Logger logger = new LoggerConfiguration().CreateLogger();
+        ILogger logger = NullLogger.Instance;
         bool exceptionHandled;
 
         try
@@ -156,31 +160,31 @@ public class ExtensionsTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTe
             exceptionHandled = false;
         }
 
-        Assert.False(exceptionHandled);
+        _ = exceptionHandled.Should().BeFalse();
     }
 
     [Fact]
     public void LoggerExtension_LogAndHandle_WithCustomFunction_ShouldLog()
     {
-        Logger logger = new LoggerConfiguration().CreateLogger();
+        ILogger logger = NullLogger.Instance;
         InvalidOperationException exception = new("Test exception");
 
         // Test that it works with explicit function name
         bool result = logger.LogAndHandle(exception, "CustomFunction");
 
-        Assert.True(result);
+        _ = result.Should().BeTrue();
     }
 
     [Fact]
     public void LoggerExtension_LogAndPropagate_WithCustomFunction_ShouldLog()
     {
-        Logger logger = new LoggerConfiguration().CreateLogger();
+        ILogger logger = NullLogger.Instance;
         InvalidOperationException exception = new("Test exception");
 
         // Test that it works with explicit function name
         bool result = logger.LogAndPropagate(exception, "CustomFunction");
 
-        Assert.False(result);
+        _ = result.Should().BeFalse();
     }
 
     #endregion
@@ -192,7 +196,10 @@ public class ExtensionsTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTe
     {
         string? nullString = null;
 
-        _ = Assert.Throws<ArgumentNullException>(() => nullString!.Decompress());
+        _ = FluentActions
+            .Invoking(() => nullString!.Decompress())
+            .Should()
+            .Throw<ArgumentNullException>();
     }
 
     [Fact]
@@ -200,9 +207,10 @@ public class ExtensionsTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTe
     {
         string? nullString = null;
 
-        _ = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
-            await nullString.CompressAsync()
-        );
+        _ = await FluentActions
+            .Awaiting(() => nullString.CompressAsync())
+            .Should()
+            .ThrowAsync<ArgumentNullException>();
     }
 
     [Fact]
@@ -210,9 +218,10 @@ public class ExtensionsTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTe
     {
         string? nullString = null;
 
-        _ = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
-            await nullString.DecompressAsync()
-        );
+        _ = await FluentActions
+            .Awaiting(() => nullString.DecompressAsync())
+            .Should()
+            .ThrowAsync<ArgumentNullException>();
     }
 
     #endregion
@@ -242,7 +251,7 @@ public class ExtensionsTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTe
             string compressed = original.Compress();
             string decompressed = compressed.Decompress();
 
-            Assert.Equal(original, decompressed);
+            _ = decompressed.Should().Be(original);
         }
     }
 
@@ -263,7 +272,7 @@ public class ExtensionsTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTe
             string compressed = await original.CompressAsync();
             string decompressed = await compressed.DecompressAsync();
 
-            Assert.Equal(original, decompressed);
+            _ = decompressed.Should().Be(original);
         }
     }
 

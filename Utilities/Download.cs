@@ -1,5 +1,6 @@
 using System.Net.Http.Headers;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 
 namespace InsaneGenius.Utilities;
 
@@ -9,6 +10,11 @@ namespace InsaneGenius.Utilities;
 public static class Download
 {
     private static readonly Lazy<HttpClient> s_httpClient = new(CreateHttpClient);
+    private static readonly Lazy<ILogger> s_logger = new(() =>
+        LogOptions.CreateLogger(typeof(Download).FullName!)
+    );
+
+    private static ILogger Log => s_logger.Value;
 
     /// <summary>
     /// Gets or sets the HTTP client timeout in seconds. Default is 180 seconds.
@@ -41,7 +47,7 @@ public static class Download
             size = httpResponse.Content.Headers.ContentLength ?? 0;
             modifiedTime = httpResponse.Content.Headers.LastModified?.DateTime ?? DateTime.MinValue;
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        catch (Exception e) when (Log.LogAndHandle(e))
         {
             return false;
         }
@@ -75,7 +81,7 @@ public static class Download
                 httpResponse.Content.Headers.LastModified?.DateTime ?? DateTime.MinValue;
             return (true, size, modifiedTime);
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        catch (Exception e) when (Log.LogAndHandle(e))
         {
             return (false, 0, DateTime.MinValue);
         }
@@ -99,7 +105,7 @@ public static class Download
             using FileStream fileStream = File.OpenWrite(fileName);
             httpStream.CopyTo(fileStream);
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        catch (Exception e) when (Log.LogAndHandle(e))
         {
             return false;
         }
@@ -132,7 +138,7 @@ public static class Download
             await using FileStream fileStream = File.OpenWrite(fileName);
             await httpStream.CopyToAsync(fileStream, cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        catch (Exception e) when (Log.LogAndHandle(e))
         {
             return false;
         }
@@ -156,7 +162,7 @@ public static class Download
         {
             value = GetHttpClient().GetStringAsync(uri).GetAwaiter().GetResult();
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        catch (Exception e) when (Log.LogAndHandle(e))
         {
             return false;
         }
@@ -185,7 +191,7 @@ public static class Download
                 .ConfigureAwait(false);
             return (true, value);
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        catch (Exception e) when (Log.LogAndHandle(e))
         {
             return (false, string.Empty);
         }

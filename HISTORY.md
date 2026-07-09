@@ -4,6 +4,14 @@ Some useful and not so useful C# .NET utility classes.
 
 ## Release History
 
+- v3.7:
+  - Replaced the Serilog-coupled logging model with the backend-agnostic `Microsoft.Extensions.Logging` abstraction, matching the sibling `LanguageTags` project.
+  - Removed the global Serilog `LogOptions.Logger` property (a breaking API change) in favor of a thread-safe, injectable `ILoggerFactory` configured via `LogOptions.SetFactory(...)` / `TrySetFactory(...)`; the library now depends only on `Microsoft.Extensions.Logging.Abstractions`.
+  - Reworked `FileEx` and `Download` to resolve per-class cached loggers through `LogOptions.CreateLogger(...)` and to emit source-generated `[LoggerMessage]` messages, keeping the build clean under `AnalysisMode=All` and `TreatWarningsAsErrors`.
+  - Moved the `LogAndHandle` / `LogAndPropagate` helpers onto `Microsoft.Extensions.Logging.ILogger` as internal extensions (exposed to tests via `InternalsVisibleTo`).
+  - Renamed the public `Extensions` class to `CompressExtensions` (a breaking API change for direct references; instance-style extension calls such as `value.Compress()` are unaffected), resolving the naming clash with the `Microsoft.Extensions` namespace.
+  - Updated the `Sandbox` example to configure a Serilog console logger and inject it through a `SerilogLoggerFactory`, borrowing the pattern from `LanguageTagsCreate`.
+  - Dropped the library's Serilog dependency and its `IL3058` AOT warning suppression.
 - v3.6:
   - Reworked the CI/CD pipeline to the branch-scoped self-publishing model: `main` publishes stable releases and `develop` publishes prereleases, each branch publishing itself when a shipped input changes.
   - Switched NuGet publishing to keyless OIDC trusted publishing, removing the `NUGET_API_KEY` secret.
