@@ -8,7 +8,7 @@ namespace InsaneGenius.Utilities.Tests;
 /// Serializes tests that mutate the process-global <see cref="LogOptions"/> state.
 /// </summary>
 [CollectionDefinition("LogOptions", DisableParallelization = true)]
-public sealed class LogOptionsCollectionDefinition;
+public sealed class LogOptionsCollectionDefinition { }
 
 [Collection("LogOptions")]
 public sealed class LogOptionsTests

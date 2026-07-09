@@ -21,7 +21,7 @@ namespace InsaneGenius.Utilities;
 /// </list>
 /// <para>
 /// Note that loggers are created and cached at the time of use by each class. Changes to <see cref="LoggerFactory"/>
-/// after a logger has been created will not affect existing cached loggers—only new logger requests will use the updated configuration.
+/// after a logger has been created will not affect existing cached loggers. Only new logger requests will use the updated configuration.
 /// </para>
 /// </remarks>
 public static class LogOptions

@@ -6,7 +6,7 @@ Some useful and not so useful C# .NET utility classes.
 
 - v3.7:
   - Replaced the Serilog-coupled logging model with the backend-agnostic `Microsoft.Extensions.Logging` abstraction, matching the sibling `LanguageTags` project.
-  - Removed the global Serilog `LogOptions.Logger` property (a breaking API change) in favour of a thread-safe, injectable `ILoggerFactory` configured via `LogOptions.SetFactory(...)` / `TrySetFactory(...)`; the library now depends only on `Microsoft.Extensions.Logging.Abstractions`.
+  - Removed the global Serilog `LogOptions.Logger` property (a breaking API change) in favor of a thread-safe, injectable `ILoggerFactory` configured via `LogOptions.SetFactory(...)` / `TrySetFactory(...)`; the library now depends only on `Microsoft.Extensions.Logging.Abstractions`.
   - Reworked `FileEx` and `Download` to resolve per-class cached loggers through `LogOptions.CreateLogger(...)` and to emit source-generated `[LoggerMessage]` messages, keeping the build clean under `AnalysisMode=All` and `TreatWarningsAsErrors`.
   - Moved the `LogAndHandle` / `LogAndPropagate` helpers onto `Microsoft.Extensions.Logging.ILogger` as internal extensions (exposed to tests via `InternalsVisibleTo`).
   - Renamed the public `Extensions` class to `CompressExtensions` (a breaking API change for direct references; instance-style extension calls such as `value.Compress()` are unaffected), resolving the naming clash with the `Microsoft.Extensions` namespace.
