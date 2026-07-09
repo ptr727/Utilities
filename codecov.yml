@@ -1,0 +1,19 @@
+# Codecov configuration.
+#
+# Coverage is report-only for this repo: the upload step in
+# .github/workflows/validate-task.yml sets fail_ci_if_error: false, and the
+# patch status below is informational so a coverage delta never blocks a merge.
+# The project status stays as a visible (non-blocking-by-target) signal.
+coverage:
+  status:
+    project:
+      default:
+        informational: true
+    patch:
+      default:
+        informational: true
+
+# The Sandbox is an example/demo console app, not the shipped
+# InsaneGenius.Utilities library, and is intentionally not unit-tested.
+ignore:
+  - "Sandbox/**"

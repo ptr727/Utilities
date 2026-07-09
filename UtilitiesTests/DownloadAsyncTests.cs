@@ -15,8 +15,8 @@ public class DownloadAsyncTests(UtilitiesTests fixture) : IClassFixture<Utilitie
 
         (bool success, long size, DateTime _) = await Download.GetContentInfoAsync(uri);
 
-        Assert.True(success);
-        Assert.True(size > 0);
+        _ = success.Should().BeTrue();
+        _ = (size > 0).Should().BeTrue();
     }
 
     [Fact]
@@ -26,9 +26,9 @@ public class DownloadAsyncTests(UtilitiesTests fixture) : IClassFixture<Utilitie
 
         (bool success, string? content) = await Download.DownloadStringAsync(uri);
 
-        Assert.True(success);
-        Assert.NotEmpty(content);
-        Assert.Contains("google", content, StringComparison.OrdinalIgnoreCase);
+        _ = success.Should().BeTrue();
+        _ = content.Should().NotBeEmpty();
+        _ = content.Should().ContainEquivalentOf("google");
     }
 
     [Fact]
@@ -43,9 +43,9 @@ public class DownloadAsyncTests(UtilitiesTests fixture) : IClassFixture<Utilitie
         {
             bool result = await Download.DownloadFileAsync(uri, tempFile);
 
-            Assert.True(result);
-            Assert.True(File.Exists(tempFile));
-            Assert.True(new FileInfo(tempFile).Length > 0);
+            _ = result.Should().BeTrue();
+            _ = File.Exists(tempFile).Should().BeTrue();
+            _ = (new FileInfo(tempFile).Length > 0).Should().BeTrue();
         }
         finally
         {
@@ -63,7 +63,7 @@ public class DownloadAsyncTests(UtilitiesTests fixture) : IClassFixture<Utilitie
 
         (bool success, long _, DateTime _) = await Download.GetContentInfoAsync(invalidUri);
 
-        Assert.False(success);
+        _ = success.Should().BeFalse();
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class DownloadAsyncTests(UtilitiesTests fixture) : IClassFixture<Utilitie
         (bool Success, string _) = await Download.DownloadStringAsync(uri, cts.Token);
 
         // Should either throw cancellation or return false due to cancellation
-        Assert.False(Success);
+        _ = Success.Should().BeFalse();
     }
 
     [Fact]
@@ -84,9 +84,10 @@ public class DownloadAsyncTests(UtilitiesTests fixture) : IClassFixture<Utilitie
     {
         Uri? nullUri = null;
 
-        _ = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
-            await Download.GetContentInfoAsync(nullUri!)
-        );
+        _ = await FluentActions
+            .Awaiting(() => Download.GetContentInfoAsync(nullUri!))
+            .Should()
+            .ThrowAsync<ArgumentNullException>();
     }
 
     [Fact]
@@ -98,7 +99,7 @@ public class DownloadAsyncTests(UtilitiesTests fixture) : IClassFixture<Utilitie
 
         Uri result = Download.CreateUri(url, username, password);
 
-        Assert.Contains(username, result.ToString());
+        _ = result.ToString().Should().Contain(username);
     }
 
     [Fact]
@@ -106,6 +107,9 @@ public class DownloadAsyncTests(UtilitiesTests fixture) : IClassFixture<Utilitie
     {
         string? nullUrl = null;
 
-        _ = Assert.Throws<ArgumentNullException>(() => Download.CreateUri(nullUrl!));
+        _ = FluentActions
+            .Invoking(() => Download.CreateUri(nullUrl!))
+            .Should()
+            .Throw<ArgumentNullException>();
     }
 }

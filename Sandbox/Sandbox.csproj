@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <RootNamespace>InsaneGenius.Utilities.Sandbox</RootNamespace>
     <PublishAot>true</PublishAot>
     <InvariantGlobalization>false</InvariantGlobalization>
     <VerifyReferenceAotCompatibility>true</VerifyReferenceAotCompatibility>
@@ -10,6 +11,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Serilog" />
+    <PackageReference Include="Serilog.Extensions.Logging" />
     <PackageReference Include="Serilog.Sinks.Console" />
   </ItemGroup>
   <ItemGroup>
