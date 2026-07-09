@@ -15,7 +15,7 @@ public class ConsoleTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests
         ConsoleEx.WriteLineColor(ConsoleColor.Green, "Test message");
 
         string result = output.ToString();
-        Assert.Contains("Test message", result);
+        _ = result.Should().Contain("Test message");
 
         // Reset console
         StreamWriter standardOutput = new(Console.OpenStandardOutput()) { AutoFlush = true };
@@ -31,7 +31,7 @@ public class ConsoleTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests
         ConsoleEx.WriteLineColor(ConsoleColor.Green, string.Empty);
 
         string result = output.ToString();
-        Assert.NotNull(result);
+        _ = result.Should().NotBeNull();
 
         // Reset console
         StreamWriter standardOutput = new(Console.OpenStandardOutput()) { AutoFlush = true };
@@ -43,9 +43,10 @@ public class ConsoleTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests
     {
         object? nullValue = null;
 
-        _ = Assert.Throws<ArgumentNullException>(() =>
-            ConsoleEx.WriteLineColor(ConsoleColor.Red, nullValue!)
-        );
+        _ = FluentActions
+            .Invoking(() => ConsoleEx.WriteLineColor(ConsoleColor.Red, nullValue!))
+            .Should()
+            .Throw<ArgumentNullException>();
     }
 
     [Fact]
@@ -57,7 +58,7 @@ public class ConsoleTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests
         ConsoleEx.WriteLineError("Error message");
 
         string result = output.ToString();
-        Assert.Contains("Error message", result);
+        _ = result.Should().Contain("Error message");
 
         // Reset console
         StreamWriter standardOutput = new(Console.OpenStandardOutput()) { AutoFlush = true };
@@ -73,7 +74,7 @@ public class ConsoleTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests
         ConsoleEx.WriteLineEvent("Event message");
 
         string result = output.ToString();
-        Assert.Contains("Event message", result);
+        _ = result.Should().Contain("Event message");
 
         // Reset console
         StreamWriter standardOutput = new(Console.OpenStandardOutput()) { AutoFlush = true };
@@ -89,7 +90,7 @@ public class ConsoleTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests
         ConsoleEx.WriteLineTool("Tool message");
 
         string result = output.ToString();
-        Assert.Contains("Tool message", result);
+        _ = result.Should().Contain("Tool message");
 
         // Reset console
         StreamWriter standardOutput = new(Console.OpenStandardOutput()) { AutoFlush = true };
@@ -105,7 +106,7 @@ public class ConsoleTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests
         ConsoleEx.WriteLine("Output message");
 
         string result = output.ToString();
-        Assert.Contains("Output message", result);
+        _ = result.Should().Contain("Output message");
 
         // Reset console
         StreamWriter standardOutput = new(Console.OpenStandardOutput()) { AutoFlush = true };
@@ -132,9 +133,9 @@ public class ConsoleTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests
     [Fact]
     public void ColorConstants_ShouldHaveCorrectValues()
     {
-        Assert.Equal(ConsoleColor.Green, ConsoleEx.ToolColor);
-        Assert.Equal(ConsoleColor.Red, ConsoleEx.ErrorColor);
-        Assert.Equal(ConsoleColor.Cyan, ConsoleEx.OutputColor);
-        Assert.Equal(ConsoleColor.Yellow, ConsoleEx.EventColor);
+        _ = ConsoleEx.ToolColor.Should().Be(ConsoleColor.Green);
+        _ = ConsoleEx.ErrorColor.Should().Be(ConsoleColor.Red);
+        _ = ConsoleEx.OutputColor.Should().Be(ConsoleColor.Cyan);
+        _ = ConsoleEx.EventColor.Should().Be(ConsoleColor.Yellow);
     }
 }

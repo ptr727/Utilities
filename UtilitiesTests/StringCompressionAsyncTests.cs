@@ -24,7 +24,7 @@ public class StringCompressionAsyncTests(UtilitiesTests fixture) : IClassFixture
         string decompressed = await compressed.DecompressAsync();
 
         // Compare to original string
-        Assert.Equal(text, decompressed);
+        _ = decompressed.Should().Be(text);
     }
 
     [Theory]
@@ -39,7 +39,7 @@ public class StringCompressionAsyncTests(UtilitiesTests fixture) : IClassFixture
         string compressed = await text.CompressAsync(level);
         string decompressed = await compressed.DecompressAsync();
 
-        Assert.Equal(text, decompressed);
+        _ = decompressed.Should().Be(text);
     }
 
     [Fact]
@@ -52,8 +52,8 @@ public class StringCompressionAsyncTests(UtilitiesTests fixture) : IClassFixture
 
         string compressed = await text.CompressAsync(cancellationToken: cts.Token);
 
-        Assert.NotNull(compressed);
-        Assert.NotEmpty(compressed);
+        _ = compressed.Should().NotBeNull();
+        _ = compressed.Should().NotBeEmpty();
     }
 
     [Fact]
@@ -61,9 +61,10 @@ public class StringCompressionAsyncTests(UtilitiesTests fixture) : IClassFixture
     {
         string invalidBase64 = "This is not valid Base64!";
 
-        _ = await Assert.ThrowsAsync<FormatException>(async () =>
-            await invalidBase64.DecompressAsync()
-        );
+        _ = await FluentActions
+            .Awaiting(() => invalidBase64.DecompressAsync())
+            .Should()
+            .ThrowAsync<FormatException>();
     }
 
     [Fact]
@@ -71,9 +72,10 @@ public class StringCompressionAsyncTests(UtilitiesTests fixture) : IClassFixture
     {
         string? nullString = null;
 
-        _ = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
-            await StringCompression.CompressAsync(nullString!)
-        );
+        _ = await FluentActions
+            .Awaiting(() => StringCompression.CompressAsync(nullString!))
+            .Should()
+            .ThrowAsync<ArgumentNullException>();
     }
 
     [Fact]
@@ -81,9 +83,10 @@ public class StringCompressionAsyncTests(UtilitiesTests fixture) : IClassFixture
     {
         string? nullString = null;
 
-        _ = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
-            await StringCompression.DecompressAsync(nullString!)
-        );
+        _ = await FluentActions
+            .Awaiting(() => StringCompression.DecompressAsync(nullString!))
+            .Should()
+            .ThrowAsync<ArgumentNullException>();
     }
 
     [Fact]
@@ -95,7 +98,9 @@ public class StringCompressionAsyncTests(UtilitiesTests fixture) : IClassFixture
         string compressed = await largeText.CompressAsync();
         string decompressed = await compressed.DecompressAsync();
 
-        Assert.Equal(largeText, decompressed);
-        Assert.True(compressed.Length < largeText.Length, "Compressed size should be smaller");
+        _ = decompressed.Should().Be(largeText);
+        _ = (compressed.Length < largeText.Length)
+            .Should()
+            .BeTrue("Compressed size should be smaller");
     }
 }
