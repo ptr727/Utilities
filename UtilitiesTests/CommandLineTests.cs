@@ -22,13 +22,13 @@ public class CommandLineTests(UtilitiesTests fixture) : IClassFixture<UtilitiesT
         ];
 
         string[] output = CommandLineEx.ParseArguments(input);
-        Assert.Equal(expected, output);
+        _ = output.Should().Equal(expected);
     }
 
     [Fact]
     public void GetCommandLineArgs()
     {
         string[] commandlineArgs = CommandLineEx.GetCommandLineArgs();
-        Assert.True(commandlineArgs.Length > 0);
+        _ = (commandlineArgs.Length > 0).Should().BeTrue();
     }
 }

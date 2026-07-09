@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using Microsoft.Extensions.Logging;
 
 namespace InsaneGenius.Utilities;
 
@@ -9,6 +10,12 @@ namespace InsaneGenius.Utilities;
 /// </summary>
 public static class FileEx
 {
+    private static readonly Lazy<ILogger> s_logger = new(() =>
+        LogOptions.CreateLogger(typeof(FileEx).FullName!)
+    );
+
+    private static ILogger Log => s_logger.Value;
+
     /// <summary>
     /// Settings for file operations including retry behavior and cancellation.
     /// </summary>
@@ -47,18 +54,13 @@ public static class FileEx
                 result = true;
                 break;
             }
-            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (IOException e) when (Log.LogAndHandle(e))
             {
                 // Retry
-                LogOptions.Logger.Information(
-                    "Deleting ({RetryCount} / {OptionsRetryCount}) : {FileName}",
-                    retryCount,
-                    Options.RetryCount,
-                    fileName
-                );
+                Log.LogDeletingFile(retryCount, Options.RetryCount, fileName);
                 _ = Options.RetryWaitForCancel();
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (Exception e) when (Log.LogAndHandle(e))
             {
                 break;
             }
@@ -101,18 +103,13 @@ public static class FileEx
                 result = true;
                 break;
             }
-            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (IOException e) when (Log.LogAndHandle(e))
             {
-                LogOptions.Logger.Information(
-                    "Deleting ({RetryCount} / {OptionsRetryCount}) : {FileName}",
-                    retryCount,
-                    Options.RetryCount,
-                    fileName
-                );
+                Log.LogDeletingFile(retryCount, Options.RetryCount, fileName);
                 await Task.Delay(Options.RetryWaitTime * 1000, cancellationToken)
                     .ConfigureAwait(false);
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (Exception e) when (Log.LogAndHandle(e))
             {
                 break;
             }
@@ -154,20 +151,15 @@ public static class FileEx
                 result = true;
                 break;
             }
-            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (IOException e) when (Log.LogAndHandle(e))
             {
                 // TODO : Do not retry if folder is not empty, it will never succeed
 
                 // Retry
-                LogOptions.Logger.Information(
-                    "Deleting ({RetryCount} / {OptionsRetryCount}) : {Directory}",
-                    retryCount,
-                    Options.RetryCount,
-                    directory
-                );
+                Log.LogDeletingDirectory(retryCount, Options.RetryCount, directory);
                 _ = Options.RetryWaitForCancel();
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (Exception e) when (Log.LogAndHandle(e))
             {
                 break;
             }
@@ -210,18 +202,13 @@ public static class FileEx
                 result = true;
                 break;
             }
-            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (IOException e) when (Log.LogAndHandle(e))
             {
-                LogOptions.Logger.Information(
-                    "Deleting ({RetryCount} / {OptionsRetryCount}) : {Directory}",
-                    retryCount,
-                    Options.RetryCount,
-                    directory
-                );
+                Log.LogDeletingDirectory(retryCount, Options.RetryCount, directory);
                 await Task.Delay(Options.RetryWaitTime * 1000, cancellationToken)
                     .ConfigureAwait(false);
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (Exception e) when (Log.LogAndHandle(e))
             {
                 break;
             }
@@ -291,11 +278,7 @@ public static class FileEx
             || string.IsNullOrEmpty(newFile)
         )
         {
-            LogOptions.Logger.Error(
-                "Renaming file failed due to invalid path(s) : {OriginalName} to {NewName}",
-                originalName,
-                newName
-            );
+            Log.LogRenameInvalidPath(originalName, newName);
             return false;
         }
 
@@ -321,18 +304,17 @@ public static class FileEx
                 result = true;
                 break;
             }
-            catch (FileNotFoundException e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (FileNotFoundException e) when (Log.LogAndHandle(e))
             {
                 // File not found
                 break;
             }
-            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (IOException e) when (Log.LogAndHandle(e))
             {
                 // Retry
                 if (originalDirectory.Equals(newDirectory, StringComparison.OrdinalIgnoreCase))
                 {
-                    LogOptions.Logger.Information(
-                        "Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalDirectory} : {OriginalFile} to {NewFile}",
+                    Log.LogRenamingInDirectory(
                         retryCount,
                         Options.RetryCount,
                         originalDirectory,
@@ -342,18 +324,12 @@ public static class FileEx
                 }
                 else
                 {
-                    LogOptions.Logger.Information(
-                        "Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalName} to {NewName}",
-                        retryCount,
-                        Options.RetryCount,
-                        originalName,
-                        newName
-                    );
+                    Log.LogRenaming(retryCount, Options.RetryCount, originalName, newName);
                 }
 
                 _ = Options.RetryWaitForCancel();
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (Exception e) when (Log.LogAndHandle(e))
             {
                 break;
             }
@@ -391,11 +367,7 @@ public static class FileEx
             || string.IsNullOrEmpty(newFile)
         )
         {
-            LogOptions.Logger.Error(
-                "Renaming file failed due to invalid path(s) : {OriginalName} to {NewName}",
-                originalName,
-                newName
-            );
+            Log.LogRenameInvalidPath(originalName, newName);
             return false;
         }
 
@@ -418,18 +390,17 @@ public static class FileEx
                 result = true;
                 break;
             }
-            catch (FileNotFoundException e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (FileNotFoundException e) when (Log.LogAndHandle(e))
             {
                 // File not found
                 break;
             }
-            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (IOException e) when (Log.LogAndHandle(e))
             {
                 // Retry
                 if (originalDirectory.Equals(newDirectory, StringComparison.OrdinalIgnoreCase))
                 {
-                    LogOptions.Logger.Information(
-                        "Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalDirectory} : {OriginalFile} to {NewFile}",
+                    Log.LogRenamingInDirectory(
                         retryCount,
                         Options.RetryCount,
                         originalDirectory,
@@ -439,19 +410,13 @@ public static class FileEx
                 }
                 else
                 {
-                    LogOptions.Logger.Information(
-                        "Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalName} to {NewName}",
-                        retryCount,
-                        Options.RetryCount,
-                        originalName,
-                        newName
-                    );
+                    Log.LogRenaming(retryCount, Options.RetryCount, originalName, newName);
                 }
 
                 await Task.Delay(Options.RetryWaitTime * 1000, cancellationToken)
                     .ConfigureAwait(false);
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (Exception e) when (Log.LogAndHandle(e))
             {
                 break;
             }
@@ -495,24 +460,18 @@ public static class FileEx
                 result = true;
                 break;
             }
-            catch (FileNotFoundException e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (FileNotFoundException e) when (Log.LogAndHandle(e))
             {
                 // File not found
                 break;
             }
-            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (IOException e) when (Log.LogAndHandle(e))
             {
                 // Retry
-                LogOptions.Logger.Information(
-                    "Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalName} to {NewName}",
-                    retryCount,
-                    Options.RetryCount,
-                    originalName,
-                    newName
-                );
+                Log.LogRenaming(retryCount, Options.RetryCount, originalName, newName);
                 _ = Options.RetryWaitForCancel();
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (Exception e) when (Log.LogAndHandle(e))
             {
                 break;
             }
@@ -559,25 +518,19 @@ public static class FileEx
                 result = true;
                 break;
             }
-            catch (FileNotFoundException e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (FileNotFoundException e) when (Log.LogAndHandle(e))
             {
                 // File not found
                 break;
             }
-            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (IOException e) when (Log.LogAndHandle(e))
             {
                 // Retry
-                LogOptions.Logger.Information(
-                    "Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalName} to {NewName}",
-                    retryCount,
-                    Options.RetryCount,
-                    originalName,
-                    newName
-                );
+                Log.LogRenaming(retryCount, Options.RetryCount, originalName, newName);
                 await Task.Delay(Options.RetryWaitTime * 1000, cancellationToken)
                     .ConfigureAwait(false);
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (Exception e) when (Log.LogAndHandle(e))
             {
                 break;
             }
@@ -737,7 +690,7 @@ public static class FileEx
             FileInfo fileInfo = new(fileName);
             return IsFileReadable(fileInfo);
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        catch (Exception e) when (Log.LogAndHandle(e))
         {
             return false;
         }
@@ -771,18 +724,13 @@ public static class FileEx
                 result = true;
                 break;
             }
-            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (IOException e) when (Log.LogAndHandle(e))
             {
                 // Retry
-                LogOptions.Logger.Information(
-                    "Waiting for file to become readable ({RetryCount} / {OptionsRetryCount}) : {Name}",
-                    retryCount,
-                    Options.RetryCount,
-                    fileName
-                );
+                Log.LogWaitingForReadable(retryCount, Options.RetryCount, fileName);
                 _ = Options.RetryWaitForCancel();
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (Exception e) when (Log.LogAndHandle(e))
             {
                 break;
             }
@@ -822,19 +770,14 @@ public static class FileEx
                 result = true;
                 break;
             }
-            catch (IOException e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (IOException e) when (Log.LogAndHandle(e))
             {
                 // Retry
-                LogOptions.Logger.Information(
-                    "Waiting for file to become readable ({RetryCount} / {OptionsRetryCount}) : {Name}",
-                    retryCount,
-                    Options.RetryCount,
-                    fileName
-                );
+                Log.LogWaitingForReadable(retryCount, Options.RetryCount, fileName);
                 await Task.Delay(Options.RetryWaitTime * 1000, cancellationToken)
                     .ConfigureAwait(false);
             }
-            catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+            catch (Exception e) when (Log.LogAndHandle(e))
             {
                 break;
             }
@@ -861,7 +804,7 @@ public static class FileEx
                 FileShare.ReadWrite
             );
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        catch (Exception e) when (Log.LogAndHandle(e))
         {
             return false;
         }
@@ -887,7 +830,7 @@ public static class FileEx
                 FileShare.ReadWrite
             );
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        catch (Exception e) when (Log.LogAndHandle(e))
         {
             return false;
         }
@@ -913,7 +856,7 @@ public static class FileEx
                 FileShare.ReadWrite
             );
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        catch (Exception e) when (Log.LogAndHandle(e))
         {
             return false;
         }
@@ -934,7 +877,7 @@ public static class FileEx
             DirectoryInfo dirInfo = new(directory);
             return dirInfo.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly).All(IsFileReadable);
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        catch (Exception e) when (Log.LogAndHandle(e))
         {
             return false;
         }
@@ -954,7 +897,7 @@ public static class FileEx
                 _ = Directory.CreateDirectory(directory);
             }
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        catch (Exception e) when (Log.LogAndHandle(e))
         {
             return false;
         }
@@ -1056,7 +999,7 @@ public static class FileEx
                 fileList.AddRange(dirInfo.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly));
             }
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        catch (Exception e) when (Log.LogAndHandle(e))
         {
             return false;
         }
@@ -1119,7 +1062,7 @@ public static class FileEx
             directorySecurity.AddAccessRule(accessRule);
             directoryInfo.SetAccessControl(directorySecurity);
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        catch (Exception e) when (Log.LogAndHandle(e))
         {
             return false;
         }
@@ -1191,7 +1134,7 @@ public static class FileEx
             // Close
             stream.Close();
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        catch (Exception e) when (Log.LogAndHandle(e))
         {
             return false;
         }
@@ -1239,7 +1182,7 @@ public static class FileEx
                 remaining -= writeSize;
             }
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        catch (Exception e) when (Log.LogAndHandle(e))
         {
             return false;
         }
@@ -1268,7 +1211,7 @@ public static class FileEx
             // Set length
             stream.SetLength(size);
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        catch (Exception e) when (Log.LogAndHandle(e))
         {
             return false;
         }
@@ -1295,7 +1238,7 @@ public static class FileEx
 
             stream.SetLength(size);
         }
-        catch (Exception e) when (LogOptions.Logger.LogAndHandle(e))
+        catch (Exception e) when (Log.LogAndHandle(e))
         {
             return false;
         }

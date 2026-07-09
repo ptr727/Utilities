@@ -21,14 +21,13 @@ Some useful and not so useful C# .NET utility classes.
 
 ### Release Notes
 
-**Version: 3.6**:
+**Version: 3.7**:
 
 **Summary**:
 
-- Internal CI/CD rework, no library API changes.
-  - Branch-scoped self-publishing workflows.
-  - Keyless OIDC NuGet publishing.
-  - Hardened repository configuration, see [WORKFLOW.md](./WORKFLOW.md).
+- Adopted an injectable `Microsoft.Extensions.Logging` logging model.
+  - Configure logging with `LogOptions.SetFactory(ILoggerFactory)` instead of the removed Serilog-typed `LogOptions.Logger` property.
+  - The library now depends on `Microsoft.Extensions.Logging.Abstractions` and is backend-agnostic; the `Sandbox` shows Serilog console wiring.
 
 See [Release History](./HISTORY.md) for complete release notes and older versions.
 

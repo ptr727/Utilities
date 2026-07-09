@@ -1,15 +1,13 @@
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace InsaneGenius.Utilities;
 
 /// <summary>
-/// Provides extension methods for string compression and logger error handling.
+/// Provides extension methods for string compression.
 /// </summary>
-#pragma warning disable CA1708 // Identifiers should differ by more than case
-public static class Extensions
-#pragma warning restore CA1708 // Identifiers should differ by more than case
+public static class CompressExtensions
 {
     /// <summary>
     /// Extension methods for string compression and decompression.
@@ -54,9 +52,15 @@ public static class Extensions
         public Task<string> DecompressAsync(CancellationToken cancellationToken = default) =>
             StringCompression.DecompressAsync(uncompressedString, cancellationToken);
     }
+}
 
+/// <summary>
+/// Provides logger error handling helpers and strongly-typed, source-generated log messages.
+/// </summary>
+internal static partial class LogExtensions
+{
     /// <summary>
-    /// Extension methods for Serilog ILogger error handling.
+    /// Extension methods for Microsoft.Extensions.Logging ILogger error handling.
     /// </summary>
     extension(ILogger logger)
     {
@@ -66,12 +70,12 @@ public static class Extensions
         /// <param name="exception">The exception to log.</param>
         /// <param name="function">The function name (automatically captured).</param>
         /// <returns>Always returns false to allow exception to propagate.</returns>
-        public bool LogAndPropagate(
+        internal bool LogAndPropagate(
             Exception exception,
             [CallerMemberName] string function = "unknown"
         )
         {
-            logger.Error(exception, "{Function}", function);
+            logger.LogCatchException(function, exception);
             return false;
         }
 
@@ -81,13 +85,88 @@ public static class Extensions
         /// <param name="exception">The exception to log.</param>
         /// <param name="function">The function name (automatically captured).</param>
         /// <returns>Always returns true to indicate exception was handled.</returns>
-        public bool LogAndHandle(
+        internal bool LogAndHandle(
             Exception exception,
             [CallerMemberName] string function = "unknown"
         )
         {
-            logger.Error(exception, "{Function}", function);
+            logger.LogCatchException(function, exception);
             return true;
         }
     }
+
+    [LoggerMessage(Message = "Exception in {Function}", Level = LogLevel.Error)]
+    internal static partial void LogCatchException(
+        this ILogger logger,
+        string function,
+        Exception exception
+    );
+
+    [LoggerMessage(
+        Message = "Deleting ({RetryCount} / {OptionsRetryCount}) : {FileName}",
+        Level = LogLevel.Information
+    )]
+    internal static partial void LogDeletingFile(
+        this ILogger logger,
+        int retryCount,
+        int optionsRetryCount,
+        string fileName
+    );
+
+    [LoggerMessage(
+        Message = "Deleting ({RetryCount} / {OptionsRetryCount}) : {Directory}",
+        Level = LogLevel.Information
+    )]
+    internal static partial void LogDeletingDirectory(
+        this ILogger logger,
+        int retryCount,
+        int optionsRetryCount,
+        string directory
+    );
+
+    [LoggerMessage(
+        Message = "Renaming file failed due to invalid path(s) : {OriginalName} to {NewName}",
+        Level = LogLevel.Error
+    )]
+    internal static partial void LogRenameInvalidPath(
+        this ILogger logger,
+        string originalName,
+        string newName
+    );
+
+    [LoggerMessage(
+        Message = "Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalDirectory} : {OriginalFile} to {NewFile}",
+        Level = LogLevel.Information
+    )]
+    internal static partial void LogRenamingInDirectory(
+        this ILogger logger,
+        int retryCount,
+        int optionsRetryCount,
+        string originalDirectory,
+        string originalFile,
+        string newFile
+    );
+
+    [LoggerMessage(
+        Message = "Renaming ({RetryCount} / {OptionsRetryCount}) : {OriginalName} to {NewName}",
+        Level = LogLevel.Information
+    )]
+    internal static partial void LogRenaming(
+        this ILogger logger,
+        int retryCount,
+        int optionsRetryCount,
+        string originalName,
+        string newName
+    );
+
+    [LoggerMessage(
+        Message = "Waiting for file to become readable ({RetryCount} / {OptionsRetryCount}) : {Name}",
+        Level = LogLevel.Information
+    )]
+    internal static partial void LogWaitingForReadable(
+        this ILogger logger,
+        int retryCount,
+        int optionsRetryCount,
+        string name
+    );
 }

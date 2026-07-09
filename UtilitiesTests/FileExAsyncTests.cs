@@ -15,8 +15,8 @@ public class FileExAsyncTests(UtilitiesTests fixture) : IClassFixture<UtilitiesT
         {
             bool result = await FileEx.DeleteFileAsync(tempFile);
 
-            Assert.True(result);
-            Assert.False(File.Exists(tempFile));
+            _ = result.Should().BeTrue();
+            _ = File.Exists(tempFile).Should().BeFalse();
         }
         finally
         {
@@ -37,8 +37,8 @@ public class FileExAsyncTests(UtilitiesTests fixture) : IClassFixture<UtilitiesT
         {
             bool result = await FileEx.DeleteDirectoryAsync(tempDir);
 
-            Assert.True(result);
-            Assert.False(Directory.Exists(tempDir));
+            _ = result.Should().BeTrue();
+            _ = Directory.Exists(tempDir).Should().BeFalse();
         }
         finally
         {
@@ -63,8 +63,8 @@ public class FileExAsyncTests(UtilitiesTests fixture) : IClassFixture<UtilitiesT
         {
             bool result = await FileEx.DeleteDirectoryAsync(tempDir, recursive: true);
 
-            Assert.True(result);
-            Assert.False(Directory.Exists(tempDir));
+            _ = result.Should().BeTrue();
+            _ = Directory.Exists(tempDir).Should().BeFalse();
         }
         finally
         {
@@ -85,9 +85,9 @@ public class FileExAsyncTests(UtilitiesTests fixture) : IClassFixture<UtilitiesT
         {
             bool result = await FileEx.RenameFileAsync(tempFile, newPath);
 
-            Assert.True(result);
-            Assert.False(File.Exists(tempFile));
-            Assert.True(File.Exists(newPath));
+            _ = result.Should().BeTrue();
+            _ = File.Exists(tempFile).Should().BeFalse();
+            _ = File.Exists(newPath).Should().BeTrue();
         }
         finally
         {
@@ -113,9 +113,9 @@ public class FileExAsyncTests(UtilitiesTests fixture) : IClassFixture<UtilitiesT
         {
             bool result = await FileEx.RenameFolderAsync(tempDir, newPath);
 
-            Assert.True(result);
-            Assert.False(Directory.Exists(tempDir));
-            Assert.True(Directory.Exists(newPath));
+            _ = result.Should().BeTrue();
+            _ = Directory.Exists(tempDir).Should().BeFalse();
+            _ = Directory.Exists(newPath).Should().BeTrue();
         }
         finally
         {
@@ -141,7 +141,7 @@ public class FileExAsyncTests(UtilitiesTests fixture) : IClassFixture<UtilitiesT
 
             bool result = await FileEx.WaitFileReadableAsync(tempFile);
 
-            Assert.True(result);
+            _ = result.Should().BeTrue();
         }
         finally
         {
@@ -162,9 +162,9 @@ public class FileExAsyncTests(UtilitiesTests fixture) : IClassFixture<UtilitiesT
         {
             bool result = await FileEx.CreateRandomFilledFileAsync(tempFile, fileSize);
 
-            Assert.True(result);
-            Assert.True(File.Exists(tempFile));
-            Assert.Equal(fileSize, new FileInfo(tempFile).Length);
+            _ = result.Should().BeTrue();
+            _ = File.Exists(tempFile).Should().BeTrue();
+            _ = new FileInfo(tempFile).Length.Should().Be(fileSize);
         }
         finally
         {
@@ -185,9 +185,9 @@ public class FileExAsyncTests(UtilitiesTests fixture) : IClassFixture<UtilitiesT
         {
             bool result = await FileEx.CreateSparseFileAsync(tempFile, fileSize);
 
-            Assert.True(result);
-            Assert.True(File.Exists(tempFile));
-            Assert.Equal(fileSize, new FileInfo(tempFile).Length);
+            _ = result.Should().BeTrue();
+            _ = File.Exists(tempFile).Should().BeTrue();
+            _ = new FileInfo(tempFile).Length.Should().Be(fileSize);
         }
         finally
         {
@@ -211,7 +211,7 @@ public class FileExAsyncTests(UtilitiesTests fixture) : IClassFixture<UtilitiesT
             bool result = await FileEx.DeleteFileAsync(tempFile, cts.Token);
 
             // Should either succeed quickly or respect cancellation
-            Assert.True(result || cts.Token.IsCancellationRequested);
+            _ = (result || cts.Token.IsCancellationRequested).Should().BeTrue();
         }
         finally
         {
@@ -234,9 +234,9 @@ public class FileExAsyncTests(UtilitiesTests fixture) : IClassFixture<UtilitiesT
         {
             bool result = await FileEx.DeleteInsideDirectoryAsync(tempDir);
 
-            Assert.True(result);
-            Assert.True(Directory.Exists(tempDir)); // Directory should still exist
-            Assert.False(File.Exists(testFile)); // But file should be gone
+            _ = result.Should().BeTrue();
+            _ = Directory.Exists(tempDir).Should().BeTrue(); // Directory should still exist
+            _ = File.Exists(testFile).Should().BeFalse(); // But file should be gone
         }
         finally
         {
