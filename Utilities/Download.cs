@@ -242,13 +242,27 @@ public static class Download
     {
         HttpClient client = new() { Timeout = TimeSpan.FromSeconds(TimeoutSeconds) };
 
-        Assembly assembly = Assembly.GetExecutingAssembly();
-        const string productName = "ptr727.Utilities";
-        string productVersion = assembly.GetName().Version?.ToString() ?? "1.0.0";
+        // Identify the consuming application (the caller), never this library. Assembly-to-file
+        // metadata is unreliable under NativeAOT (dotnet/runtime#122457), so try the managed
+        // entry assembly name, then the OS-level process executable name, then a generic value.
+        Assembly? entryAssembly = Assembly.GetEntryAssembly();
+        string? processPath = Environment.ProcessPath;
+        string? processName = string.IsNullOrEmpty(processPath)
+            ? null
+            : Path.GetFileNameWithoutExtension(processPath);
+        string productName = entryAssembly?.GetName().Name ?? processName ?? "Unknown";
+        string productVersion = entryAssembly?.GetName().Version?.ToString() ?? "1.0.0";
 
-        client.DefaultRequestHeaders.UserAgent.Add(
-            new ProductInfoHeaderValue(productName, productVersion)
-        );
+        // The derived name may not be a valid HTTP token, so only add a User-Agent that parses.
+        if (
+            ProductInfoHeaderValue.TryParse(
+                $"{productName}/{productVersion}",
+                out ProductInfoHeaderValue? userAgent
+            )
+        )
+        {
+            client.DefaultRequestHeaders.UserAgent.Add(userAgent);
+        }
 
         return client;
     }
