@@ -1,7 +1,7 @@
 using System.IO.Compression;
 using System.Text;
 
-namespace InsaneGenius.Utilities;
+namespace ptr727.Utilities;
 
 // https://stackoverflow.com/questions/7343465/compression-decompression-string-with-c-sharp
 

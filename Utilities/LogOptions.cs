@@ -1,7 +1,6 @@
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace InsaneGenius.Utilities;
+namespace ptr727.Utilities;
 
 /// <summary>
 /// Provides global logging configuration for the library.

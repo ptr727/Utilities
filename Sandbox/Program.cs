@@ -1,8 +1,7 @@
 using System.Diagnostics;
 using System.Reflection;
-using InsaneGenius.Utilities;
-using InsaneGenius.Utilities.Sandbox;
-using Serilog;
+using ptr727.Utilities;
+using ptr727.Utilities.Sandbox;
 
 // Configure logging: build a Serilog console logger and inject it into the library.
 Log.Logger = LoggerFactory.Create();

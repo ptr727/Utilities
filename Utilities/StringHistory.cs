@@ -1,4 +1,4 @@
-namespace InsaneGenius.Utilities;
+namespace ptr727.Utilities;
 
 /// <summary>
 /// Manages a history of strings with configurable limits on the number of first and last lines to retain.
