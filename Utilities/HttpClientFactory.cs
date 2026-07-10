@@ -163,7 +163,7 @@ public static class HttpClientFactory
         if (outcome.Exception is null)
         {
             return outcome.Result is not null
-                && (int)outcome.Result.StatusCode is 408 or 429 or >= 500;
+                && IsTransientStatusCode((int)outcome.Result.StatusCode);
         }
 
         // Retry known-transient failures: a request timeout (a cancellation with an inner
@@ -175,13 +175,14 @@ public static class HttpClientFactory
         {
             OperationCanceledException canceled => canceled.InnerException is TimeoutException,
             HttpRequestException { StatusCode: null } or IOException => true,
-            HttpRequestException { StatusCode: { } statusCode } => (int)statusCode
-                is 408
-                    or 429
-                    or >= 500,
+            HttpRequestException { StatusCode: { } statusCode } => IsTransientStatusCode(
+                (int)statusCode
+            ),
             _ => false,
         };
     }
+
+    private static bool IsTransientStatusCode(int statusCode) => statusCode is 408 or 429 or >= 500;
 
     private static string FormatOutcome(Outcome<HttpResponseMessage> outcome) =>
         outcome.Exception?.Message ?? outcome.Result?.StatusCode.ToString() ?? "unknown";
