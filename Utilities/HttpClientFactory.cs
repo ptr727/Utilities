@@ -34,7 +34,9 @@ public static class HttpClientFactory
     /// </summary>
     /// <returns>The shared HttpClient instance.</returns>
     /// <remarks>
-    /// All callers share this client, its connection pool, and its circuit-breaker state.
+    /// All callers share this client, its connection pool, and its circuit-breaker state. Do not
+    /// dispose it; it lives for the process lifetime. Use <see cref="CreateClient(HttpClientOptions)"/>
+    /// for a caller-owned instance.
     /// </remarks>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Design",

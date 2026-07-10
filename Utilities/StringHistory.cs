@@ -12,7 +12,7 @@ public class StringHistory
     /// <summary>
     /// Initializes a new instance of the <see cref="StringHistory"/> class with no limits.
     /// </summary>
-    public StringHistory() { }
+    public StringHistory() => StringList = _stringList.AsReadOnly();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="StringHistory"/> class with specified limits.
@@ -20,6 +20,7 @@ public class StringHistory
     /// <param name="maxFirstLines">Maximum number of first lines to retain.</param>
     /// <param name="maxLastLines">Maximum number of last lines to retain.</param>
     public StringHistory(int maxFirstLines, int maxLastLines)
+        : this()
     {
         MaxFirstLines = maxFirstLines;
         MaxLastLines = maxLastLines;
@@ -91,7 +92,7 @@ public class StringHistory
     /// <summary>
     /// Gets the list of stored strings.
     /// </summary>
-    public ReadOnlyCollection<string> StringList => _stringList.AsReadOnly();
+    public ReadOnlyCollection<string> StringList { get; }
 
     private readonly List<string> _stringList = [];
     private int _firstLines;
