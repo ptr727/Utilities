@@ -23,7 +23,7 @@ public class FileTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests>
         }
 
         string path = FileEx.CombinePath(path1, path2);
-        Assert.Equal(path, output);
+        _ = path.Should().Be(output);
     }
 
     [Theory]
@@ -57,6 +57,6 @@ public class FileTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests>
         }
 
         string path = FileEx.CombinePath(path1, path2, path3);
-        Assert.Equal(path, output);
+        _ = path.Should().Be(output);
     }
 }

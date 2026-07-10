@@ -23,6 +23,6 @@ public class StringCompressionTests(UtilitiesTests fixture) : IClassFixture<Util
         string decompressed = compressed.Decompress();
 
         // Compare to original string
-        Assert.Equal(text, decompressed);
+        _ = decompressed.Should().Be(text);
     }
 }

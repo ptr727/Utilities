@@ -27,7 +27,7 @@ public class FormatTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests>
     public void BytestoKibi(long value, string output)
     {
         string kibi = Format.BytesToKibi(value);
-        Assert.Equal(kibi, output);
+        _ = kibi.Should().Be(output);
     }
 
     [Theory]
@@ -51,6 +51,6 @@ public class FormatTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests>
     public void BytestoKilo(long value, string output)
     {
         string kilo = Format.BytesToKilo(value);
-        Assert.Equal(kilo, output);
+        _ = kilo.Should().Be(output);
     }
 }
