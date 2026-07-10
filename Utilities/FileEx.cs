@@ -963,9 +963,9 @@ public static class FileEx
     /// <summary>
     /// Enumerates all files and directories in the specified source directories.
     /// </summary>
-    /// <param name="sourceList">The list of source directories to enumerate.</param>
-    /// <param name="fileList">Output list of all files found.</param>
-    /// <param name="directoryList">Output list of all directories found (includes source directories).</param>
+    /// <param name="sourceList">The source directories to enumerate.</param>
+    /// <param name="fileList">Output collection of all files found.</param>
+    /// <param name="directoryList">Output collection of all directories found (includes source directories).</param>
     /// <returns>True if successful, false otherwise.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="sourceList"/> is null.</exception>
     public static bool EnumerateDirectories(
@@ -981,7 +981,7 @@ public static class FileEx
 
         try
         {
-            // Add all directories and files from the list of folders
+            // Add all directories and files from the source folders
             foreach (string folder in sourceList)
             {
                 // Add this folder to the directory list
@@ -1017,8 +1017,8 @@ public static class FileEx
     /// Enumerates all files and directories in the specified directory.
     /// </summary>
     /// <param name="directory">The directory to enumerate.</param>
-    /// <param name="fileList">Output list of all files found.</param>
-    /// <param name="directoryList">Output list of all directories found (includes the specified directory).</param>
+    /// <param name="fileList">Output collection of all files found.</param>
+    /// <param name="directoryList">Output collection of all directories found (includes the specified directory).</param>
     /// <returns>True if successful, false otherwise.</returns>
     public static bool EnumerateDirectory(
         string directory,
