@@ -163,19 +163,26 @@ public static class HttpClientFactory
         if (outcome.Exception is null)
         {
             return outcome.Result is not null
-                && (int)outcome.Result.StatusCode is 408 or 429 or >= 500;
+                && IsTransientStatusCode((int)outcome.Result.StatusCode);
         }
 
-        // Retry only known-transient failures: a timeout (a cancellation with an inner
-        // TimeoutException) or a network/IO error. Caller cancellation, an open circuit, and any
-        // other exception (including programming errors) are not retried.
+        // Retry known-transient failures: a request timeout (a cancellation with an inner
+        // TimeoutException), a network or IO error (an HttpRequestException with no status, or an
+        // IOException), or an HttpRequestException whose own status code is transient (408, 429,
+        // >= 500). Caller cancellation, an open circuit, a 4xx status, and any other exception
+        // (including programming errors) are not retried.
         return outcome.Exception switch
         {
             OperationCanceledException canceled => canceled.InnerException is TimeoutException,
-            HttpRequestException or IOException => true,
+            HttpRequestException { StatusCode: null } or IOException => true,
+            HttpRequestException { StatusCode: { } statusCode } => IsTransientStatusCode(
+                (int)statusCode
+            ),
             _ => false,
         };
     }
+
+    private static bool IsTransientStatusCode(int statusCode) => statusCode is 408 or 429 or >= 500;
 
     private static string FormatOutcome(Outcome<HttpResponseMessage> outcome) =>
         outcome.Exception?.Message ?? outcome.Result?.StatusCode.ToString() ?? "unknown";

@@ -94,6 +94,41 @@ public class HttpClientFactoryResilienceTests
         _ = stub.CallCount.Should().Be(1); // programming errors are not retried
     }
 
+    [Fact]
+    public async Task HttpRequestExceptionWithNonTransientStatus_IsNotRetried()
+    {
+        using StubHttpMessageHandler stub = new(
+            Throws(new HttpRequestException("not found", null, HttpStatusCode.NotFound))
+        );
+        using HttpClient client = CreateStubbedClient(stub, FastOptions());
+
+        _ = await FluentActions
+            .Awaiting(() => client.GetAsync(new Uri("http://localhost/")))
+            .Should()
+            .ThrowAsync<HttpRequestException>();
+        _ = stub.CallCount.Should().Be(1); // a 404 HttpRequestException is not transient
+    }
+
+    [Fact]
+    public async Task HttpRequestExceptionWithTransientStatus_IsRetriedThenSucceeds()
+    {
+        using StubHttpMessageHandler stub = new(
+            Throws(
+                new HttpRequestException("unavailable", null, HttpStatusCode.ServiceUnavailable)
+            ),
+            Throws(
+                new HttpRequestException("unavailable", null, HttpStatusCode.ServiceUnavailable)
+            ),
+            Status(HttpStatusCode.OK)
+        );
+        using HttpClient client = CreateStubbedClient(stub, FastOptions());
+
+        using HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/"));
+
+        _ = response.StatusCode.Should().Be(HttpStatusCode.OK);
+        _ = stub.CallCount.Should().Be(3); // 503 exception retried, then success
+    }
+
     private static HttpClientOptions FastOptions() =>
         new()
         {
