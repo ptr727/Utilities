@@ -1,4 +1,4 @@
-namespace InsaneGenius.Utilities;
+namespace ptr727.Utilities;
 
 /// <summary>
 /// Configuration options for FileEx operations.

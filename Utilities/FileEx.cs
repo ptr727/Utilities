@@ -1,9 +1,8 @@
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
-using Microsoft.Extensions.Logging;
 
-namespace InsaneGenius.Utilities;
+namespace ptr727.Utilities;
 
 /// <summary>
 /// Provides extended file and directory operation utilities with retry logic and cancellation support.
@@ -1097,6 +1096,11 @@ public static class FileEx
     /// <param name="name">The file path to create.</param>
     /// <param name="size">The size of the file in bytes.</param>
     /// <returns>True if successful, false otherwise.</returns>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Security",
+        "CA5394:Do not use insecure randomness",
+        Justification = "Random fills the file with non-cryptographic placeholder data, not security-sensitive values."
+    )]
     public static bool CreateRandomFilledFile(string name, long size)
     {
         try
@@ -1149,6 +1153,11 @@ public static class FileEx
     /// <param name="size">The size of the file in bytes.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>True if successful, false otherwise.</returns>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Security",
+        "CA5394:Do not use insecure randomness",
+        Justification = "Random fills the file with non-cryptographic placeholder data, not security-sensitive values."
+    )]
     public static async Task<bool> CreateRandomFilledFileAsync(
         string name,
         long size,
