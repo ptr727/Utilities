@@ -66,6 +66,34 @@ public class HttpClientFactoryResilienceTests
         _ = stub.CallCount.Should().Be(1); // no retry on cancellation
     }
 
+    [Fact]
+    public async Task NetworkException_IsRetried()
+    {
+        using StubHttpMessageHandler stub = new(Throws(new HttpRequestException("network")));
+        HttpClientOptions options = FastOptions();
+        options.RetryMaxAttempts = 2;
+        using HttpClient client = CreateStubbedClient(stub, options);
+
+        _ = await FluentActions
+            .Awaiting(() => client.GetAsync(new Uri("http://localhost/")))
+            .Should()
+            .ThrowAsync<HttpRequestException>();
+        _ = stub.CallCount.Should().Be(3); // initial attempt + 2 retries
+    }
+
+    [Fact]
+    public async Task NonTransientException_IsNotRetried()
+    {
+        using StubHttpMessageHandler stub = new(Throws(new InvalidOperationException("bug")));
+        using HttpClient client = CreateStubbedClient(stub, FastOptions());
+
+        _ = await FluentActions
+            .Awaiting(() => client.GetAsync(new Uri("http://localhost/")))
+            .Should()
+            .ThrowAsync<InvalidOperationException>();
+        _ = stub.CallCount.Should().Be(1); // programming errors are not retried
+    }
+
     private static HttpClientOptions FastOptions() =>
         new()
         {
