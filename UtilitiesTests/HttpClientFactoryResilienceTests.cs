@@ -95,7 +95,7 @@ public class HttpClientFactoryResilienceTests
     }
 
     [Fact]
-    public async Task StatusBearingHttpRequestException_IsNotRetried()
+    public async Task HttpRequestExceptionWithNonTransientStatus_IsNotRetried()
     {
         using StubHttpMessageHandler stub = new(
             Throws(new HttpRequestException("not found", null, HttpStatusCode.NotFound))
