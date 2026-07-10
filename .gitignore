@@ -4,6 +4,10 @@
 [Oo]bj/
 .artifacts
 
+# Test coverage output (e.g. dotnet test --results-directory ./coverage)
+[Cc]overage/
+TestResults/
+
 .idea
 .vs
 
