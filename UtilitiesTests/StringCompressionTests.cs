@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+
 namespace ptr727.Utilities.Tests;
 
 public class StringCompressionTests
@@ -6,10 +8,8 @@ public class StringCompressionTests
     public void CompressDecompress()
     {
         // Create random string
-        Random random = new();
-        int length = random.Next(64 * 1024);
-        byte[] buffer = new byte[length];
-        random.NextBytes(buffer);
+        int length = RandomNumberGenerator.GetInt32(64 * 1024);
+        byte[] buffer = RandomNumberGenerator.GetBytes(length);
         string text = Convert.ToBase64String(buffer);
 
         // Compress the string

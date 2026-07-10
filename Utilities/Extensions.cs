@@ -173,4 +173,31 @@ internal static partial class LogExtensions
         int optionsRetryCount,
         string name
     );
+
+    [LoggerMessage(
+        Message = "HTTP retry attempt {Attempt} after {DelayMs}ms : {Outcome}",
+        Level = LogLevel.Warning
+    )]
+    internal static partial void LogHttpRetry(
+        this ILogger logger,
+        int attempt,
+        double delayMs,
+        string outcome
+    );
+
+    [LoggerMessage(
+        Message = "Circuit breaker opened for {DurationSeconds}s : {Outcome}",
+        Level = LogLevel.Warning
+    )]
+    internal static partial void LogCircuitOpened(
+        this ILogger logger,
+        double durationSeconds,
+        string outcome
+    );
+
+    [LoggerMessage(Message = "Circuit breaker closed", Level = LogLevel.Information)]
+    internal static partial void LogCircuitClosed(this ILogger logger);
+
+    [LoggerMessage(Message = "Circuit breaker half-opened", Level = LogLevel.Debug)]
+    internal static partial void LogCircuitHalfOpened(this ILogger logger);
 }

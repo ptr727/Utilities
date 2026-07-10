@@ -12,7 +12,7 @@ public class StringHistory
     /// <summary>
     /// Initializes a new instance of the <see cref="StringHistory"/> class with no limits.
     /// </summary>
-    public StringHistory() { }
+    public StringHistory() => StringList = _stringList.AsReadOnly();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="StringHistory"/> class with specified limits.
@@ -20,6 +20,7 @@ public class StringHistory
     /// <param name="maxFirstLines">Maximum number of first lines to retain.</param>
     /// <param name="maxLastLines">Maximum number of last lines to retain.</param>
     public StringHistory(int maxFirstLines, int maxLastLines)
+        : this()
     {
         MaxFirstLines = maxFirstLines;
         MaxLastLines = maxLastLines;
@@ -37,14 +38,14 @@ public class StringHistory
         // No restrictions
         if (MaxFirstLines == 0 && MaxLastLines == 0)
         {
-            StringList.Add(value);
+            _stringList.Add(value);
             return;
         }
 
         // Restrict first lines
         if (_firstLines < MaxFirstLines)
         {
-            StringList.Add(value);
+            _stringList.Add(value);
             _firstLines++;
             return;
         }
@@ -58,14 +59,14 @@ public class StringHistory
         // Restrict last lines
         if (_lastLines < MaxLastLines)
         {
-            StringList.Add(value);
+            _stringList.Add(value);
             _lastLines++;
             return;
         }
 
         // Roll the last lines
-        StringList.RemoveAt(MaxFirstLines);
-        StringList.Add(value);
+        _stringList.RemoveAt(MaxFirstLines);
+        _stringList.Add(value);
     }
 
     /// <summary>
@@ -73,8 +74,8 @@ public class StringHistory
     /// </summary>
     /// <returns>A string containing all stored lines.</returns>
     public override string ToString() =>
-        string.Join(Environment.NewLine, StringList)
-        + (StringList.Count > 0 ? Environment.NewLine : string.Empty);
+        string.Join(Environment.NewLine, _stringList)
+        + (_stringList.Count > 0 ? Environment.NewLine : string.Empty);
 
     /// <summary>
     /// Gets or sets the maximum number of first lines to retain.
@@ -89,10 +90,11 @@ public class StringHistory
     public int MaxLastLines { get; set; }
 
     /// <summary>
-    /// Gets the list of stored strings.
+    /// Gets the read-only collection of stored strings.
     /// </summary>
-    public List<string> StringList { get; } = [];
+    public ReadOnlyCollection<string> StringList { get; }
 
+    private readonly List<string> _stringList = [];
     private int _firstLines;
     private int _lastLines;
 }

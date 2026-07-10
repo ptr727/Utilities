@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Sandbox (non-AOT)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": ".NET Build",
+            "program": "${workspaceFolder}/.artifacts/bin/Sandbox/debug/Sandbox.dll",
+            "cwd": "${workspaceFolder}/Sandbox",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        }
+    ]
+}

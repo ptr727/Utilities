@@ -199,7 +199,7 @@ public class FileExAsyncTests
     {
         string tempFile = Path.GetTempFileName();
         using CancellationTokenSource cts = new();
-        cts.Cancel(); // Cancel immediately
+        await cts.CancelAsync(); // Cancel immediately
 
         try
         {
