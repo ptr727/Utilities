@@ -761,12 +761,15 @@ public static class FileEx
             try
             {
                 FileInfo fileInfo = new(fileName);
-                await using FileStream stream = fileInfo.Open(
+                FileStream stream = fileInfo.Open(
                     FileMode.Open,
                     FileAccess.Read,
                     FileShare.ReadWrite
                 );
-                result = true;
+                await using (stream.ConfigureAwait(false))
+                {
+                    result = true;
+                }
                 break;
             }
             catch (IOException e) when (Log.LogAndHandle(e))
@@ -966,15 +969,15 @@ public static class FileEx
     /// <returns>True if successful, false otherwise.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="sourceList"/> is null.</exception>
     public static bool EnumerateDirectories(
-        List<string> sourceList,
-        out List<FileInfo> fileList,
-        out List<DirectoryInfo> directoryList
+        IEnumerable<string> sourceList,
+        out Collection<FileInfo> fileList,
+        out Collection<DirectoryInfo> directoryList
     )
     {
         ArgumentNullException.ThrowIfNull(sourceList);
 
-        directoryList = [];
-        fileList = [];
+        List<DirectoryInfo> directories = [];
+        List<FileInfo> files = [];
 
         try
         {
@@ -983,26 +986,30 @@ public static class FileEx
             {
                 // Add this folder to the directory list
                 DirectoryInfo dirInfo = new(folder);
-                directoryList.Add(dirInfo);
+                directories.Add(dirInfo);
 
                 // Recursively add all child folders
-                directoryList.AddRange(
+                directories.AddRange(
                     dirInfo.EnumerateDirectories("*", SearchOption.AllDirectories)
                 );
             }
 
             // Add all files from all the directories to the file list
-            foreach (DirectoryInfo dirInfo in directoryList)
+            foreach (DirectoryInfo dirInfo in directories)
             {
                 // Add all files in this folder
-                fileList.AddRange(dirInfo.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly));
+                files.AddRange(dirInfo.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly));
             }
         }
         catch (Exception e) when (Log.LogAndHandle(e))
         {
+            fileList = [];
+            directoryList = [];
             return false;
         }
 
+        fileList = new Collection<FileInfo>(files);
+        directoryList = new Collection<DirectoryInfo>(directories);
         return true;
     }
 
@@ -1015,13 +1022,9 @@ public static class FileEx
     /// <returns>True if successful, false otherwise.</returns>
     public static bool EnumerateDirectory(
         string directory,
-        out List<FileInfo> fileList,
-        out List<DirectoryInfo> directoryList
-    )
-    {
-        List<string> sourceList = [directory];
-        return EnumerateDirectories(sourceList, out fileList, out directoryList);
-    }
+        out Collection<FileInfo> fileList,
+        out Collection<DirectoryInfo> directoryList
+    ) => EnumerateDirectories([directory], out fileList, out directoryList);
 
     /// <summary>
     /// Resets directory permissions to grant everyone full control (Windows only).
@@ -1166,29 +1169,34 @@ public static class FileEx
     {
         try
         {
-            await using FileStream stream = File.Open(
+            FileStream stream = File.Open(
                 name,
                 FileMode.Create,
                 FileAccess.ReadWrite,
                 FileShare.ReadWrite
             );
-
-            stream.SetLength(size);
-            _ = stream.Seek(0, SeekOrigin.Begin);
-
-            const int bufferSize = 2 * Format.MiB;
-            byte[] buffer = new byte[bufferSize];
-            Random rand = new();
-
-            long remaining = size;
-            while (remaining > 0)
+            await using (stream.ConfigureAwait(false))
             {
-                rand.NextBytes(buffer);
-                long writeSize = Math.Min(remaining, Convert.ToInt64(buffer.Length));
-                await stream
-                    .WriteAsync(buffer.AsMemory(0, Convert.ToInt32(writeSize)), cancellationToken)
-                    .ConfigureAwait(false);
-                remaining -= writeSize;
+                stream.SetLength(size);
+                _ = stream.Seek(0, SeekOrigin.Begin);
+
+                const int bufferSize = 2 * Format.MiB;
+                byte[] buffer = new byte[bufferSize];
+                Random rand = new();
+
+                long remaining = size;
+                while (remaining > 0)
+                {
+                    rand.NextBytes(buffer);
+                    long writeSize = Math.Min(remaining, Convert.ToInt64(buffer.Length));
+                    await stream
+                        .WriteAsync(
+                            buffer.AsMemory(0, Convert.ToInt32(writeSize)),
+                            cancellationToken
+                        )
+                        .ConfigureAwait(false);
+                    remaining -= writeSize;
+                }
             }
         }
         catch (Exception e) when (Log.LogAndHandle(e))
@@ -1238,14 +1246,16 @@ public static class FileEx
     {
         try
         {
-            await using FileStream stream = File.Open(
+            FileStream stream = File.Open(
                 name,
                 FileMode.OpenOrCreate,
                 FileAccess.ReadWrite,
                 FileShare.ReadWrite
             );
-
-            stream.SetLength(size);
+            await using (stream.ConfigureAwait(false))
+            {
+                stream.SetLength(size);
+            }
         }
         catch (Exception e) when (Log.LogAndHandle(e))
         {

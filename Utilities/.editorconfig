@@ -3,19 +3,5 @@ root = false
 # C# files
 [*.cs]
 
-# Allow Ex
+# CA1711: Allow Ex suffix
 dotnet_diagnostic.CA1711.severity = none
-
-# Library-scoped analyzer exceptions. Each is a deliberate, documented decision
-# for this published library, not a brownfield blanket-relax (see CODESTYLE.md
-# "Analyzer Diagnostics and Suppressions"). Localized single-symbol exceptions
-# (CA1024, CA1034, CA1054, CA5394) are suppressed with [SuppressMessage]
-# attributes at the specific symbol instead of here.
-# CA1002: the published ptr727.Utilities surface intentionally exposes
-#   List<T> (FileEx.EnumerateDirectory, StringHistory.StringList); changing to
-#   Collection<T> is a breaking API change.
-dotnet_diagnostic.CA1002.severity = suggestion
-# CA2007: await using / await foreach disposal sites; the awaited async calls
-#   already use ConfigureAwait(false) and a ConfiguredAsyncDisposable rewrite
-#   hurts readability.
-dotnet_diagnostic.CA2007.severity = suggestion

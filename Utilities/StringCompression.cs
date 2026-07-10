@@ -59,13 +59,8 @@ public static class StringCompression
 
         using MemoryStream uncompressedStream = new(Encoding.UTF8.GetBytes(uncompressedString));
         using MemoryStream compressedStream = new();
-        await using (
-            DeflateStream compressorStream = new(
-                compressedStream,
-                compressionLevel,
-                leaveOpen: true
-            )
-        )
+        DeflateStream compressorStream = new(compressedStream, compressionLevel, leaveOpen: true);
+        await using (compressorStream.ConfigureAwait(false))
         {
             await uncompressedStream
                 .CopyToAsync(compressorStream, cancellationToken)
@@ -117,9 +112,8 @@ public static class StringCompression
 
         using MemoryStream compressedStream = new(Convert.FromBase64String(compressedString));
         using MemoryStream decompressedStream = new();
-        await using (
-            DeflateStream decompressorStream = new(compressedStream, CompressionMode.Decompress)
-        )
+        DeflateStream decompressorStream = new(compressedStream, CompressionMode.Decompress);
+        await using (decompressorStream.ConfigureAwait(false))
         {
             await decompressorStream
                 .CopyToAsync(decompressedStream, cancellationToken)

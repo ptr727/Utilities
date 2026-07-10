@@ -5,33 +5,39 @@ public class ConsoleTests
     [Fact]
     public void WriteLineColor_WithValidString_ShouldContainMessage()
     {
-        StringWriter output = new();
+        TextWriter originalOutput = Console.Out;
+        using StringWriter output = new();
         Console.SetOut(output);
+        try
+        {
+            ConsoleEx.WriteLineColor(ConsoleColor.Green, "Test message");
 
-        ConsoleEx.WriteLineColor(ConsoleColor.Green, "Test message");
-
-        string result = output.ToString();
-        _ = result.Should().Contain("Test message");
-
-        // Reset console
-        StreamWriter standardOutput = new(Console.OpenStandardOutput()) { AutoFlush = true };
-        Console.SetOut(standardOutput);
+            string result = output.ToString();
+            _ = result.Should().Contain("Test message");
+        }
+        finally
+        {
+            Console.SetOut(originalOutput);
+        }
     }
 
     [Fact]
     public void WriteLineColor_WithEmptyString_ShouldNotThrow()
     {
-        StringWriter output = new();
+        TextWriter originalOutput = Console.Out;
+        using StringWriter output = new();
         Console.SetOut(output);
+        try
+        {
+            ConsoleEx.WriteLineColor(ConsoleColor.Green, string.Empty);
 
-        ConsoleEx.WriteLineColor(ConsoleColor.Green, string.Empty);
-
-        string result = output.ToString();
-        _ = result.Should().NotBeNull();
-
-        // Reset console
-        StreamWriter standardOutput = new(Console.OpenStandardOutput()) { AutoFlush = true };
-        Console.SetOut(standardOutput);
+            string result = output.ToString();
+            _ = result.Should().NotBeNull();
+        }
+        finally
+        {
+            Console.SetOut(originalOutput);
+        }
     }
 
     [Fact]
@@ -48,65 +54,77 @@ public class ConsoleTests
     [Fact]
     public void WriteLineError_WithString_ShouldContainMessage()
     {
-        StringWriter output = new();
+        TextWriter originalOutput = Console.Out;
+        using StringWriter output = new();
         Console.SetOut(output);
+        try
+        {
+            ConsoleEx.WriteLineError("Error message");
 
-        ConsoleEx.WriteLineError("Error message");
-
-        string result = output.ToString();
-        _ = result.Should().Contain("Error message");
-
-        // Reset console
-        StreamWriter standardOutput = new(Console.OpenStandardOutput()) { AutoFlush = true };
-        Console.SetOut(standardOutput);
+            string result = output.ToString();
+            _ = result.Should().Contain("Error message");
+        }
+        finally
+        {
+            Console.SetOut(originalOutput);
+        }
     }
 
     [Fact]
     public void WriteLineEvent_WithString_ShouldContainMessage()
     {
-        StringWriter output = new();
+        TextWriter originalOutput = Console.Out;
+        using StringWriter output = new();
         Console.SetOut(output);
+        try
+        {
+            ConsoleEx.WriteLineEvent("Event message");
 
-        ConsoleEx.WriteLineEvent("Event message");
-
-        string result = output.ToString();
-        _ = result.Should().Contain("Event message");
-
-        // Reset console
-        StreamWriter standardOutput = new(Console.OpenStandardOutput()) { AutoFlush = true };
-        Console.SetOut(standardOutput);
+            string result = output.ToString();
+            _ = result.Should().Contain("Event message");
+        }
+        finally
+        {
+            Console.SetOut(originalOutput);
+        }
     }
 
     [Fact]
     public void WriteLineTool_WithString_ShouldContainMessage()
     {
-        StringWriter output = new();
+        TextWriter originalOutput = Console.Out;
+        using StringWriter output = new();
         Console.SetOut(output);
+        try
+        {
+            ConsoleEx.WriteLineTool("Tool message");
 
-        ConsoleEx.WriteLineTool("Tool message");
-
-        string result = output.ToString();
-        _ = result.Should().Contain("Tool message");
-
-        // Reset console
-        StreamWriter standardOutput = new(Console.OpenStandardOutput()) { AutoFlush = true };
-        Console.SetOut(standardOutput);
+            string result = output.ToString();
+            _ = result.Should().Contain("Tool message");
+        }
+        finally
+        {
+            Console.SetOut(originalOutput);
+        }
     }
 
     [Fact]
     public void WriteLine_WithString_ShouldContainMessage()
     {
-        StringWriter output = new();
+        TextWriter originalOutput = Console.Out;
+        using StringWriter output = new();
         Console.SetOut(output);
+        try
+        {
+            ConsoleEx.WriteLine("Output message");
 
-        ConsoleEx.WriteLine("Output message");
-
-        string result = output.ToString();
-        _ = result.Should().Contain("Output message");
-
-        // Reset console
-        StreamWriter standardOutput = new(Console.OpenStandardOutput()) { AutoFlush = true };
-        Console.SetOut(standardOutput);
+            string result = output.ToString();
+            _ = result.Should().Contain("Output message");
+        }
+        finally
+        {
+            Console.SetOut(originalOutput);
+        }
     }
 
     [Theory]
@@ -116,14 +134,17 @@ public class ConsoleTests
     [InlineData(ConsoleColor.Cyan)]
     public void WriteLineColor_WithDifferentColors_ShouldNotThrow(ConsoleColor color)
     {
-        StringWriter output = new();
+        TextWriter originalOutput = Console.Out;
+        using StringWriter output = new();
         Console.SetOut(output);
-
-        ConsoleEx.WriteLineColor(color, "Test");
-
-        // Reset console
-        StreamWriter standardOutput = new(Console.OpenStandardOutput()) { AutoFlush = true };
-        Console.SetOut(standardOutput);
+        try
+        {
+            ConsoleEx.WriteLineColor(color, "Test");
+        }
+        finally
+        {
+            Console.SetOut(originalOutput);
+        }
     }
 
     [Fact]
