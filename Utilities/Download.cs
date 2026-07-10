@@ -253,16 +253,19 @@ public static class Download
         string productName = entryAssembly?.GetName().Name ?? processName ?? "Unknown";
         string productVersion = entryAssembly?.GetName().Version?.ToString() ?? "1.0.0";
 
-        // The derived name may not be a valid HTTP token, so only add a User-Agent that parses.
+        // The derived name may not be a valid HTTP token (e.g. a process name with spaces);
+        // fall back to a guaranteed-valid token so a User-Agent is always set.
         if (
-            ProductInfoHeaderValue.TryParse(
+            !ProductInfoHeaderValue.TryParse(
                 $"{productName}/{productVersion}",
                 out ProductInfoHeaderValue? userAgent
             )
         )
         {
-            client.DefaultRequestHeaders.UserAgent.Add(userAgent);
+            userAgent = new ProductInfoHeaderValue("Unknown", productVersion);
         }
+
+        client.DefaultRequestHeaders.UserAgent.Add(userAgent);
 
         return client;
     }
