@@ -9,7 +9,7 @@ public sealed class FileExTests : IDisposable
         $"FileExTests-{Guid.NewGuid()}"
     );
 
-    public FileExTests() => Directory.CreateDirectory(_tempDir);
+    public FileExTests() => _ = Directory.CreateDirectory(_tempDir);
 
     public void Dispose()
     {
