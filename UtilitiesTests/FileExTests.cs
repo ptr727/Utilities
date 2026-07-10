@@ -93,7 +93,7 @@ public sealed class FileExTests : IDisposable
     }
 
     [Fact]
-    public void RenameFile_InvalidPath_ReturnsFalse() =>
+    public void RenameFile_SourceWithoutDirectory_ReturnsFalse() =>
         FileEx.RenameFile("nodirectory.txt", Path.Combine(_tempDir, "x.txt")).Should().BeFalse();
 
     [Fact]
