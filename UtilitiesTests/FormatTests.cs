@@ -1,6 +1,6 @@
 namespace ptr727.Utilities.Tests;
 
-public class FormatTests : IClassFixture<UtilitiesTests>
+public class FormatTests
 {
     [Theory]
     [InlineData(0, "0B")]

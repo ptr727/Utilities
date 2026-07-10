@@ -1,6 +1,6 @@
 namespace ptr727.Utilities.Tests;
 
-public class StringCompressionTests : IClassFixture<UtilitiesTests>
+public class StringCompressionTests
 {
     [Fact]
     public void CompressDecompress()

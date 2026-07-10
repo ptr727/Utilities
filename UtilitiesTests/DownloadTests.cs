@@ -1,6 +1,6 @@
 namespace ptr727.Utilities.Tests;
 
-public class DownloadTests : IClassFixture<UtilitiesTests>
+public class DownloadTests
 {
     [Fact]
     public void GetUriInformation()

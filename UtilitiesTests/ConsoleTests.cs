@@ -1,6 +1,6 @@
 namespace ptr727.Utilities.Tests;
 
-public class ConsoleTests : IClassFixture<UtilitiesTests>
+public class ConsoleTests
 {
     [Fact]
     public void WriteLineColor_WithValidString_ShouldContainMessage()

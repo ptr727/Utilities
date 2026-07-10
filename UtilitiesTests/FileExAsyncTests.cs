@@ -1,6 +1,6 @@
 namespace ptr727.Utilities.Tests;
 
-public class FileExAsyncTests : IClassFixture<UtilitiesTests>
+public class FileExAsyncTests
 {
     [Fact]
     public async Task DeleteFileAsync_WithExistingFile_ShouldReturnTrue()

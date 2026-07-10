@@ -1,6 +1,6 @@
 namespace ptr727.Utilities.Tests;
 
-public class DownloadAsyncTests : IClassFixture<UtilitiesTests>
+public class DownloadAsyncTests
 {
     [Fact]
     public async Task GetContentInfoAsync_WithValidUri_ShouldReturnSuccess()

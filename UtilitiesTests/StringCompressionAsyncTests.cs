@@ -2,7 +2,7 @@ using System.IO.Compression;
 
 namespace ptr727.Utilities.Tests;
 
-public class StringCompressionAsyncTests : IClassFixture<UtilitiesTests>
+public class StringCompressionAsyncTests
 {
     [Fact]
     public async Task CompressDecompressAsync()

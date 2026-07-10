@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 
 namespace ptr727.Utilities.Tests;
 
-public class FileTests : IClassFixture<UtilitiesTests>
+public class FileTests
 {
     [Theory]
     [InlineData(@"C:\Path One", @"Path Two", @"C:\Path One\Path Two")]

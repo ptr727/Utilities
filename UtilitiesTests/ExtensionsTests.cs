@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace ptr727.Utilities.Tests;
 
-public class ExtensionsTests : IClassFixture<UtilitiesTests>
+public class ExtensionsTests
 {
     #region String Compression Extension Tests
 

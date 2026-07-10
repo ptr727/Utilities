@@ -1,6 +1,6 @@
 namespace ptr727.Utilities.Tests;
 
-public class CommandLineTests : IClassFixture<UtilitiesTests>
+public class CommandLineTests
 {
     [Fact]
     public void ParseArguments()

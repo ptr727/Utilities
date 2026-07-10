@@ -1,6 +1,6 @@
 namespace ptr727.Utilities.Tests;
 
-public class StringHistoryTests : IClassFixture<UtilitiesTests>
+public class StringHistoryTests
 {
     [Fact]
     public void Constructor_Default_ShouldInitialize()

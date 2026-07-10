@@ -243,7 +243,7 @@ public static class Download
         HttpClient client = new() { Timeout = TimeSpan.FromSeconds(TimeoutSeconds) };
 
         Assembly assembly = Assembly.GetExecutingAssembly();
-        string productName = assembly.GetName().Name ?? "ptr727.Utilities";
+        const string productName = "ptr727.Utilities";
         string productVersion = assembly.GetName().Version?.ToString() ?? "1.0.0";
 
         client.DefaultRequestHeaders.UserAgent.Add(
