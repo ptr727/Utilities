@@ -1,6 +1,6 @@
 # Instructions for AI Coding Agents
 
-**Utilities** is a C# .NET library of general-purpose utility classes, published as the NuGet package `InsaneGenius.Utilities` and consumed directly from `main`. The library ships under [`Utilities/`](./Utilities/), with a `Sandbox/` console app for experimentation and an xUnit test project (`UtilitiesTests/`).
+**Utilities** is a C# .NET library of general-purpose utility classes, published as the NuGet package `ptr727.Utilities` and consumed directly from `main`. The library ships under [`Utilities/`](./Utilities/), with a `Sandbox/` console app for experimentation and an xUnit test project (`UtilitiesTests/`).
 
 This file is the canonical reference for cross-cutting AI-agent rules. The CI/CD workflow contract and conventions live in [`WORKFLOW.md`](./WORKFLOW.md); C# code-style conventions live in [`CODESTYLE.md`](./CODESTYLE.md). Copilot review *mechanics* are owned by [`.github/copilot-instructions.md`](./.github/copilot-instructions.md) - this file delegates them there explicitly (see "PR Review Etiquette" below). High-level summaries in other docs (e.g. README's Contributing section) are allowed when they link back here; don't duplicate the rules themselves. The library's **project-specific conventions and public-API/behavioral contracts** also live here (the [Library API Conventions](#library-api-conventions) section), **not** in `.github/copilot-instructions.md` - that file targets GitHub Copilot / VS Code specifically, while this file is the agent-agnostic one every coding agent reads, so any rule a reviewer must honor has to live here to be provider-independent.
 
@@ -173,7 +173,7 @@ The conventions for everything under `.github/workflows/` - action pinning, file
 ## Project Structure
 
 - **Utilities** (`Utilities/Utilities.csproj`)
-  - Core library project, published as NuGet `InsaneGenius.Utilities`. Target framework: .NET 10.0.
+  - Core library project, published as NuGet `ptr727.Utilities`. Target framework: .NET 10.0.
 - **Sandbox** (`Sandbox/Sandbox.csproj`)
   - Console app for experimentation; not packaged or published.
 - **UtilitiesTests** (`UtilitiesTests/UtilitiesTests.csproj`)

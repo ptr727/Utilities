@@ -1,11 +1,7 @@
-using Xunit;
+namespace ptr727.Utilities.Tests;
 
-namespace InsaneGenius.Utilities.Tests;
-
-public class FileExAsyncTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests>
+public class FileExAsyncTests
 {
-    private readonly UtilitiesTests _fixture = fixture;
-
     [Fact]
     public async Task DeleteFileAsync_WithExistingFile_ShouldReturnTrue()
     {

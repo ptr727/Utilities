@@ -1,8 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Xunit;
 
-namespace InsaneGenius.Utilities.Tests;
+namespace ptr727.Utilities.Tests;
 
 /// <summary>
 /// Serializes tests that mutate the process-global <see cref="LogOptions"/> state.

@@ -1,9 +1,8 @@
 using System.Globalization;
-using Serilog;
 using Serilog.Extensions.Logging;
 using Serilog.Sinks.SystemConsole.Themes;
 
-namespace InsaneGenius.Utilities.Sandbox;
+namespace ptr727.Utilities.Sandbox;
 
 /// <summary>
 /// Configures a Serilog console logger and exposes it as a
