@@ -72,7 +72,7 @@ public class ExtensionsTests
     public async Task StringExtension_CompressAsync_WithCancellation_ShouldRespectToken()
     {
         using CancellationTokenSource cts = new();
-        cts.Cancel();
+        await cts.CancelAsync();
         string original = "Test string";
 
         _ = await FluentActions

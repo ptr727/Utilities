@@ -97,6 +97,27 @@
             }
         },
         {
+            "label": "Sandbox AOT Publish",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "publish",
+                "${workspaceFolder}/Sandbox/Sandbox.csproj",
+                "-c",
+                "Release",
+                "-r",
+                "linux-x64",
+                "-p:PublishAot=true"
+            ],
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "presentation": {
+                "showReuseMessage": false,
+                "clear": false
+            }
+        },
+        {
             "label": "Husky.Net Run",
             "type": "process",
             "command": "dotnet",
