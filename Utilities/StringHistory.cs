@@ -90,7 +90,7 @@ public class StringHistory
     public int MaxLastLines { get; set; }
 
     /// <summary>
-    /// Gets the list of stored strings.
+    /// Gets the read-only collection of stored strings.
     /// </summary>
     public ReadOnlyCollection<string> StringList { get; }
 
