@@ -180,12 +180,14 @@ public static class HttpClientFactory
                 && (int)outcome.Result.StatusCode is 408 or 429 or >= 500;
         }
 
-        // Retry timeouts (cancellation with an inner TimeoutException), not caller cancellation or an open circuit.
+        // Retry only known-transient failures: a timeout (a cancellation with an inner
+        // TimeoutException) or a network/IO error. Caller cancellation, an open circuit, and any
+        // other exception (including programming errors) are not retried.
         return outcome.Exception switch
         {
             OperationCanceledException canceled => canceled.InnerException is TimeoutException,
-            BrokenCircuitException => false,
-            _ => true,
+            HttpRequestException or IOException => true,
+            _ => false,
         };
     }
 
