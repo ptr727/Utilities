@@ -1,12 +1,9 @@
 using System.IO.Compression;
-using Xunit;
 
-namespace InsaneGenius.Utilities.Tests;
+namespace ptr727.Utilities.Tests;
 
-public class StringCompressionAsyncTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests>
+public class StringCompressionAsyncTests
 {
-    private readonly UtilitiesTests _fixture = fixture;
-
     [Fact]
     public async Task CompressDecompressAsync()
     {

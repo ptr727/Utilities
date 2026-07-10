@@ -8,11 +8,10 @@
     <Version>1.1.0.1</Version>
     <FileVersion>1.1.0.1</FileVersion>
     <AssemblyVersion>1.1.0.0</AssemblyVersion>
-    <PackageId>InsaneGenius.Utilities.Tests</PackageId>
-    <AssemblyName>InsaneGenius.Utilities.Tests</AssemblyName>
-    <RootNamespace>InsaneGenius.Utilities.Tests</RootNamespace>
+    <PackageId>ptr727.Utilities.Tests</PackageId>
+    <AssemblyName>UtilitiesTests</AssemblyName>
+    <RootNamespace>ptr727.Utilities.Tests</RootNamespace>
     <NeutralLanguage>en</NeutralLanguage>
-    <PackageProjectUrl>https://dev.azure.com/pieterv/</PackageProjectUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
