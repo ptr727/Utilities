@@ -33,24 +33,15 @@ public class HttpClientFactoryTests
     }
 
     [Fact]
-    public void CreateClient_WithUserAgent_AppliesUserAgent()
+    public void CreateClient_WithUserAgentOption_AppliesUserAgent()
     {
         ProductInfoHeaderValue userAgent = new("Sample", "9.9");
 
-        using HttpClient client = HttpClientFactory.CreateClient(userAgent);
+        using HttpClient client = HttpClientFactory.CreateClient(
+            new HttpClientOptions { UserAgent = userAgent }
+        );
 
         _ = client.DefaultRequestHeaders.UserAgent.Should().Contain(userAgent);
-    }
-
-    [Fact]
-    public void CreateClient_WithNullUserAgent_Throws()
-    {
-        ProductInfoHeaderValue? userAgent = null;
-
-        _ = FluentActions
-            .Invoking(() => HttpClientFactory.CreateClient(userAgent!))
-            .Should()
-            .Throw<ArgumentNullException>();
     }
 
     [Fact]

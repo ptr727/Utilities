@@ -1,4 +1,3 @@
-using System.Net.Http.Headers;
 using Microsoft.Extensions.Http.Resilience;
 using Polly;
 using Polly.CircuitBreaker;
@@ -74,19 +73,6 @@ public static class HttpClientFactory
         );
 
         return client;
-    }
-
-    /// <summary>
-    /// Creates a new caller-owned <see cref="HttpClient"/> with the specified User-Agent and default options.
-    /// </summary>
-    /// <param name="userAgent">The User-Agent header value to use.</param>
-    /// <returns>A configured HttpClient. The caller owns and should store and reuse the instance.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="userAgent"/> is null.</exception>
-    public static HttpClient CreateClient(ProductInfoHeaderValue userAgent)
-    {
-        ArgumentNullException.ThrowIfNull(userAgent);
-
-        return CreateClient(new HttpClientOptions { UserAgent = userAgent });
     }
 
     /// <summary>
