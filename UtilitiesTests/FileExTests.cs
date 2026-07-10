@@ -44,7 +44,7 @@ public sealed class FileExTests : IDisposable
 
     [Fact]
     public void DeleteFile_MissingFile_ReturnsTrue() =>
-        FileEx.DeleteFile(Path.Combine(_tempDir, "missing.txt")).Should().BeTrue();
+        _ = FileEx.DeleteFile(Path.Combine(_tempDir, "missing.txt")).Should().BeTrue();
 
     [Fact]
     public void DeleteDirectory_ExistingEmpty_DeletesAndReturnsTrue()
@@ -57,7 +57,7 @@ public sealed class FileExTests : IDisposable
 
     [Fact]
     public void DeleteDirectory_Missing_ReturnsTrue() =>
-        FileEx.DeleteDirectory(Path.Combine(_tempDir, "missing")).Should().BeTrue();
+        _ = FileEx.DeleteDirectory(Path.Combine(_tempDir, "missing")).Should().BeTrue();
 
     [Fact]
     public void DeleteDirectory_Recursive_DeletesContents()
@@ -94,11 +94,14 @@ public sealed class FileExTests : IDisposable
 
     [Fact]
     public void RenameFile_SourceWithoutDirectory_ReturnsFalse() =>
-        FileEx.RenameFile("nodirectory.txt", Path.Combine(_tempDir, "x.txt")).Should().BeFalse();
+        _ = FileEx
+            .RenameFile("nodirectory.txt", Path.Combine(_tempDir, "x.txt"))
+            .Should()
+            .BeFalse();
 
     [Fact]
     public void RenameFile_MissingSource_ReturnsFalse() =>
-        FileEx
+        _ = FileEx
             .RenameFile(Path.Combine(_tempDir, "missing.txt"), Path.Combine(_tempDir, "x.txt"))
             .Should()
             .BeFalse();
@@ -171,38 +174,38 @@ public sealed class FileExTests : IDisposable
 
     [Fact]
     public void DeleteInsideDirectory_Missing_ReturnsTrue() =>
-        FileEx.DeleteInsideDirectory(Path.Combine(_tempDir, "missing")).Should().BeTrue();
+        _ = FileEx.DeleteInsideDirectory(Path.Combine(_tempDir, "missing")).Should().BeTrue();
 
     [Fact]
     public void IsFileReadable_String_ReadableFile_ReturnsTrue() =>
-        FileEx.IsFileReadable(NewFile("readable.txt")).Should().BeTrue();
+        _ = FileEx.IsFileReadable(NewFile("readable.txt")).Should().BeTrue();
 
     [Fact]
     public void IsFileReadable_String_Missing_ReturnsFalse() =>
-        FileEx.IsFileReadable(Path.Combine(_tempDir, "missing.txt")).Should().BeFalse();
+        _ = FileEx.IsFileReadable(Path.Combine(_tempDir, "missing.txt")).Should().BeFalse();
 
     [Fact]
     public void IsFileReadable_FileInfo_ReturnsTrue() =>
-        FileEx.IsFileReadable(new FileInfo(NewFile("read.txt"))).Should().BeTrue();
+        _ = FileEx.IsFileReadable(new FileInfo(NewFile("read.txt"))).Should().BeTrue();
 
     [Fact]
     public void IsFileWriteable_FileInfo_ReturnsTrue() =>
-        FileEx.IsFileWriteable(new FileInfo(NewFile("write.txt"))).Should().BeTrue();
+        _ = FileEx.IsFileWriteable(new FileInfo(NewFile("write.txt"))).Should().BeTrue();
 
     [Fact]
     public void IsFileReadWriteable_FileInfo_ReturnsTrue() =>
-        FileEx.IsFileReadWriteable(new FileInfo(NewFile("readwrite.txt"))).Should().BeTrue();
+        _ = FileEx.IsFileReadWriteable(new FileInfo(NewFile("readwrite.txt"))).Should().BeTrue();
 
     [Fact]
     public void IsFileReadable_NullFileInfo_Throws() =>
-        FluentActions
+        _ = FluentActions
             .Invoking(() => FileEx.IsFileReadable((FileInfo)null!))
             .Should()
             .Throw<ArgumentNullException>();
 
     [Fact]
     public void WaitFileReadable_ReadableFile_ReturnsTrue() =>
-        FileEx.WaitFileReadable(NewFile("wait.txt")).Should().BeTrue();
+        _ = FileEx.WaitFileReadable(NewFile("wait.txt")).Should().BeTrue();
 
     [Fact]
     public void AreFilesInDirectoryReadable_AllReadable_ReturnsTrue()
@@ -224,7 +227,7 @@ public sealed class FileExTests : IDisposable
 
     [Fact]
     public void CreateDirectory_Existing_ReturnsTrue() =>
-        FileEx.CreateDirectory(_tempDir).Should().BeTrue();
+        _ = FileEx.CreateDirectory(_tempDir).Should().BeTrue();
 
     [Fact]
     public void EnumerateDirectory_ReturnsFilesAndDirectories()
@@ -276,7 +279,7 @@ public sealed class FileExTests : IDisposable
 
     [Fact]
     public void TimeStampFileName_DefaultTimestamp_PrefixesFileName() =>
-        Path.GetFileName(FileEx.TimeStampFileName(Path.Combine(_tempDir, "report.log")))
+        _ = Path.GetFileName(FileEx.TimeStampFileName(Path.Combine(_tempDir, "report.log")))
             .Should()
             .EndWith("_report.log");
 
