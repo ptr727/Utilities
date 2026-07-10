@@ -5,6 +5,7 @@ Some useful and not so useful C# .NET utility classes.
 ## Release History
 
 - v3.7:
+  - Renamed the NuGet package and root namespace from `InsaneGenius.Utilities` to `ptr727.Utilities` (a breaking change), aligning with the `ptr727.*` package naming used by the sibling `LanguageTags` project; consumers must update their package reference and change `using InsaneGenius.Utilities;` directives to `using ptr727.Utilities;`. The assembly is now named `Utilities`.
   - Replaced the Serilog-coupled logging model with the backend-agnostic `Microsoft.Extensions.Logging` abstraction, matching the sibling `LanguageTags` project.
   - Removed the global Serilog `LogOptions.Logger` property (a breaking API change) in favor of a thread-safe, injectable `ILoggerFactory` configured via `LogOptions.SetFactory(...)` / `TrySetFactory(...)`; the library now depends only on `Microsoft.Extensions.Logging.Abstractions`.
   - Reworked `FileEx` and `Download` to resolve per-class cached loggers through `LogOptions.CreateLogger(...)` and to emit source-generated `[LoggerMessage]` messages, keeping the build clean under `AnalysisMode=All` and `TreatWarningsAsErrors`.

@@ -1,4 +1,4 @@
-namespace InsaneGenius.Utilities;
+namespace ptr727.Utilities;
 
 /// <summary>
 /// Provides formatting utilities for byte sizes and size constants.
@@ -70,8 +70,10 @@ public static class Format
         double fraction = Math.Round(value / Math.Pow(KiB, magnitude), 1);
         double truncate = Math.Truncate(fraction);
         return fraction.Equals(truncate)
-            ? $"{Convert.ToInt64(truncate):D}{s_kibiSuffix[magnitude]}{units}"
-            : $"{fraction:F}{s_kibiSuffix[magnitude]}{units}";
+            ? FormattableString.Invariant(
+                $"{Convert.ToInt64(truncate):D}{s_kibiSuffix[magnitude]}{units}"
+            )
+            : FormattableString.Invariant($"{fraction:F}{s_kibiSuffix[magnitude]}{units}");
     }
 
     private static readonly string[] s_kibiSuffix = ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei"];
@@ -101,8 +103,10 @@ public static class Format
         double fraction = Math.Round(value / Math.Pow(KB, magnitude), 1);
         double truncate = Math.Truncate(fraction);
         return fraction.Equals(truncate)
-            ? $"{Convert.ToInt64(truncate):D}{s_kiloSuffix[magnitude]}{units}"
-            : $"{fraction:F}{s_kiloSuffix[magnitude]}{units}";
+            ? FormattableString.Invariant(
+                $"{Convert.ToInt64(truncate):D}{s_kiloSuffix[magnitude]}{units}"
+            )
+            : FormattableString.Invariant($"{fraction:F}{s_kiloSuffix[magnitude]}{units}");
     }
 
     private static readonly string[] s_kiloSuffix = ["", "K", "M", "G", "T", "P", "E"];
