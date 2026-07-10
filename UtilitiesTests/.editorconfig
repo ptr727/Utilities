@@ -3,18 +3,11 @@ root = false
 # C# files
 [*.cs]
 
-# Allow underscores in test method names
+# CA1707: xUnit test method names use underscores (Method_Scenario_Expected).
 dotnet_diagnostic.CA1707.severity = none
 
-# Test-scoped analyzer exceptions: rules that target production-code concerns
-# and don't apply to xUnit test code. Each is documented, not a brownfield
-# blanket-relax (see CODESTYLE.md "Analyzer Diagnostics and Suppressions").
-# CA1515: xUnit requires public test classes, so they can't be made internal.
-dotnet_diagnostic.CA1515.severity = suggestion
-# CA1849: synchronous calls inside async test paths are kept intentionally.
-dotnet_diagnostic.CA1849.severity = suggestion
-# CA2000: test disposable ownership is transferred or scoped to the test, so
-#   scope-based disposal analysis reports false positives.
-dotnet_diagnostic.CA2000.severity = suggestion
-# CA5394: Random in tests is for test data, not security.
-dotnet_diagnostic.CA5394.severity = suggestion
+# CA1515: xUnit discovers only public test classes, so they cannot be internal.
+dotnet_diagnostic.CA1515.severity = none
+
+# CA2007: xUnit forbids ConfigureAwait in test methods (xUnit1030), so CA2007 cannot be satisfied in test code.
+dotnet_diagnostic.CA2007.severity = none

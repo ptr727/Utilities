@@ -21,15 +21,17 @@ Some useful and not so useful C# .NET utility classes.
 
 ### Release Notes
 
-**Version: 3.7**:
+**Version: 4.0**:
+
+**⚠️ Breaking Changes**:
+
+- Renamed the NuGet package and namespace from `InsaneGenius.Utilities` to `ptr727.Utilities`.
+- Replaced Serilog with an injectable `Microsoft.Extensions.Logging` logging model.
+- Replaced `List<T>` in public methods with `Collection<T>` and `ReadOnlyCollection<T>`.
 
 **Summary**:
 
-- Renamed the NuGet package and namespace from `InsaneGenius.Utilities` to `ptr727.Utilities` (breaking).
-  - Update your package reference to `ptr727.Utilities` and change `using InsaneGenius.Utilities;` to `using ptr727.Utilities;`.
-- Adopted an injectable `Microsoft.Extensions.Logging` logging model (breaking).
-  - Configure logging with `LogOptions.SetFactory(ILoggerFactory)` instead of the removed Serilog-typed `LogOptions.Logger` property.
-  - The library now depends on `Microsoft.Extensions.Logging.Abstractions` and is backend-agnostic; the `Sandbox` shows Serilog console wiring.
+- Added `HttpClientFactory`, a reusable resilient HTTP client factory (Polly retry and circuit breaker) with an AOT safe `AssemblyInfo` identity helper and a tunable `HttpClientOptions`.
 
 See [Release History](./HISTORY.md) for complete release notes and older versions.
 

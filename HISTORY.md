@@ -4,14 +4,19 @@ Some useful and not so useful C# .NET utility classes.
 
 ## Release History
 
-- v3.7:
-  - Renamed the NuGet package and root namespace from `InsaneGenius.Utilities` to `ptr727.Utilities` (a breaking change), aligning with the `ptr727.*` package naming used by the sibling `LanguageTags` project; consumers must update their package reference and change `using InsaneGenius.Utilities;` directives to `using ptr727.Utilities;`. The assembly is now named `Utilities`.
-  - Replaced the Serilog-coupled logging model with the backend-agnostic `Microsoft.Extensions.Logging` abstraction, matching the sibling `LanguageTags` project.
+- v4.0:
+  - Added `HttpClientFactory`, a reusable resilient HTTP client factory built on `Microsoft.Extensions.Http.Resilience` (Polly) with retry, circuit breaker, and connection pooling, tunable through the new `HttpClientOptions`; it exposes a shared singleton client, caller-owned clients, and the resilience handler for callers that build their own client with a custom base address or headers.
+  - Added `AssemblyInfo`, an AOT safe assembly and application identity helper whose `For<T>()` substitutes for `Assembly.GetExecutingAssembly()` (unreliable under Native AOT), and which supplies the consuming application name, version, and a default User-Agent.
+  - Reworked `Download` to build its `HttpClient` through `HttpClientFactory`, so downloads now flow through the shared retry and circuit-breaker pipeline; the `TimeoutSeconds` property and all method signatures are unchanged.
+  - Changed public members that exposed `List<T>` to safe collection types (a breaking API change): `FileEx.EnumerateDirectories` / `EnumerateDirectory` now return `Collection<T>` out parameters and accept `IEnumerable<string>`, and `StringHistory.StringList` is now a `ReadOnlyCollection<string>`.
+  - Gated the library's reference AOT verification behind an explicit `PublishAot` opt-in, and turned the `Sandbox` project into a Native AOT smoke test (published and run as AOT) that proves the resilience pipeline and assembly-identity resolution work under Native AOT.
+  - Renamed the NuGet package and root namespace from `InsaneGenius.Utilities` to `ptr727.Utilities` (a breaking change); consumers must update their package reference and change `using InsaneGenius.Utilities;` directives to `using ptr727.Utilities;`. The assembly is now named `Utilities`.
+  - Replaced the Serilog-coupled logging model with the backend-agnostic `Microsoft.Extensions.Logging` abstraction.
   - Removed the global Serilog `LogOptions.Logger` property (a breaking API change) in favor of a thread-safe, injectable `ILoggerFactory` configured via `LogOptions.SetFactory(...)` / `TrySetFactory(...)`; the library now depends only on `Microsoft.Extensions.Logging.Abstractions`.
   - Reworked `FileEx` and `Download` to resolve per-class cached loggers through `LogOptions.CreateLogger(...)` and to emit source-generated `[LoggerMessage]` messages, keeping the build clean under `AnalysisMode=All` and `TreatWarningsAsErrors`.
   - Moved the `LogAndHandle` / `LogAndPropagate` helpers onto `Microsoft.Extensions.Logging.ILogger` as internal extensions (exposed to tests via `InternalsVisibleTo`).
   - Renamed the public `Extensions` class to `CompressExtensions` (a breaking API change for direct references; instance-style extension calls such as `value.Compress()` are unaffected), resolving the naming clash with the `Microsoft.Extensions` namespace.
-  - Updated the `Sandbox` example to configure a Serilog console logger and inject it through a `SerilogLoggerFactory`, borrowing the pattern from `LanguageTagsCreate`.
+  - Updated the `Sandbox` example to configure a Serilog console logger and inject it through a `SerilogLoggerFactory`.
   - Dropped the library's Serilog dependency and its `IL3058` AOT warning suppression.
 - v3.6:
   - Reworked the CI/CD pipeline to the branch-scoped self-publishing model: `main` publishes stable releases and `develop` publishes prereleases, each branch publishing itself when a shipped input changes.

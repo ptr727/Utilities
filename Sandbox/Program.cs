@@ -1,23 +1,33 @@
-using System.Diagnostics;
-using System.Reflection;
-using ptr727.Utilities;
-using ptr727.Utilities.Sandbox;
+namespace ptr727.Utilities.Sandbox;
 
-// Configure logging: build a Serilog console logger and inject it into the library.
-Log.Logger = LoggerFactory.Create();
-LogOptions.SetFactory(LoggerFactory.CreateLoggerFactory());
+/// <summary>
+/// Sandbox entry point. Each sample class exercises a slice of the library and is invoked
+/// from <see cref="Main"/>; comment out a call to skip that sample for a given run.
+/// </summary>
+internal sealed class Program
+{
+    private Program() { }
 
-try
-{
-    // Get the assembly directory
-    Assembly? entryAssembly = Assembly.GetEntryAssembly();
-    Debug.Assert(entryAssembly != null);
-    string? assemblyDirectory = Path.GetDirectoryName(AppContext.BaseDirectory);
-    Debug.Assert(assemblyDirectory != null);
-    string projectDirectory = Path.GetFullPath(Path.Combine(assemblyDirectory, "../../../../"));
-    Log.Logger.Information("Project directory: {ProjectDirectory}", projectDirectory);
-}
-finally
-{
-    Log.CloseAndFlush();
+    private static async Task<int> Main()
+    {
+        // Configure logging: build a Serilog console logger and inject it into the library.
+        Log.Logger = LoggerFactory.Create();
+        LogOptions.SetFactory(LoggerFactory.CreateLoggerFactory());
+
+        try
+        {
+            if (!AssemblyIdentitySample.Run())
+            {
+                return 1;
+            }
+
+            await HttpClientSample.RunAsync().ConfigureAwait(false);
+
+            return 0;
+        }
+        finally
+        {
+            await Log.CloseAndFlushAsync().ConfigureAwait(false);
+        }
+    }
 }

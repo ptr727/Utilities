@@ -1,6 +1,3 @@
-using System.Net.Http.Headers;
-using System.Reflection;
-
 namespace ptr727.Utilities;
 
 /// <summary>
@@ -8,7 +5,11 @@ namespace ptr727.Utilities;
 /// </summary>
 public static class Download
 {
-    private static readonly Lazy<HttpClient> s_httpClient = new(CreateHttpClient);
+    private static readonly Lazy<HttpClient> s_httpClient = new(() =>
+        HttpClientFactory.CreateClient(
+            new HttpClientOptions { Timeout = TimeSpan.FromSeconds(TimeoutSeconds) }
+        )
+    );
     private static readonly Lazy<ILogger> s_logger = new(() =>
         LogOptions.CreateLogger(typeof(Download).FullName!)
     );
@@ -131,11 +132,19 @@ public static class Download
 
         try
         {
-            await using Stream httpStream = await GetHttpClient()
+            Stream httpStream = await GetHttpClient()
                 .GetStreamAsync(uri, cancellationToken)
                 .ConfigureAwait(false);
-            await using FileStream fileStream = File.OpenWrite(fileName);
-            await httpStream.CopyToAsync(fileStream, cancellationToken).ConfigureAwait(false);
+            await using (httpStream.ConfigureAwait(false))
+            {
+                FileStream fileStream = File.OpenWrite(fileName);
+                await using (fileStream.ConfigureAwait(false))
+                {
+                    await httpStream
+                        .CopyToAsync(fileStream, cancellationToken)
+                        .ConfigureAwait(false);
+                }
+            }
         }
         catch (Exception e) when (Log.LogAndHandle(e))
         {
@@ -236,37 +245,5 @@ public static class Download
         }
 
         return uriBuilder.Uri;
-    }
-
-    private static HttpClient CreateHttpClient()
-    {
-        HttpClient client = new() { Timeout = TimeSpan.FromSeconds(TimeoutSeconds) };
-
-        // Identify the consuming application (the caller), never this library. Assembly-to-file
-        // metadata is unreliable under NativeAOT, so try the managed entry assembly name, then
-        // the OS-level process executable name, then a generic value.
-        Assembly? entryAssembly = Assembly.GetEntryAssembly();
-        string? processPath = Environment.ProcessPath;
-        string? processName = string.IsNullOrEmpty(processPath)
-            ? null
-            : Path.GetFileNameWithoutExtension(processPath);
-        string productName = entryAssembly?.GetName().Name ?? processName ?? "Unknown";
-        string productVersion = entryAssembly?.GetName().Version?.ToString() ?? "1.0.0";
-
-        // The derived name may not be a valid HTTP token (e.g. a process name with spaces);
-        // fall back to a guaranteed-valid token so a User-Agent is always set.
-        if (
-            !ProductInfoHeaderValue.TryParse(
-                $"{productName}/{productVersion}",
-                out ProductInfoHeaderValue? userAgent
-            )
-        )
-        {
-            userAgent = new ProductInfoHeaderValue("Unknown", productVersion);
-        }
-
-        client.DefaultRequestHeaders.UserAgent.Add(userAgent);
-
-        return client;
     }
 }
