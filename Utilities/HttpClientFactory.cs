@@ -170,10 +170,22 @@ public static class HttpClientFactory
         };
     }
 
-    private static bool IsTransientFailure(Outcome<HttpResponseMessage> outcome) =>
-        outcome.Exception is not null
-            ? outcome.Exception is not (OperationCanceledException or BrokenCircuitException)
-            : outcome.Result is not null && (int)outcome.Result.StatusCode is 408 or 429 or >= 500;
+    private static bool IsTransientFailure(Outcome<HttpResponseMessage> outcome)
+    {
+        if (outcome.Exception is null)
+        {
+            return outcome.Result is not null
+                && (int)outcome.Result.StatusCode is 408 or 429 or >= 500;
+        }
+
+        // Retry timeouts (cancellation with an inner TimeoutException), not caller cancellation or an open circuit.
+        return outcome.Exception switch
+        {
+            OperationCanceledException canceled => canceled.InnerException is TimeoutException,
+            BrokenCircuitException => false,
+            _ => true,
+        };
+    }
 
     private static string FormatOutcome(Outcome<HttpResponseMessage> outcome) =>
         outcome.Exception?.Message ?? outcome.Result?.StatusCode.ToString() ?? "unknown";
