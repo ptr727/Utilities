@@ -172,7 +172,14 @@ public static class HttpClientFactory
         return outcome.Exception switch
         {
             OperationCanceledException canceled => canceled.InnerException is TimeoutException,
-            HttpRequestException or IOException => true,
+            // A network/IO HttpRequestException carries no status; treat it as transient. One that
+            // carries a status (for example from EnsureSuccessStatusCode) is transient only for a
+            // transient status code, so 4xx failures fail fast.
+            HttpRequestException { StatusCode: null } or IOException => true,
+            HttpRequestException { StatusCode: { } statusCode } => (int)statusCode
+                is 408
+                    or 429
+                    or >= 500,
             _ => false,
         };
     }

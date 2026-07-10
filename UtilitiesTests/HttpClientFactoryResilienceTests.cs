@@ -94,6 +94,21 @@ public class HttpClientFactoryResilienceTests
         _ = stub.CallCount.Should().Be(1); // programming errors are not retried
     }
 
+    [Fact]
+    public async Task StatusBearingHttpRequestException_IsNotRetried()
+    {
+        using StubHttpMessageHandler stub = new(
+            Throws(new HttpRequestException("not found", null, HttpStatusCode.NotFound))
+        );
+        using HttpClient client = CreateStubbedClient(stub, FastOptions());
+
+        _ = await FluentActions
+            .Awaiting(() => client.GetAsync(new Uri("http://localhost/")))
+            .Should()
+            .ThrowAsync<HttpRequestException>();
+        _ = stub.CallCount.Should().Be(1); // a 404 HttpRequestException is not transient
+    }
+
     private static HttpClientOptions FastOptions() =>
         new()
         {
