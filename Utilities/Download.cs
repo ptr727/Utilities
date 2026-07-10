@@ -243,8 +243,8 @@ public static class Download
         HttpClient client = new() { Timeout = TimeSpan.FromSeconds(TimeoutSeconds) };
 
         // Identify the consuming application (the caller), never this library. Assembly-to-file
-        // metadata is unreliable under NativeAOT (dotnet/runtime#122457), so try the managed
-        // entry assembly name, then the OS-level process executable name, then a generic value.
+        // metadata is unreliable under NativeAOT, so try the managed entry assembly name, then
+        // the OS-level process executable name, then a generic value.
         Assembly? entryAssembly = Assembly.GetEntryAssembly();
         string? processPath = Environment.ProcessPath;
         string? processName = string.IsNullOrEmpty(processPath)
