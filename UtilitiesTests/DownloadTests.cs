@@ -12,6 +12,6 @@ public class DownloadTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTest
         Uri uri = new(
             "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
         );
-        Assert.True(Download.GetContentInfo(uri, out long _, out DateTime _));
+        _ = Download.GetContentInfo(uri, out long _, out DateTime _).Should().BeTrue();
     }
 }

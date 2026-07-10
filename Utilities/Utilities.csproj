@@ -3,10 +3,6 @@
     <PublishAot>true</PublishAot>
     <InvariantGlobalization>false</InvariantGlobalization>
     <VerifyReferenceAotCompatibility>true</VerifyReferenceAotCompatibility>
-    <!-- Serilog is not annotated AOT-compatible; the library still ships
-         AOT-friendly. IL3058 is a compiler-level warning (no source location)
-         so it is suppressed here rather than in .editorconfig. -->
-    <NoWarn>$(NoWarn);IL3058</NoWarn>
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -30,8 +26,11 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
-    <PackageReference Include="Serilog" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="InsaneGenius.Utilities.Tests" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" Pack="true" PackagePath="" />
