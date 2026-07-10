@@ -37,14 +37,14 @@ public class StringHistory
         // No restrictions
         if (MaxFirstLines == 0 && MaxLastLines == 0)
         {
-            StringList.Add(value);
+            _stringList.Add(value);
             return;
         }
 
         // Restrict first lines
         if (_firstLines < MaxFirstLines)
         {
-            StringList.Add(value);
+            _stringList.Add(value);
             _firstLines++;
             return;
         }
@@ -58,14 +58,14 @@ public class StringHistory
         // Restrict last lines
         if (_lastLines < MaxLastLines)
         {
-            StringList.Add(value);
+            _stringList.Add(value);
             _lastLines++;
             return;
         }
 
         // Roll the last lines
-        StringList.RemoveAt(MaxFirstLines);
-        StringList.Add(value);
+        _stringList.RemoveAt(MaxFirstLines);
+        _stringList.Add(value);
     }
 
     /// <summary>
@@ -73,8 +73,8 @@ public class StringHistory
     /// </summary>
     /// <returns>A string containing all stored lines.</returns>
     public override string ToString() =>
-        string.Join(Environment.NewLine, StringList)
-        + (StringList.Count > 0 ? Environment.NewLine : string.Empty);
+        string.Join(Environment.NewLine, _stringList)
+        + (_stringList.Count > 0 ? Environment.NewLine : string.Empty);
 
     /// <summary>
     /// Gets or sets the maximum number of first lines to retain.
@@ -91,8 +91,9 @@ public class StringHistory
     /// <summary>
     /// Gets the list of stored strings.
     /// </summary>
-    public List<string> StringList { get; } = [];
+    public ReadOnlyCollection<string> StringList => _stringList.AsReadOnly();
 
+    private readonly List<string> _stringList = [];
     private int _firstLines;
     private int _lastLines;
 }
