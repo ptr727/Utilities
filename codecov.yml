@@ -13,7 +13,7 @@ coverage:
       default:
         informational: true
 
-# The Sandbox is an example/demo console app, not the shipped
-# ptr727.Utilities library, and is intentionally not unit-tested.
+# The Sandbox is an example/demo console app, not the shipped ptr727.Utilities library,
+# and is intentionally not unit-tested.
 ignore:
   - "Sandbox/**"
