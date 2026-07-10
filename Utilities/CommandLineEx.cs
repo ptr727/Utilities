@@ -1,4 +1,4 @@
-namespace InsaneGenius.Utilities;
+namespace ptr727.Utilities;
 
 /// <summary>
 /// Provides command-line argument parsing utilities.

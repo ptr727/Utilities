@@ -1,8 +1,7 @@
 using System.Net.Http.Headers;
 using System.Reflection;
-using Microsoft.Extensions.Logging;
 
-namespace InsaneGenius.Utilities;
+namespace ptr727.Utilities;
 
 /// <summary>
 /// Provides HTTP download utilities for files and strings.
@@ -201,6 +200,11 @@ public static class Download
     /// Gets the shared HttpClient instance.
     /// </summary>
     /// <returns>The HttpClient instance.</returns>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design",
+        "CA1024:Use properties where appropriate",
+        Justification = "Exposed as a method so callers see they receive the shared, lazily-initialized HttpClient rather than a lightweight property value."
+    )]
     public static HttpClient GetHttpClient() => s_httpClient.Value;
 
     /// <summary>
@@ -211,6 +215,11 @@ public static class Download
     /// <param name="password">The password (optional).</param>
     /// <returns>The constructed URI.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="url"/> is null.</exception>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design",
+        "CA1054:URI parameters should not be strings",
+        Justification = "The url parameter is intentionally a string; CreateUri builds the Uri from raw string input supplied by callers."
+    )]
     public static Uri CreateUri(string url, string? userName = null, string? password = null)
     {
         ArgumentNullException.ThrowIfNull(url);
@@ -234,7 +243,7 @@ public static class Download
         HttpClient client = new() { Timeout = TimeSpan.FromSeconds(TimeoutSeconds) };
 
         Assembly assembly = Assembly.GetExecutingAssembly();
-        string productName = assembly.GetName().Name ?? "InsaneGenius.Utilities";
+        string productName = assembly.GetName().Name ?? "ptr727.Utilities";
         string productVersion = assembly.GetName().Version?.ToString() ?? "1.0.0";
 
         client.DefaultRequestHeaders.UserAgent.Add(

@@ -1,14 +1,11 @@
 using System.IO.Compression;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Xunit;
 
-namespace InsaneGenius.Utilities.Tests;
+namespace ptr727.Utilities.Tests;
 
-public class ExtensionsTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests>
+public class ExtensionsTests : IClassFixture<UtilitiesTests>
 {
-    private readonly UtilitiesTests _fixture = fixture;
-
     #region String Compression Extension Tests
 
     [Fact]

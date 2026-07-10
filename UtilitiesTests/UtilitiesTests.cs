@@ -1,6 +1,3 @@
-namespace InsaneGenius.Utilities.Tests;
+namespace ptr727.Utilities.Tests;
 
-public class UtilitiesTests : IDisposable
-{
-    public void Dispose() => GC.SuppressFinalize(this);
-}
+public class UtilitiesTests { }

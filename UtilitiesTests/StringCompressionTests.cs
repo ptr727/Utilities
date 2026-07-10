@@ -1,11 +1,7 @@
-using Xunit;
+namespace ptr727.Utilities.Tests;
 
-namespace InsaneGenius.Utilities.Tests;
-
-public class StringCompressionTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests>
+public class StringCompressionTests : IClassFixture<UtilitiesTests>
 {
-    private readonly UtilitiesTests _fixture = fixture;
-
     [Fact]
     public void CompressDecompress()
     {

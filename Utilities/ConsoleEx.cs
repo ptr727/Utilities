@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace InsaneGenius.Utilities;
+namespace ptr727.Utilities;
 
 /// <summary>
 /// Provides enhanced console output utilities with color and timestamp support.

@@ -1,11 +1,7 @@
-using Xunit;
+namespace ptr727.Utilities.Tests;
 
-namespace InsaneGenius.Utilities.Tests;
-
-public class ConsoleTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests>
+public class ConsoleTests : IClassFixture<UtilitiesTests>
 {
-    private readonly UtilitiesTests _fixture = fixture;
-
     [Fact]
     public void WriteLineColor_WithValidString_ShouldContainMessage()
     {

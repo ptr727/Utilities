@@ -1,11 +1,7 @@
-using Xunit;
+namespace ptr727.Utilities.Tests;
 
-namespace InsaneGenius.Utilities.Tests;
-
-public class FormatTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests>
+public class FormatTests : IClassFixture<UtilitiesTests>
 {
-    private readonly UtilitiesTests _fixture = fixture;
-
     [Theory]
     [InlineData(0, "0B")]
     [InlineData(1, "1B")]

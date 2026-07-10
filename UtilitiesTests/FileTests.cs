@@ -1,12 +1,9 @@
 using System.Runtime.InteropServices;
-using Xunit;
 
-namespace InsaneGenius.Utilities.Tests;
+namespace ptr727.Utilities.Tests;
 
-public class FileTests(UtilitiesTests fixture) : IClassFixture<UtilitiesTests>
+public class FileTests : IClassFixture<UtilitiesTests>
 {
-    private readonly UtilitiesTests _fixture = fixture;
-
     [Theory]
     [InlineData(@"C:\Path One", @"Path Two", @"C:\Path One\Path Two")]
     [InlineData(@"C:\Path One\", @"\Path Two", @"C:\Path One\Path Two")]

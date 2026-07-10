@@ -14,6 +14,6 @@ coverage:
         informational: true
 
 # The Sandbox is an example/demo console app, not the shipped
-# InsaneGenius.Utilities library, and is intentionally not unit-tested.
+# ptr727.Utilities library, and is intentionally not unit-tested.
 ignore:
   - "Sandbox/**"
