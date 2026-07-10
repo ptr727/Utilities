@@ -103,10 +103,20 @@ public class HttpClientFactoryResilienceTests
 /// A stub HTTP transport that returns a scripted sequence of results and counts calls. The last
 /// step repeats once the sequence is exhausted, so a single step models a repeating outcome.
 /// </summary>
-internal sealed class StubHttpMessageHandler(params Func<Task<HttpResponseMessage>>[] steps)
-    : HttpMessageHandler
+internal sealed class StubHttpMessageHandler : HttpMessageHandler
 {
-    private readonly Queue<Func<Task<HttpResponseMessage>>> _steps = new(steps);
+    private readonly Queue<Func<Task<HttpResponseMessage>>> _steps;
+
+    internal StubHttpMessageHandler(params Func<Task<HttpResponseMessage>>[] steps)
+    {
+        ArgumentNullException.ThrowIfNull(steps);
+        if (steps.Length == 0)
+        {
+            throw new ArgumentException("At least one step is required.", nameof(steps));
+        }
+
+        _steps = new Queue<Func<Task<HttpResponseMessage>>>(steps);
+    }
 
     internal int CallCount { get; private set; }
 
