@@ -8,6 +8,3 @@ dotnet_diagnostic.CA1707.severity = none
 
 # CA1515: xUnit discovers only public test classes, so they cannot be internal.
 dotnet_diagnostic.CA1515.severity = none
-
-# CA2007: xUnit forbids ConfigureAwait in test methods (xUnit1030), so CA2007 cannot be satisfied in test code.
-dotnet_diagnostic.CA2007.severity = none
