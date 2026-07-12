@@ -1,28 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Authors>Pieter Viljoen</Authors>
-    <Company>Pieter Viljoen</Company>
-    <Copyright>Pieter Viljoen</Copyright>
-    <Description>Generally useful utility classes</Description>
-    <Version>1.1.0.1</Version>
-    <FileVersion>1.1.0.1</FileVersion>
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
-    <PackageId>ptr727.Utilities.Tests</PackageId>
-    <AssemblyName>UtilitiesTests</AssemblyName>
+    <IsTestProject>true</IsTestProject>
     <RootNamespace>ptr727.Utilities.Tests</RootNamespace>
-    <NeutralLanguage>en</NeutralLanguage>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AwesomeAssertions" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
-    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.v3" />
     <PackageReference Include="xunit.analyzers">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
