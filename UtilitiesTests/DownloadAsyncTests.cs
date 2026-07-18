@@ -9,7 +9,10 @@ public class DownloadAsyncTests
             "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
         );
 
-        (bool success, long size, DateTime _) = await Download.GetContentInfoAsync(uri);
+        (bool success, long size, DateTime _) = await Download.GetContentInfoAsync(
+            uri,
+            TestContext.Current.CancellationToken
+        );
 
         _ = success.Should().BeTrue();
         _ = (size > 0).Should().BeTrue();
@@ -20,7 +23,10 @@ public class DownloadAsyncTests
     {
         Uri uri = new("https://www.google.com");
 
-        (bool success, string? content) = await Download.DownloadStringAsync(uri);
+        (bool success, string? content) = await Download.DownloadStringAsync(
+            uri,
+            TestContext.Current.CancellationToken
+        );
 
         _ = success.Should().BeTrue();
         _ = content.Should().NotBeEmpty();
@@ -37,7 +43,11 @@ public class DownloadAsyncTests
 
         try
         {
-            bool result = await Download.DownloadFileAsync(uri, tempFile);
+            bool result = await Download.DownloadFileAsync(
+                uri,
+                tempFile,
+                TestContext.Current.CancellationToken
+            );
 
             _ = result.Should().BeTrue();
             _ = File.Exists(tempFile).Should().BeTrue();
@@ -57,7 +67,10 @@ public class DownloadAsyncTests
     {
         Uri invalidUri = new("https://thisdoesnotexist123456789.com/file.txt");
 
-        (bool success, long _, DateTime _) = await Download.GetContentInfoAsync(invalidUri);
+        (bool success, long _, DateTime _) = await Download.GetContentInfoAsync(
+            invalidUri,
+            TestContext.Current.CancellationToken
+        );
 
         _ = success.Should().BeFalse();
     }
