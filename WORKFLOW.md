@@ -592,8 +592,8 @@ strict-off, and the repository settings (auto-merge, allowed merge methods) are 
 drift. A missing or incorrect configuration item is a defect (D10). Secret *values* cannot be read
 back, so the audit asserts the names exist (failing if it cannot query them); the GitHub App installation is a
 best-effort check (a precise check needs app-level auth, so it notes rather than fails). The NuGet.org trusted-publishing
-policy (D4.7) lives outside GitHub and cannot be checked by `gh api`; the audit records it as a manual
-verification item.
+policy (D4.7) lives outside GitHub and cannot be checked by `gh api`, so it sits outside AUDIT.md's drift
+report entirely - it is a manual checklist item, verified on NuGet.org (see section 6).
 
 ### Assessment
 
@@ -662,6 +662,7 @@ and repository settings as JSON, applied by an idempotent `gh api` script and au
 [`AUDIT.md`](./AUDIT.md) diffs the live rulesets, settings, and secret names against the committed
 baseline and reports drift without changing anything; that procedure **is** the 5D audit.
 `repo-config/configure.sh [owner/repo] [release|operational]` applies the baseline to a repo (idempotent;
-both arguments optional - the repo defaults to the current one and the model to the registry lookup).
+both arguments optional - the repo defaults to the current one, and the model to the registry lookup,
+falling back to `release` with a warning when no registry is present).
 Secret values cannot be read back, so the audit asserts the names exist (failing if they cannot be queried);
 the App installation is a best-effort check.
