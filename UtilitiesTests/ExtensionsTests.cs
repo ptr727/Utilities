@@ -50,7 +50,9 @@ public class ExtensionsTests
     {
         string original = "This is a test string for async compression.";
 
-        string compressed = await original.CompressAsync();
+        string compressed = await original.CompressAsync(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         _ = compressed.Should().NotBeNull();
         _ = compressed.Should().NotBeEmpty();
@@ -61,9 +63,13 @@ public class ExtensionsTests
     public async Task StringExtension_DecompressAsync_ShouldDecompressString()
     {
         string original = "This is a test string for async decompression.";
-        string compressed = await original.CompressAsync();
+        string compressed = await original.CompressAsync(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
-        string decompressed = await compressed.DecompressAsync();
+        string decompressed = await compressed.DecompressAsync(
+            TestContext.Current.CancellationToken
+        );
 
         _ = decompressed.Should().Be(original);
     }
@@ -266,8 +272,12 @@ public class ExtensionsTests
 
         foreach (string original in testStrings)
         {
-            string compressed = await original.CompressAsync();
-            string decompressed = await compressed.DecompressAsync();
+            string compressed = await original.CompressAsync(
+                cancellationToken: TestContext.Current.CancellationToken
+            );
+            string decompressed = await compressed.DecompressAsync(
+                TestContext.Current.CancellationToken
+            );
 
             _ = decompressed.Should().Be(original);
         }
