@@ -9,7 +9,10 @@ public class FileExAsyncTests
 
         try
         {
-            bool result = await FileEx.DeleteFileAsync(tempFile);
+            bool result = await FileEx.DeleteFileAsync(
+                tempFile,
+                TestContext.Current.CancellationToken
+            );
 
             _ = result.Should().BeTrue();
             _ = File.Exists(tempFile).Should().BeFalse();
@@ -31,7 +34,10 @@ public class FileExAsyncTests
 
         try
         {
-            bool result = await FileEx.DeleteDirectoryAsync(tempDir);
+            bool result = await FileEx.DeleteDirectoryAsync(
+                tempDir,
+                TestContext.Current.CancellationToken
+            );
 
             _ = result.Should().BeTrue();
             _ = Directory.Exists(tempDir).Should().BeFalse();
@@ -53,11 +59,19 @@ public class FileExAsyncTests
         string subDir = Path.Combine(tempDir, "subdir");
         _ = Directory.CreateDirectory(subDir);
         string testFile = Path.Combine(subDir, "test.txt");
-        await File.WriteAllTextAsync(testFile, "test content");
+        await File.WriteAllTextAsync(
+            testFile,
+            "test content",
+            TestContext.Current.CancellationToken
+        );
 
         try
         {
-            bool result = await FileEx.DeleteDirectoryAsync(tempDir, recursive: true);
+            bool result = await FileEx.DeleteDirectoryAsync(
+                tempDir,
+                recursive: true,
+                TestContext.Current.CancellationToken
+            );
 
             _ = result.Should().BeTrue();
             _ = Directory.Exists(tempDir).Should().BeFalse();
@@ -79,7 +93,11 @@ public class FileExAsyncTests
 
         try
         {
-            bool result = await FileEx.RenameFileAsync(tempFile, newPath);
+            bool result = await FileEx.RenameFileAsync(
+                tempFile,
+                newPath,
+                TestContext.Current.CancellationToken
+            );
 
             _ = result.Should().BeTrue();
             _ = File.Exists(tempFile).Should().BeFalse();
@@ -107,7 +125,11 @@ public class FileExAsyncTests
 
         try
         {
-            bool result = await FileEx.RenameFolderAsync(tempDir, newPath);
+            bool result = await FileEx.RenameFolderAsync(
+                tempDir,
+                newPath,
+                TestContext.Current.CancellationToken
+            );
 
             _ = result.Should().BeTrue();
             _ = Directory.Exists(tempDir).Should().BeFalse();
@@ -133,9 +155,16 @@ public class FileExAsyncTests
 
         try
         {
-            await File.WriteAllTextAsync(tempFile, "test content");
+            await File.WriteAllTextAsync(
+                tempFile,
+                "test content",
+                TestContext.Current.CancellationToken
+            );
 
-            bool result = await FileEx.WaitFileReadableAsync(tempFile);
+            bool result = await FileEx.WaitFileReadableAsync(
+                tempFile,
+                TestContext.Current.CancellationToken
+            );
 
             _ = result.Should().BeTrue();
         }
@@ -156,7 +185,11 @@ public class FileExAsyncTests
 
         try
         {
-            bool result = await FileEx.CreateRandomFilledFileAsync(tempFile, fileSize);
+            bool result = await FileEx.CreateRandomFilledFileAsync(
+                tempFile,
+                fileSize,
+                TestContext.Current.CancellationToken
+            );
 
             _ = result.Should().BeTrue();
             _ = File.Exists(tempFile).Should().BeTrue();
@@ -224,11 +257,18 @@ public class FileExAsyncTests
         string tempDir = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}");
         _ = Directory.CreateDirectory(tempDir);
         string testFile = Path.Combine(tempDir, "test.txt");
-        await File.WriteAllTextAsync(testFile, "test content");
+        await File.WriteAllTextAsync(
+            testFile,
+            "test content",
+            TestContext.Current.CancellationToken
+        );
 
         try
         {
-            bool result = await FileEx.DeleteInsideDirectoryAsync(tempDir);
+            bool result = await FileEx.DeleteInsideDirectoryAsync(
+                tempDir,
+                TestContext.Current.CancellationToken
+            );
 
             _ = result.Should().BeTrue();
             _ = Directory.Exists(tempDir).Should().BeTrue(); // Directory should still exist

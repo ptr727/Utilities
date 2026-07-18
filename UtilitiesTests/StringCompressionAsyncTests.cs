@@ -14,10 +14,14 @@ public class StringCompressionAsyncTests
         string text = Convert.ToBase64String(buffer);
 
         // Compress the string asynchronously
-        string compressed = await text.CompressAsync();
+        string compressed = await text.CompressAsync(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
 
         // Decompress asynchronously
-        string decompressed = await compressed.DecompressAsync();
+        string decompressed = await compressed.DecompressAsync(
+            TestContext.Current.CancellationToken
+        );
 
         // Compare to original string
         _ = decompressed.Should().Be(text);
@@ -32,8 +36,10 @@ public class StringCompressionAsyncTests
         string text =
             "This is a test string that will be compressed with different compression levels.";
 
-        string compressed = await text.CompressAsync(level);
-        string decompressed = await compressed.DecompressAsync();
+        string compressed = await text.CompressAsync(level, TestContext.Current.CancellationToken);
+        string decompressed = await compressed.DecompressAsync(
+            TestContext.Current.CancellationToken
+        );
 
         _ = decompressed.Should().Be(text);
     }
@@ -91,8 +97,12 @@ public class StringCompressionAsyncTests
         // Create a large repetitive string (should compress well)
         string largeText = new('A', 1024 * 1024); // 1MB of 'A's
 
-        string compressed = await largeText.CompressAsync();
-        string decompressed = await compressed.DecompressAsync();
+        string compressed = await largeText.CompressAsync(
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+        string decompressed = await compressed.DecompressAsync(
+            TestContext.Current.CancellationToken
+        );
 
         _ = decompressed.Should().Be(largeText);
         _ = (compressed.Length < largeText.Length)
