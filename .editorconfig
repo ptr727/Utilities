@@ -72,8 +72,8 @@ end_of_line = crlf
 # Suppressions follow CODESTYLE.md "Analyzer Diagnostics and Suppressions": prefer a
 # [SuppressMessage] attribute or the owning project's .editorconfig; relax a rule
 # repo-wide here only when it applies to every project (never a brownfield batch).
+# IDE0055: CSharpier owns formatting for every project; a second formatter would fight it.
 dotnet_diagnostic.IDE0055.severity = none
-dotnet_analyzer_diagnostic.severity = suggestion
 csharp_indent_block_contents = true
 csharp_indent_braces = false
 csharp_indent_case_contents = true
