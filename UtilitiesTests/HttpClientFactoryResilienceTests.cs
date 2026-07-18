@@ -14,7 +14,10 @@ public class HttpClientFactoryResilienceTests
         );
         using HttpClient client = CreateStubbedClient(stub, FastOptions());
 
-        using HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/"));
+        using HttpResponseMessage response = await client.GetAsync(
+            new Uri("http://localhost/"),
+            TestContext.Current.CancellationToken
+        );
 
         _ = response.StatusCode.Should().Be(HttpStatusCode.OK);
         _ = stub.CallCount.Should().Be(3); // initial attempt + 2 retries
@@ -26,7 +29,10 @@ public class HttpClientFactoryResilienceTests
         using StubHttpMessageHandler stub = new(Status(HttpStatusCode.NotFound));
         using HttpClient client = CreateStubbedClient(stub, FastOptions());
 
-        using HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/"));
+        using HttpResponseMessage response = await client.GetAsync(
+            new Uri("http://localhost/"),
+            TestContext.Current.CancellationToken
+        );
 
         _ = response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         _ = stub.CallCount.Should().Be(1); // 404 is not transient
@@ -123,7 +129,10 @@ public class HttpClientFactoryResilienceTests
         );
         using HttpClient client = CreateStubbedClient(stub, FastOptions());
 
-        using HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/"));
+        using HttpResponseMessage response = await client.GetAsync(
+            new Uri("http://localhost/"),
+            TestContext.Current.CancellationToken
+        );
 
         _ = response.StatusCode.Should().Be(HttpStatusCode.OK);
         _ = stub.CallCount.Should().Be(3); // 503 exception retried, then success
