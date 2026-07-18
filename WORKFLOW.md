@@ -587,9 +587,9 @@ determined by NBGV from the checkout state in section 3.*
 ### 5D. Configuration audit
 
 Follow the read-only audit in [`AUDIT.md`](./AUDIT.md) (section 6). It confirms the listed secrets exist,
-the `main`/`develop` rulesets enforce the required merge method + status check + signed commits +
-strict-off, and the repository settings (auto-merge, allowed merge methods) are in place, reporting any
-drift. A missing or incorrect configuration item is a defect (D10). Secret *values* cannot be read
+the `main`/`develop` rulesets enforce the required merge method + status check + signed commits + "require
+branches up to date before merging" **off**, and the repository settings (auto-merge, allowed merge
+methods) are in place, reporting any drift. A missing or incorrect configuration item is a defect (D10). Secret *values* cannot be read
 back, so the audit checks that the names exist, reporting a missing name or a failed query as a defect; the
 GitHub App installation is a best-effort check (a precise check needs app-level auth, so it notes rather
 than reports a defect). The NuGet.org trusted-publishing
