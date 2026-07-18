@@ -586,14 +586,15 @@ determined by NBGV from the checkout state in section 3.*
 
 ### 5D. Configuration audit
 
-Run [`repo-config/configure.sh check`](./repo-config/) (section 6). It confirms the listed secrets exist,
+Follow the read-only audit in [`AUDIT.md`](./AUDIT.md) (section 6). It confirms the listed secrets exist,
 the `main`/`develop` rulesets enforce the required merge method + status check + signed commits +
-strict-off, and the repository settings (auto-merge, allowed merge methods) are in place, exiting non-zero
-on any drift. A missing or incorrect configuration item is a defect (D10). Secret *values* cannot be read
-back, so the audit asserts the names exist (failing if it cannot query them); the GitHub App installation is a
-best-effort check (a precise check needs app-level auth, so it notes rather than fails). The NuGet.org trusted-publishing
-policy (D4.7) lives outside GitHub and cannot be checked by `gh api`; the script flags it as a manual
-verification item.
+strict-off, and the repository settings (auto-merge, allowed merge methods) are in place, reporting any
+drift. A missing or incorrect configuration item is a defect (D10). Secret *values* cannot be read
+back, so the audit checks that the names exist, reporting a missing name or a failed query as a defect; the
+GitHub App installation is a best-effort check (a precise check needs app-level auth, so it notes rather
+than reports a defect). The NuGet.org trusted-publishing
+policy (D4.7) lives outside GitHub and cannot be checked by `gh api`, so it sits outside AUDIT.md's drift
+report entirely - it is a manual checklist item, verified on NuGet.org (see section 6).
 
 ### Assessment
 
@@ -619,7 +620,9 @@ in its own right, not merely discoverable by failure (D10; audit 5D).
 **Secrets.**
 
 - `NUGET_USERNAME` - the NuGet.org profile name passed to `NuGet/login@v1` for OIDC trusted publishing
-  (D4.7). Actions store. **No `NUGET_API_KEY`** secret is used; publishing is keyless.
+  (D4.7). Required in **both** the Actions and Dependabot secret stores, matching the fleet hub's canonical
+  `nuget-oidc` mechanism that [`spec/secrets.json`](./spec/secrets.json) carries and [`AUDIT.md`](./AUDIT.md)
+  checks. **No `NUGET_API_KEY`** secret is used; publishing is keyless.
 - `CODEGEN_APP_CLIENT_ID` / `CODEGEN_APP_PRIVATE_KEY` - the GitHub App credentials the merge-bot mints the
   App token from. Required in **both** the Actions and Dependabot secret stores, because a merge-bot run on
   a Dependabot PR is given the Dependabot secret store, not Actions secrets. The App must be installed on
@@ -655,8 +658,12 @@ first successful publish locks it to the repo and owner IDs.
 - The GitHub App installed with the scopes above.
 
 **Validation.** This configuration is codified in [`repo-config/`](./repo-config/): the branch rulesets
-and repository settings as JSON, applied and audited by an idempotent `gh api` script.
-`repo-config/configure.sh check` reads the live rulesets, settings, and secret names and exits non-zero
-on any drift; that command **is** the 5D audit. `repo-config/configure.sh apply` configures a fresh repo
-to match. Secret values cannot be read back, so the audit asserts the names exist (failing if they cannot be queried);
-the App installation is a best-effort check.
+and repository settings as JSON, applied by an idempotent `gh api` script and audited read-only per
+[`AUDIT.md`](./AUDIT.md).
+[`AUDIT.md`](./AUDIT.md) diffs the live rulesets, settings, and secret names against the committed
+baseline and reports drift without changing anything; that procedure **is** the 5D audit.
+`repo-config/configure.sh [owner/repo] [release|operational]` applies the baseline to a repo (idempotent;
+both arguments optional - the repo defaults to the current one, and the model to the registry lookup,
+falling back to `release` with a warning when no registry is present).
+Secret values cannot be read back, so the audit checks that the names exist, reporting a missing name or a
+failed query as a defect; the App installation is a best-effort check.
