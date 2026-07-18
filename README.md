@@ -11,7 +11,8 @@ Some useful and not so useful C# .NET utility classes.
 ### Build Status
 
 [![Release Status][releasebuildstatus-shield]][actions-link]\
-[![Last Commit][lastcommit-shield]][commits-link]
+[![Last Commit][lastcommit-shield]][commits-link]\
+[![Coverage][coverage-shield]][coverage-link]
 
 ### Releases
 
@@ -69,6 +70,8 @@ Licensed under the [MIT License][license-link]\
 
 [actions-link]: https://github.com/ptr727/Utilities/actions
 [commits-link]: https://github.com/ptr727/Utilities/commits/main
+[coverage-link]: https://app.codecov.io/gh/ptr727/Utilities
+[coverage-shield]: https://img.shields.io/codecov/c/github/ptr727/Utilities?logo=codecov&label=Coverage
 [github-link]: https://github.com/ptr727/Utilities
 [lastcommit-shield]: https://img.shields.io/github/last-commit/ptr727/Utilities?logo=github&label=Last%20Commit
 [license-link]: ./LICENSE
