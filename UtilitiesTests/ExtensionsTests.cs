@@ -93,7 +93,7 @@ public class ExtensionsTests
         string? nullString = null;
 
         _ = FluentActions
-            .Invoking(() => nullString.Compress())
+            .Invoking(() => nullString!.Compress())
             .Should()
             .Throw<ArgumentNullException>();
     }
@@ -211,7 +211,7 @@ public class ExtensionsTests
         string? nullString = null;
 
         _ = await FluentActions
-            .Awaiting(() => nullString.CompressAsync())
+            .Awaiting(() => nullString!.CompressAsync())
             .Should()
             .ThrowAsync<ArgumentNullException>();
     }
@@ -222,7 +222,7 @@ public class ExtensionsTests
         string? nullString = null;
 
         _ = await FluentActions
-            .Awaiting(() => nullString.DecompressAsync())
+            .Awaiting(() => nullString!.DecompressAsync())
             .Should()
             .ThrowAsync<ArgumentNullException>();
     }
