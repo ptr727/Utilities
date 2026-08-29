@@ -2,6 +2,10 @@
   <PropertyGroup>
     <IsTestProject>true</IsTestProject>
     <RootNamespace>ptr727.Utilities.Tests</RootNamespace>
+    <!-- .NET 10 SDK dropped the VSTest bridge for dotnet test; run xunit.v3 through native
+         Microsoft.Testing.Platform instead (paired with global.json's "test.runner" setting). -->
+    <OutputType>Exe</OutputType>
+    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AwesomeAssertions" />
@@ -12,9 +16,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="All" />
-    <PackageReference Include="coverlet.collector">
+    <!-- coverlet.collector is VSTest-only; Microsoft.Testing.Extensions.CodeCoverage is the
+         native MTP coverage provider (drives the dotnet test coverage flag). -->
+    <!-- Unlike coverlet.collector, this extension's self-registration code is compiled in, so
+         "compile" must stay in IncludeAssets. -->
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage">
       <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <IncludeAssets>compile; runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
