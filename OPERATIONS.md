@@ -34,7 +34,7 @@ docker run --rm -v "$PWD":/check --workdir /check mstruebing/editorconfig-checke
 
 ## Runbooks
 
-**Cutting a release.** Publishing is two-phase, so merging a pull request never publishes. A release to NuGet.org and GitHub Releases is a deliberate `workflow_dispatch` of `publish-release.yml`, or a bot merge to `main` that touches a shipped input. Update [`README.md`](./README.md)'s summary and the full entry in [`HISTORY.md`](./HISTORY.md) in the same change that ships the behavior, not afterwards.
+**Cutting a release.** Publishing is two-phase, so merging a pull request never publishes. A release to NuGet.org and GitHub Releases is a deliberate `workflow_dispatch` of `publish-release.yml`, or a bot merge to `main` that touches a shipped input. Update [`README.md`](./README.md)'s summary and the full entry in [`HISTORY.md`](./HISTORY.md) in the same change that ships the behavior, not afterward.
 
 **Bumping the version floor.** [`version.json`](./version.json) carries the NBGV floor. Raise it on `develop` and let the promotion carry it to `main`, since `main` builds the stable version and every other branch a prerelease.
 
