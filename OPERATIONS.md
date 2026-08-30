@@ -34,7 +34,7 @@ docker run --rm -v "$PWD":/check --workdir /check mstruebing/editorconfig-checke
 
 ## Runbooks
 
-**Cutting a release.** Publishing is two-phase, so merging a pull request never publishes. A release to NuGet.org and GitHub Releases is a deliberate `workflow_dispatch` of `publish-release.yml`, or a bot merge to `main` that touches a shipped input. Update [`README.md`](./README.md)'s summary and the full entry in [`HISTORY.md`](./HISTORY.md) in the same change that ships the behavior, not afterward.
+**Cutting a release.** Publishing is two-phase, so a human pull request merge never publishes, whichever branch it lands on. A release to NuGet.org and GitHub Releases is a deliberate `workflow_dispatch` of `publish-release.yml`. The one exception is a bot merge to `main` that touches a shipped input, which the publisher gates on the merging actor rather than on the merge itself, so a Dependabot bump republishes the package with its declared dependencies current. Update [`README.md`](./README.md)'s summary and the full entry in [`HISTORY.md`](./HISTORY.md) in the same change that ships the behavior, not afterward.
 
 **Bumping the version floor.** [`version.json`](./version.json) carries the NBGV floor. Raise it on `develop` and let the promotion carry it to `main`, since `main` builds the stable version and every other branch a prerelease.
 
@@ -46,7 +46,7 @@ dotnet tool update husky --local
 dotnet tool restore
 ```
 
-**Installing the commit hook.** Husky.Net runs the clean-compile checks before a commit, and a fresh clone has to install it once:
+**Installing the commit hook.** Husky.Net runs the formatting and style half of the clean-compile before a commit, meaning CSharpier and `dotnet format style`, and not the build between them. A fresh clone has to install it once:
 
 ```shell
 dotnet tool restore
@@ -67,7 +67,7 @@ The library itself logs through an `ILoggerFactory` seam and configures no sink,
 
 - **CSharpier** owns C# formatting, which is why `IDE0055` is the one analyzer rule relaxed repo-wide. It is a local dotnet tool restored from the manifest, so `dotnet tool restore` precedes any use of it.
 - **`dotnet format style`** is built into the SDK and needs no restore.
-- **Husky.Net** runs the local pre-commit gate, defined in [`.husky/task-runner.json`](./.husky/task-runner.json).
+- **Husky.Net** runs the local pre-commit gate, defined in [`.husky/task-runner.json`](./.husky/task-runner.json). It carries the two formatting tasks rather than the whole clean-compile, so the build stays a step you run yourself and CI is the backstop.
 - **Docker** is required for the document linters and the EditorConfig checker, and for nothing else in this repo.
 - The cspell accepted-word list and the path exclusions both live in [`cspell.json`](./cspell.json), the single source the editor extension, the CLI, and CI all read. Do not keep a parallel word list in the `.code-workspace` file.
 
