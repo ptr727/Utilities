@@ -1,17 +1,12 @@
 name: Publish project release action
 
-# Publisher. A human PR merge never auto-publishes; a release is a deliberate dispatch or a bot merge to main.
+# Publisher for this repository, wiring its one target, the NuGet package, into the reusable release chain.
+# A human pull request merge never auto-publishes, so a release is a deliberate dispatch or a bot merge to main that touches a shipped input.
+# The plan job computes that gate once, and only the codegen App or Dependabot actor qualifies on a push.
 #
-# - Push trigger (main only, on.push.paths inclusion list below - library source, version floor, build config,
-#   or package versions): a code-affecting Dependabot/codegen merge auto-publishes a stable release. The plan
-#   job (publish-plan-task.yml) computes the gate once - only the codegen App / Dependabot actor qualifies on a
-#   push, so a human merge or promotion to main skips and the maintainer dispatches when release-ready.
-# - Inclusion-only: add a path when a new input starts affecting the shipped package. Package versions
-#   (Directory.Packages.props) ARE listed: a NuGet version can't be re-pushed, so a dependency bump must
-#   republish to keep declared dependencies current (closes the stale/vulnerable-dependency window). GitHub
-#   Actions bumps are not listed (they don't ship in the package), so an Actions bump merges without republishing.
-# - workflow_dispatch: the maintainer publishes the chosen branch - main a stable release, develop a prerelease.
-# - Gate: the publish job needs the same validate-task the PR runs, so nothing publishes that would fail validation.
+# The push path list is inclusion-only, so a path joins it when a new input starts affecting the shipped package.
+# Package versions are listed because a NuGet version cannot be re-pushed, so a dependency bump must republish to keep the declared dependencies current.
+# GitHub Actions bumps are absent for the same reason inverted, since they do not ship in the package.
 on:
   push:
     branches: [main]
@@ -22,45 +17,60 @@ on:
       - 'Directory.Packages.props'
   workflow_dispatch:
 
-# Ref-independent group so concurrent publishes serialize, and cancel-in-progress: false so a publish is
-# never cancelled mid-release (a half-created GitHub release or partial NuGet push).
+# The group is ref-independent so concurrent publishes serialize.
+# The cancel-in-progress setting is false so a publish is never cancelled mid-release, which would leave a half-created GitHub release or a partial NuGet push.
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
 
+# GITHUB_TOKEN gets no scope by default, and each job below grants only what it writes with.
+permissions: {}
+
 jobs:
 
-  # Single source of the release-gate decision (publish? stable?); validate + publish gate on its outputs
-  # instead of re-testing event/actor/branch. See publish-plan-task.yml for the policy.
+  # Single source of the release-gate decision, publish or not and stable or not, reused by every job below.
   plan:
     name: Plan release job
-    uses: ./.github/workflows/publish-plan-task.yml
+    uses: ptr727/ProjectTemplate/.github/workflows/publish-plan-task.yml@f3b4cc98654878e63ebfe21b68b8516b7bb46469 # 2.0.526
     with:
       event_name: ${{ github.event_name }}
       actor: ${{ github.actor }}
       ref_name: ${{ github.ref_name }}
 
-  # The same unit-test + lint gate the PR runs, on the branch tip; runs only when a publish will happen.
+  # The same gate the pull request runs, on the branch tip, running only when a publish will happen.
   validate:
     name: Validate job
     needs: [plan]
     if: ${{ needs.plan.outputs.publish == 'true' }}
-    uses: ./.github/workflows/validate-task.yml
-    secrets: inherit
+    uses: ptr727/ProjectTemplate/.github/workflows/validate-task.yml@f3b4cc98654878e63ebfe21b68b8516b7bb46469 # 2.0.526
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    permissions:
+      contents: read
 
-  # Build, version, validate, push, and release the triggering branch (main = release, develop = prerelease via
-  # dispatch). Grants the write scopes build-release-task needs (it declares none, so the read-only smoke caller
-  # is not forced to over-grant). Gated on the plan decision.
+  # Build, version, push, and release the triggering branch, main a stable release and develop a prerelease by dispatch.
+  # This repository ships one target, the NuGet package, so every other target is disabled explicitly rather than left at its default.
+  # The grants are what the enabled paths write with.
+  # Contents and actions cover the release upload and its artifact cleanup, and id-token covers the keyless NuGet push through OIDC trusted publishing.
   publish:
     name: Publish project release job
     needs: [plan, validate]
-    if: ${{ needs.plan.outputs.publish == 'true' }}
-    uses: ./.github/workflows/build-release-task.yml
-    secrets: inherit
+    if: ${{ needs.plan.outputs.publish == 'true' && needs.validate.result == 'success' }}
+    uses: ptr727/ProjectTemplate/.github/workflows/build-release-task.yml@f3b4cc98654878e63ebfe21b68b8516b7bb46469 # 2.0.526
+    secrets:
+      NUGET_USERNAME: ${{ secrets.NUGET_USERNAME }}
     permissions:
       contents: write
       id-token: write
       actions: write
     with:
-      publish: true
+      ref: ${{ github.sha }}
+      branch: ${{ github.ref_name }}
       smoke: false
+      github: true
+      nuget: true
+      enable_nuget: true
+      enable_docker: false
+      enable_pypi: false
+      enable_dotnet_publish: false
+      nuget_project: ./Utilities/Utilities.csproj
