@@ -35,6 +35,8 @@ jobs:
     if: ${{ !github.event.deleted }}
     uses: ./.github/workflows/validate-task.yml
     secrets: inherit
+    permissions:
+      contents: read
 
   # Build and pack the library in its branch configuration to prove it ships, publishing and uploading nothing.
   # Setting smoke true hard-disables every publish path in the hub task regardless of the flags below it.

@@ -9,7 +9,7 @@ The clean-compile gate is the [`.NET Format`](./.vscode/tasks.json) VS Code task
 ```shell
 dotnet tool restore
 dotnet csharpier format --log-level=debug .
-dotnet build --verbosity detailed
+dotnet build "$PWD" --verbosity=diagnostic
 dotnet format style --verify-no-changes --severity=info --verbosity=detailed
 ```
 

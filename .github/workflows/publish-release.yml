@@ -54,6 +54,8 @@ jobs:
     if: ${{ needs.plan.outputs.publish == 'true' }}
     uses: ./.github/workflows/validate-task.yml
     secrets: inherit
+    permissions:
+      contents: read
 
   # Build, version, push, and release the triggering branch, main a stable release and develop a prerelease by dispatch.
   # This repository ships one target, the NuGet package, so every other target is disabled explicitly rather than left at its default.

@@ -119,7 +119,6 @@ Licensed under the [MIT License][license]\
 
 [actions-link]: https://github.com/ptr727/Utilities/actions
 [commits-link]: https://github.com/ptr727/Utilities/commits/main
-[coverage-link]: https://app.codecov.io/gh/ptr727/Utilities
 [discussions-link]: https://github.com/ptr727/Utilities/discussions
 [github-link]: https://github.com/ptr727/Utilities
 [issues-link]: https://github.com/ptr727/Utilities/issues
@@ -139,6 +138,7 @@ Licensed under the [MIT License][license]\
 
 [awesomeassertions-link]: https://awesomeassertions.org/
 [codecov-link]: https://about.codecov.io/
+[coverage-link]: https://app.codecov.io/gh/ptr727/Utilities
 [csharpier-link]: https://csharpier.com/
 [cspell-link]: https://cspell.org
 [dependabot-link]: https://github.com/dependabot
