@@ -30,11 +30,12 @@ docker run --rm -v "$PWD":/work -w /work rhysd/actionlint
 docker run --rm -v "$PWD":/check --workdir /check mstruebing/editorconfig-checker:latest
 ```
 
-**The repository gates run from a hub checkout**, because the prose and repository gates are hosted there rather than carried here. Both are read-only, and CI runs them on every pull request. Run them from this repository's root, since both resolve their target from the working directory, and point `hub` at a checkout of the fleet template fetched at `main`:
+**The repository gates run from a hub checkout**, because the prose and repository gates are hosted there rather than carried here. Both are read-only, and CI runs them on every pull request. Run them from this repository's root, since both resolve their target from the working directory. Point `hub` at a checkout of the fleet template fetched at `main`, and set `base` to the branch the work actually targets, since the prose gate reports only on lines changed against it and a promotion branch targets `main` rather than `develop`:
 
 ```shell
 hub=/path/to/ProjectTemplate
-python3 "$hub/.github/actions/prose-gate/prose_lint.py" --diff origin/develop
+base=develop
+python3 "$hub/.github/actions/prose-gate/prose_lint.py" --diff "origin/$base"
 python3 "$hub/.github/actions/repo-gate/repo_gate.py" --root .
 ```
 
