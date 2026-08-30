@@ -1,6 +1,15 @@
 {
   "version": "0.2",
   "language": "en-US",
+  "ignorePaths": [
+    "**/bin/**",
+    "**/obj/**",
+    ".artifacts/**",
+    ".git/**"
+  ],
+  "ignoreRegExpList": [
+    "/```mermaid[\\s\\S]*?```/g"
+  ],
   "words": [
     "csdevkit",
     "davidanson",
@@ -21,12 +30,5 @@
     "templating",
     "triggerbuild",
     "winget"
-  ],
-  "ignorePaths": [
-    "Data/**",
-    "**/bin/**",
-    "**/obj/**",
-    ".artifacts/**",
-    ".git/**"
   ]
 }
