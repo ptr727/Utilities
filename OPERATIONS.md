@@ -30,11 +30,12 @@ docker run --rm -v "$PWD":/work -w /work rhysd/actionlint
 docker run --rm -v "$PWD":/check --workdir /check mstruebing/editorconfig-checker:latest
 ```
 
-**The repository gates run from a hub checkout**, because the prose and repository gates are hosted there rather than carried here. Both are read-only, and CI runs them on every pull request:
+**The repository gates run from a hub checkout**, because the prose and repository gates are hosted there rather than carried here. Both are read-only, and CI runs them on every pull request. Run them from this repository's root, since both resolve their target from the working directory, and point `hub` at a checkout of the fleet template fetched at `main`:
 
 ```shell
-python3 <hub>/.github/actions/prose-gate/prose_lint.py --diff origin/develop
-python3 <hub>/.github/actions/repo-gate/repo_gate.py --root .
+hub=/path/to/ProjectTemplate
+python3 "$hub/.github/actions/prose-gate/prose_lint.py" --diff origin/develop
+python3 "$hub/.github/actions/repo-gate/repo_gate.py" --root .
 ```
 
 The prose gate covers the character set, comment wrapping, sentence style, and dead paths. The repository gate covers action SHA pinning and the line-ending policy, comparing `.editorconfig` against `.gitattributes` and resolving representative paths through `git check-attr`.
