@@ -1,7 +1,8 @@
 name: Test pull request action
 
 # CI for every pull request into main or develop, and for those two branches after a merge lands on them.
-# Both jobs below are reusable tasks reached by pin, so this file carries the trigger policy and the per-target wiring and nothing else.
+# The validate and smoke-build jobs are reusable tasks reached by pin, so their bodies are not here.
+# The changes filter and the aggregator are this repository's own, and the aggregator's name is bound by the branch ruleset.
 #
 # The push trigger is main and develop only, and it exists because the required checks are not strict.
 # A pull request that went green against an older base still merges, so nothing would otherwise ever validate the merge result.

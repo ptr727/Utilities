@@ -30,6 +30,22 @@ docker run --rm -v "$PWD":/work -w /work rhysd/actionlint
 docker run --rm -v "$PWD":/check --workdir /check mstruebing/editorconfig-checker:latest
 ```
 
+**The repository gates run from a hub checkout**, because the prose and repository gates are hosted there rather than carried here. Both are read-only, and CI runs them on every pull request:
+
+```shell
+python3 <hub>/.github/actions/prose-gate/prose_lint.py --diff origin/develop
+python3 <hub>/.github/actions/repo-gate/repo_gate.py --root .
+```
+
+The prose gate covers the character set, comment wrapping, sentence style, and dead paths. The repository gate covers action SHA pinning and the line-ending policy, comparing `.editorconfig` against `.gitattributes` and resolving representative paths through `git check-attr`.
+
+**Shell scripts are linted too**, which reaches [`.husky/pre-commit`](./.husky/pre-commit) here, the only tracked file with a shebang. Both run in CI and neither is in the .NET clean-compile, so a hook edit that passes every command above can still red the build:
+
+```shell
+docker run --rm -v "$PWD":/mnt --workdir /mnt koalaman/shellcheck:stable -- .husky/pre-commit
+docker run --rm -v "$PWD":/mnt --workdir /mnt mvdan/shfmt:latest -d -- .husky/pre-commit
+```
+
 **What CI cannot exercise.** The publisher's NuGet push and GitHub release run only on a real publish, so a pull request proves the package builds and packs and never proves it uploads. A change to the push or release path is verified by reading the run of the release it first ships in, not by a green pull request. The local commit hook is likewise a convenience that can be bypassed or never installed, so CI is the authoritative backstop and a locally green tree is not evidence a push will pass.
 
 ## Runbooks
