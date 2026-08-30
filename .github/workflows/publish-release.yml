@@ -1,22 +1,12 @@
 name: Publish project release action
 
-# Publisher for this repository.
-# A human pull request merge never auto-publishes.
-# A release is a deliberate dispatch, or a bot merge to main that touches a shipped input.
-# The release-gate decision, the build and version job graph, and the NuGet push are hub-hosted tasks this file reaches by pin.
-# What stays here is the trigger policy and the per-target wiring, per the fleet's release-chain adoption shape.
+# Publisher for this repository, wiring its one target, the NuGet package, into the reusable release chain.
+# A human pull request merge never auto-publishes, so a release is a deliberate dispatch or a bot merge to main that touches a shipped input.
+# The plan job computes that gate once, and only the codegen App or Dependabot actor qualifies on a push.
 #
-# The push trigger is main-only, and its inclusion list covers the library source, the version floor, the build configuration, and the package versions.
-# A code-affecting bot merge therefore auto-publishes a stable release.
-# The plan job computes the gate once, and only the codegen App or Dependabot actor qualifies on a push.
-# A human merge or a promotion to main skips, and the maintainer dispatches when release-ready.
-#
-# The list is inclusion-only, so a path is added when a new input starts affecting the shipped package.
+# The push path list is inclusion-only, so a path joins it when a new input starts affecting the shipped package.
 # Package versions are listed because a NuGet version cannot be re-pushed, so a dependency bump must republish to keep the declared dependencies current.
-# GitHub Actions bumps are not listed, since they do not ship in the package, so an Actions bump merges without republishing.
-#
-# A workflow_dispatch publishes the chosen branch, main a stable release and develop a prerelease.
-# The publish job needs the same validation the pull request runs, so nothing publishes that would fail it.
+# GitHub Actions bumps are absent for the same reason inverted, since they do not ship in the package.
 on:
   push:
     branches: [main]

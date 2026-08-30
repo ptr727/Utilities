@@ -1,23 +1,12 @@
 name: Test pull request action
 
-# CI for every branch.
-# The validate job is this repository's own task rather than the hub's.
-# The hub's unit-test step runs the VSTest coverage invocation, and this repository's tests run on native Microsoft.Testing.Platform, where that invocation exits with zero tests ran.
+# CI for every pull request into main or develop.
+# The validate job is this repository's own task rather than the reusable one every other repository calls.
+# That task's unit-test step runs the VSTest coverage invocation, and this repository's tests run on native Microsoft.Testing.Platform, where that invocation exits with zero tests ran.
 # See CODESTYLE.md "Utilities .NET Conventions" and OPERATIONS.md "Local Verification" for the invocation this repository uses instead.
-# The smoke build is the hub's release task with smoke true, so a pull request proves the package still builds and packs.
-#
-# The trigger is push rather than pull_request so the local validate task resolves from the pushed head.
-# A pull request that edits that task therefore tests its own copy.
-# The aggregator below is the ruleset required-status-check, produced here on the head SHA.
-#
-# There is deliberately no pull_request trigger.
-# A fork pull request cannot push to this repository, so it produces no run and cannot satisfy the required check.
-# A maintainer lands such a contribution on an in-repo branch, which does push and so validates, before merging.
-# This is the documented exception, per WORKFLOW.md.
 on:
-  # All branches, but not tags: release tags must not re-run CI.
-  push:
-    branches: ['**']
+  pull_request:
+    branches: [main, develop]
   workflow_dispatch:
 
 concurrency:
@@ -29,25 +18,48 @@ permissions: {}
 
 jobs:
 
-  # The deleted guard skips a branch-deletion push, whose github.sha is all zeros, so checkout would fail.
-  validate:
-    name: Validate job
-    if: ${{ !github.event.deleted }}
-    uses: ./.github/workflows/validate-task.yml
-    secrets: inherit
+  # This repository builds one release target, the NuGet package.
+  # The single filter entry excludes a workflow-only change from the smoke build rather than separating targets this repository does not have (D1.1, D1.4).
+  changes:
+    name: Detect changed targets job
+    runs-on: ubuntu-latest
     permissions:
       contents: read
+      pull-requests: read
+    outputs:
+      release: ${{ steps.filter.outputs.release }}
+    steps:
+      # Full history, since a workflow_dispatch run has no pull request to query and the filter diffs locally against the default branch instead.
+      # A shallow checkout could leave it with no common ancestor to diff from.
+      - name: Checkout code step
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Filter changed paths step
+        id: filter
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        with:
+          filters: |
+            release:
+              - '!.github/workflows/**'
 
-  # Build and pack the library in its branch configuration to prove it ships, publishing and uploading nothing.
-  # Setting smoke true hard-disables every publish path in the hub task regardless of the flags below it.
+  validate:
+    name: Validate job
+    uses: ./.github/workflows/validate-task.yml
+    permissions:
+      contents: read
+    secrets: inherit
+
+  # Build and pack the library in its branch configuration to prove it ships, publishing and uploading nothing (D1.3).
+  # Setting smoke true hard-disables every publish path in the release task regardless of the flags below it.
   smoke-build:
     name: Smoke build job
-    if: ${{ !github.event.deleted }}
+    needs: [changes]
+    if: needs.changes.outputs.release == 'true'
     uses: ptr727/ProjectTemplate/.github/workflows/build-release-task.yml@a3781210c622a61bdd3bbe31a6ac7a431c4a163d # 2.0.525
     permissions:
       contents: read
     with:
-      branch: ${{ github.ref_name }}
       smoke: true
       github: false
       nuget: false
@@ -56,23 +68,26 @@ jobs:
       enable_pypi: false
       enable_dotnet_publish: false
       nuget_project: ./Utilities/Utilities.csproj
+      # On a pull_request event github.ref_name is the pull request ref, for example 123/merge, never the target branch.
+      # The logical branch reads base_ref first and only falls back to ref_name on a non-pull-request trigger.
+      branch: ${{ github.base_ref || github.ref_name }}
 
   # Single required status check.
-  # Its name is the ruleset-bound context in the hub's repository-configuration payloads, so do not rename it without updating those in lockstep.
-  # It must succeed, rather than merely not fail.
+  # Its name is the ruleset-bound context, so do not rename it without updating the ruleset in lockstep.
+  # It treats a skipped smoke build, meaning an unchanged target, as a pass, and blocks on failure or cancelled (D1.5, D7.4).
   check-workflow-status:
     name: Check pull request workflow status job
     runs-on: ubuntu-latest
-    needs: [validate, smoke-build]
-    if: ${{ always() && !github.event.deleted }}
+    needs: [changes, validate, smoke-build]
+    if: always()
     steps:
       - name: Check workflow results step
         run: |
           set -Eeuo pipefail
-          for result in "validate:${{ needs.validate.result }}" "smoke-build:${{ needs.smoke-build.result }}"; do
+          for result in "changes:${{ needs.changes.result }}" "validate:${{ needs.validate.result }}" "smoke-build:${{ needs.smoke-build.result }}"; do
             name="${result%%:*}"
             value="${result#*:}"
-            if [[ "$value" != "success" ]]; then
+            if [[ "$value" != "success" && "$value" != "skipped" ]]; then
               echo "::error::Job '$name' did not succeed ($value)."
               exit 1
             fi
