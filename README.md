@@ -4,9 +4,9 @@ Some useful and not so useful C# .NET utility classes.
 
 ## Build and Distribution
 
-- **Source Code**: [GitHub][github-link] - Source code, issues, discussions, and CI/CD pipelines.
-- **Versioned Releases**: [GitHub Releases][releases-link] - Version tagged source code and build artifacts.
-- **NuGet Packages** [NuGet Packages][nuget-link] - .NET libraries published to NuGet.org.
+- **Source Code**: [GitHub][github-link] for source, issues, discussions, and CI/CD pipelines.
+- **Versioned Releases**: [GitHub Releases][releases-link] for version-tagged source archives and build artifacts.
+- **NuGet Packages**: [NuGet Packages][nuget-link] for the published `ptr727.Utilities` library.
 
 ### Build Status
 
@@ -36,6 +36,18 @@ Some useful and not so useful C# .NET utility classes.
 
 See [Release History](./HISTORY.md) for complete release notes and older versions.
 
+## Table of Contents
+
+- [Build and Distribution](#build-and-distribution)
+  - [Build Status](#build-status)
+  - [Releases](#releases)
+  - [Release Notes](#release-notes)
+- [Installation](#installation)
+- [Questions or Issues](#questions-or-issues)
+- [Contributing](#contributing)
+- [3rd Party Tools](#3rd-party-tools)
+- [License](#license)
+
 ## Installation
 
 ```shell
@@ -48,6 +60,11 @@ dotnet add package ptr727.Utilities
 using ptr727.Utilities;
 ```
 
+## Questions or Issues
+
+- Report a defect or request a feature on [GitHub Issues][issues-link].
+- Ask a question or start a conversation on [GitHub Discussions][discussions-link].
+
 ## Contributing
 
 - **Branching workflow**:
@@ -55,30 +72,83 @@ using ptr727.Utilities;
   - Feature branch -> `develop` via **squash merge** (develop is kept linear).
   - `develop` -> `main` via **merge commit** (preserves develop's commit list on main as the second parent of each release commit).
   - Dependabot targets `main` and `develop` in parallel via separate PRs.
-  - See [`WORKFLOW.md`](./WORKFLOW.md) for complete details.
+  - See [`WORKFLOW.md`][workflow] for complete details.
 - **Code style**:
-  - See [`CODESTYLE.md`](./CODESTYLE.md) and [`.editorconfig`](./.editorconfig) for C# code style rules.
-- **Repository setup**:
-  - See [`repo-config/README.md`](./repo-config/README.md) for repo configuration details.
+  - See [`CODESTYLE.md`][codestyle] and [`.editorconfig`][editorconfig] for C# code style rules.
+- **Local verification**:
+  - See [`OPERATIONS.md`][operations] for the clean-compile, test, and lint commands.
+- **Library design**:
+  - See [`ARCHITECTURE.md`][architecture] for the project layout and the public-API contracts.
+
+## 3rd Party Tools
+
+The third-party tools, libraries, and actions this project depends on.
+
+- [AwesomeAssertions][awesomeassertions-link]: Assertion library for .NET tests.
+- [Codecov][codecov-link]: Coverage reporting service.
+- [CSharpier][csharpier-link]: C# code formatter.
+- [cspell][cspell-link]: Spell checker.
+- [editorconfig-checker][editorconfig-checker-link]: Line-ending and whitespace linter.
+- [GitHub Actions][github-actions-link]: CI and automation runner.
+- [GitHub Dependabot][dependabot-link]: Dependency update bot.
+- [Husky.Net][husky-link]: Git hook manager for .NET.
+- [markdownlint-cli2][markdownlint-link]: Markdown linter.
+- [Microsoft.Extensions.Http.Resilience][resilience-link]: Resilience pipeline for HttpClient.
+- [Microsoft.Testing.Platform][testing-platform-link]: Test runner and extension host for .NET.
+- [Nerdbank.GitVersioning][nbgv-link]: Version computation from git height.
+- [Polly][polly-link]: Resilience and transient-fault-handling library for .NET.
+- [Serilog][serilog-link]: Structured logging library for .NET.
+- [xUnit.Net][xunit-link]: Test framework for .NET.
 
 ## License
 
-Licensed under the [MIT License][license-link]\
+Licensed under the [MIT License][license]\
 ![GitHub License][license-shield]
 
-<!-- Shields links -->
+<!-- Shields -->
+
+[coverage-shield]: https://img.shields.io/codecov/c/github/ptr727/Utilities?logo=codecov&label=Coverage
+[lastcommit-shield]: https://img.shields.io/github/last-commit/ptr727/Utilities?logo=github&label=Last%20Commit
+[license-shield]: https://img.shields.io/github/license/ptr727/Utilities?label=License
+[nugetreleaseversion-shield]: https://img.shields.io/nuget/v/ptr727.Utilities?logo=nuget&label=NuGet%20Release
+[prereleaseversion-shield]: https://img.shields.io/github/v/release/ptr727/Utilities?include_prereleases&filter=*-g*&label=GitHub%20Pre-Release&logo=github
+[releasebuildstatus-shield]: https://img.shields.io/github/actions/workflow/status/ptr727/Utilities/publish-release.yml?logo=github&label=Releases%20Build
+[releaseversion-shield]: https://img.shields.io/github/v/release/ptr727/Utilities?logo=github&label=GitHub%20Release
+
+<!-- Distribution -->
 
 [actions-link]: https://github.com/ptr727/Utilities/actions
 [commits-link]: https://github.com/ptr727/Utilities/commits/main
 [coverage-link]: https://app.codecov.io/gh/ptr727/Utilities
-[coverage-shield]: https://img.shields.io/codecov/c/github/ptr727/Utilities?logo=codecov&label=Coverage
+[discussions-link]: https://github.com/ptr727/Utilities/discussions
 [github-link]: https://github.com/ptr727/Utilities
-[lastcommit-shield]: https://img.shields.io/github/last-commit/ptr727/Utilities?logo=github&label=Last%20Commit
-[license-link]: ./LICENSE
-[license-shield]: https://img.shields.io/github/license/ptr727/Utilities?label=License
+[issues-link]: https://github.com/ptr727/Utilities/issues
 [nuget-link]: https://www.nuget.org/packages/ptr727.Utilities/
-[nugetreleaseversion-shield]: https://img.shields.io/nuget/v/ptr727.Utilities?logo=nuget&label=NuGet%20Release
-[prereleaseversion-shield]: https://img.shields.io/github/v/release/ptr727/Utilities?include_prereleases&filter=*-g*&label=GitHub%20Pre-Release&logo=github
-[releasebuildstatus-shield]: https://img.shields.io/github/actions/workflow/status/ptr727/Utilities/publish-release.yml?logo=github&label=Releases%20Build
 [releases-link]: https://github.com/ptr727/Utilities/releases
-[releaseversion-shield]: https://img.shields.io/github/v/release/ptr727/Utilities?logo=github&label=GitHub%20Release
+
+<!-- Repo -->
+
+[architecture]: ./ARCHITECTURE.md
+[codestyle]: ./CODESTYLE.md
+[editorconfig]: ./.editorconfig
+[license]: ./LICENSE
+[operations]: ./OPERATIONS.md
+[workflow]: ./WORKFLOW.md
+
+<!-- External -->
+
+[awesomeassertions-link]: https://awesomeassertions.org/
+[codecov-link]: https://about.codecov.io/
+[csharpier-link]: https://csharpier.com/
+[cspell-link]: https://cspell.org
+[dependabot-link]: https://github.com/dependabot
+[editorconfig-checker-link]: https://github.com/editorconfig-checker/editorconfig-checker
+[github-actions-link]: https://github.com/actions
+[husky-link]: https://alirezanet.github.io/Husky.Net/
+[markdownlint-link]: https://github.com/DavidAnson/markdownlint-cli2
+[nbgv-link]: https://github.com/dotnet/Nerdbank.GitVersioning
+[polly-link]: https://www.pollydocs.org/
+[resilience-link]: https://learn.microsoft.com/en-us/dotnet/core/resilience/http-resilience
+[serilog-link]: https://serilog.net/
+[testing-platform-link]: https://learn.microsoft.com/en-us/dotnet/core/testing/microsoft-testing-platform-intro
+[xunit-link]: https://xunit.net/

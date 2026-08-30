@@ -1,14 +1,19 @@
 name: Test pull request action
 
-# CI for every branch. Runs on push so the reusable tasks resolve from the pushed head: a PR that edits a
-# workflow or the build task tests its own copy. validate-task (unit tests + lint) and smoke-build run on
-# every push with no paths filter, so a reusable-workflow change is always exercised. The aggregator below
-# is the ruleset required-status-check, produced here on the head SHA. validate-task is the same gate the
-# publisher runs, so nothing merges or publishes that would fail it.
+# CI for every branch.
+# The validate job is this repository's own task rather than the hub's.
+# The hub's unit-test step runs the VSTest coverage invocation, and this repository's tests run on native Microsoft.Testing.Platform, where that invocation exits with zero tests ran.
+# See CODESTYLE.md "Utilities .NET Conventions" and OPERATIONS.md "Local Verification" for the invocation this repository uses instead.
+# The smoke build is the hub's release task with smoke true, so a pull request proves the package still builds and packs.
 #
-# There is deliberately no pull_request trigger: a fork PR cannot push to this repo, so it produces no run
-# and cannot satisfy the required check. A maintainer lands such a contribution on an in-repo branch (which
-# does push, and so validates) before merging. This is the documented exception (see WORKFLOW.md).
+# The trigger is push rather than pull_request so the local validate task resolves from the pushed head.
+# A pull request that edits that task therefore tests its own copy.
+# The aggregator below is the ruleset required-status-check, produced here on the head SHA.
+#
+# There is deliberately no pull_request trigger.
+# A fork pull request cannot push to this repository, so it produces no run and cannot satisfy the required check.
+# A maintainer lands such a contribution on an in-repo branch, which does push and so validates, before merging.
+# This is the documented exception, per WORKFLOW.md.
 on:
   # All branches, but not tags: release tags must not re-run CI.
   push:
@@ -19,29 +24,40 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# GITHUB_TOKEN gets no scope by default, and each job below grants only what it reads with.
+permissions: {}
+
 jobs:
 
-  # `!github.event.deleted` skips a branch-deletion push (github.sha is all-zeros, so checkout/build fails).
+  # The deleted guard skips a branch-deletion push, whose github.sha is all zeros, so checkout would fail.
   validate:
     name: Validate job
     if: ${{ !github.event.deleted }}
     uses: ./.github/workflows/validate-task.yml
     secrets: inherit
 
-  # Build and pack the library in its branch configuration to prove it ships, publishing nothing. Runs on
-  # every push, so a change to build-release-task is exercised head-resolved in the PR that makes it.
+  # Build and pack the library in its branch configuration to prove it ships, publishing and uploading nothing.
+  # Setting smoke true hard-disables every publish path in the hub task regardless of the flags below it.
   smoke-build:
     name: Smoke build job
     if: ${{ !github.event.deleted }}
-    uses: ./.github/workflows/build-release-task.yml
+    uses: ptr727/ProjectTemplate/.github/workflows/build-release-task.yml@a3781210c622a61bdd3bbe31a6ac7a431c4a163d # 2.0.525
     permissions:
       contents: read
     with:
+      branch: ${{ github.ref_name }}
       smoke: true
-      publish: false
+      github: false
+      nuget: false
+      enable_nuget: true
+      enable_docker: false
+      enable_pypi: false
+      enable_dotnet_publish: false
+      nuget_project: ./Utilities/Utilities.csproj
 
-  # Single required status check. Its name is the ruleset-bound context in repo-config/ruleset-*.json. Do
-  # not rename it without updating those in lockstep. Must succeed, not merely not-fail.
+  # Single required status check.
+  # Its name is the ruleset-bound context in the hub's repository-configuration payloads, so do not rename it without updating those in lockstep.
+  # It must succeed, rather than merely not fail.
   check-workflow-status:
     name: Check pull request workflow status job
     runs-on: ubuntu-latest
@@ -50,7 +66,7 @@ jobs:
     steps:
       - name: Check workflow results step
         run: |
-          set -euo pipefail
+          set -Eeuo pipefail
           for result in "validate:${{ needs.validate.result }}" "smoke-build:${{ needs.smoke-build.result }}"; do
             name="${result%%:*}"
             value="${result#*:}"

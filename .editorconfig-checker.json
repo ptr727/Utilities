@@ -1,4 +1,7 @@
 {
+  "Exclude": [
+    "^\\.artifacts/"
+  ],
   "Disable": {
     "Charset": true,
     "Indentation": true,

@@ -1,28 +1,31 @@
 <Solution>
     <Folder Name="/Solution Items/">
         <File Path=".editorconfig" />
+        <File Path=".editorconfig-checker.json" />
         <File Path=".gitattributes" />
-        <File Path=".github/dependabot.yml" />
         <File Path=".gitignore" />
         <File Path="AGENTS.md" />
+        <File Path="ARCHITECTURE.md" />
+        <File Path="AUDIT.md" />
+        <File Path="CLAUDE.md" />
+        <File Path="codecov.yml" />
         <File Path="CODESTYLE.md" />
         <File Path="cspell.json" />
         <File Path="Directory.Build.props" />
         <File Path="Directory.Packages.props" />
         <File Path="global.json" />
+        <File Path="GOVERNANCE.md" />
+        <File Path="HISTORY.md" />
+        <File Path="host-tools.json" />
         <File Path="LICENSE" />
+        <File Path="OPERATIONS.md" />
         <File Path="README.md" />
         <File Path="version.json" />
         <File Path="WORKFLOW.md" />
     </Folder>
-    <Folder Name="/Solution Items/Data/">
-        <File Path="Data/ISO-639-2_utf-8.txt" />
-        <File Path="Data/iso-639-3.tab" />
-        <File Path="Data/language-subtag-registry" />
-    </Folder>
     <Folder Name="/Solution Items/GitHub Actions/">
+        <File Path=".github/copilot-instructions.md" />
         <File Path=".github/dependabot.yml" />
-        <File Path=".github/workflows/build-release-task.yml" />
         <File Path=".github/workflows/merge-bot-pull-request.yml" />
         <File Path=".github/workflows/publish-release.yml" />
         <File Path=".github/workflows/test-pull-request.yml" />

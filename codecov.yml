@@ -1,9 +1,8 @@
 # Codecov configuration.
-#
-# Coverage is report-only for this repo: the upload step in
-# .github/workflows/validate-task.yml sets fail_ci_if_error: false, and the
-# patch status below is informational so a coverage delta never blocks a merge.
-# The project status stays as a visible (non-blocking-by-target) signal.
+# Codecov's coverage statuses are advisory: they report and trend coverage, never gating a PR.
+# - informational: true makes project and patch statuses advisory (always pass), so a coverage delta never blocks a PR.
+# - Distinct from the upload step's fail_ci_if_error: false, which only guards upload errors.
+# - A repo may override this to enforce a coverage threshold.
 coverage:
   status:
     project:
@@ -13,7 +12,7 @@ coverage:
       default:
         informational: true
 
-# The Sandbox is an example/demo console app, not the shipped ptr727.Utilities library,
-# and is intentionally not unit-tested.
+# Exclude code intentionally not unit-tested from the coverage denominator.
+# The Sandbox is an experimentation console app rather than the shipped ptr727.Utilities library.
 ignore:
   - "Sandbox/**"
