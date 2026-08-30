@@ -2,13 +2,16 @@
 [Rr]elease/
 [Bb]in/
 [Oo]bj/
-.artifacts
-
-# Test coverage output (e.g. dotnet test --results-directory ./coverage)
-[Cc]overage/
-TestResults/
 
 .idea
 .vs
-
+.artifacts
+.DS_Store
 *.user
+.claude
+
+# Coverage output (dotnet test --coverage, and the VSTest/coverlet layout)
+[Cc]overage/
+[Tt]est[Rr]esults/
+*.cobertura.xml
+*.coverage
