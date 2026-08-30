@@ -1,0 +1,4 @@
+{
+    "note": "This repository's own host-tool declaration, layered over the fleet declaration by the hub's host gate. It states what this repository needs beyond the fleet floors, so it is where a tool only this repository uses, or a floor only this repository requires, is declared. Layering is tighten-only: an entry here may add a tool, raise a floor, or turn an optional tool required, and may not lower a floor or turn a required tool optional, because that would retire a fleet check from inside the repository it protects. The tools list is empty because this repository needs nothing the fleet declaration does not already carry, and the file is present rather than absent so the declaration is somewhere a reader can find rather than somewhere they have to know to look.",
+    "tools": []
+}
