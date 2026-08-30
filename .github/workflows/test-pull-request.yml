@@ -1,9 +1,7 @@
 name: Test pull request action
 
 # CI for every pull request into main or develop, and for those two branches after a merge lands on them.
-# The validate job is this repository's own task rather than the reusable one every other repository calls.
-# That task's unit-test step runs the VSTest coverage invocation, and this repository's tests run on native Microsoft.Testing.Platform, where that invocation exits with zero tests ran.
-# See CODESTYLE.md "Utilities .NET Conventions" and OPERATIONS.md "Local Verification" for the invocation this repository uses instead.
+# Both jobs below are reusable tasks reached by pin, so this file carries the trigger policy and the per-target wiring and nothing else.
 #
 # The push trigger is main and develop only, and it exists because the required checks are not strict.
 # A pull request that went green against an older base still merges, so nothing would otherwise ever validate the merge result.
@@ -56,10 +54,11 @@ jobs:
 
   validate:
     name: Validate job
-    uses: ./.github/workflows/validate-task.yml
+    uses: ptr727/ProjectTemplate/.github/workflows/validate-task.yml@f3b4cc98654878e63ebfe21b68b8516b7bb46469 # 2.0.526
     permissions:
       contents: read
-    secrets: inherit
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   # Build and pack the library in its branch configuration to prove it ships, publishing and uploading nothing (D1.3).
   # Setting smoke true hard-disables every publish path in the release task regardless of the flags below it.
@@ -71,7 +70,7 @@ jobs:
     name: Smoke build job
     needs: [changes]
     if: needs.changes.outputs.release == 'true' || github.event_name == 'workflow_dispatch'
-    uses: ptr727/ProjectTemplate/.github/workflows/build-release-task.yml@a3781210c622a61bdd3bbe31a6ac7a431c4a163d # 2.0.525
+    uses: ptr727/ProjectTemplate/.github/workflows/build-release-task.yml@f3b4cc98654878e63ebfe21b68b8516b7bb46469 # 2.0.526
     permissions:
       contents: read
     with:

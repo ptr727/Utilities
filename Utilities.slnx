@@ -29,7 +29,6 @@
         <File Path=".github/workflows/merge-bot-pull-request.yml" />
         <File Path=".github/workflows/publish-release.yml" />
         <File Path=".github/workflows/test-pull-request.yml" />
-        <File Path=".github/workflows/validate-task.yml" />
     </Folder>
     <Project Path="Sandbox/Sandbox.csproj" />
     <Project Path="Utilities/Utilities.csproj" />

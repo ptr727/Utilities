@@ -13,13 +13,13 @@ dotnet build "$PWD" --verbosity=diagnostic
 dotnet format style --verify-no-changes --severity=info --verbosity=detailed
 ```
 
-**Tests run on native Microsoft.Testing.Platform.** The .NET 10 SDK dropped the VSTest bridge, so the VSTest coverage invocation the wider fleet uses fails here with a zero-tests-ran exit rather than degrading, and it is not an alternative to reach for. This is the invocation:
+**Tests run on native Microsoft.Testing.Platform.** The .NET 10 SDK dropped the VSTest bridge, so the older `--collect:"XPlat Code Coverage"` form exits with zero tests ran rather than degrading, and it is not an alternative to reach for. This is the invocation, and it is the one CI runs:
 
 ```shell
-dotnet test --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml --results-directory ./coverage
+dotnet test --coverage --coverage-output-format cobertura --results-directory ./coverage
 ```
 
-`--coverage-output` names the file explicitly because the default is a GUID basename that the Codecov action's file finder does not match, so the upload step would find nothing and still report success.
+The output filename is left at its default, a GUID basename, because pinning one name would give every test project in the solution the same path and the last to finish would overwrite the rest. CI prefixes each report with `coverage-` afterward, since the bare GUID name is one the Codecov finder does not match, and a report it cannot find is an upload that reports success having sent nothing.
 
 **The document linters run from their official images**, which is the portable path that needs no local Node or Go install. Each takes its globs directly, and a run reporting zero files checked scanned nothing and is not a pass:
 
