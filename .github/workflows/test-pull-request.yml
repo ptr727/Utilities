@@ -1,11 +1,18 @@
 name: Test pull request action
 
-# CI for every pull request into main or develop.
+# CI for every pull request into main or develop, and for those two branches after a merge lands on them.
 # The validate job is this repository's own task rather than the reusable one every other repository calls.
 # That task's unit-test step runs the VSTest coverage invocation, and this repository's tests run on native Microsoft.Testing.Platform, where that invocation exits with zero tests ran.
 # See CODESTYLE.md "Utilities .NET Conventions" and OPERATIONS.md "Local Verification" for the invocation this repository uses instead.
+#
+# The push trigger is main and develop only, and it exists because the required checks are not strict.
+# A pull request that went green against an older base still merges, so nothing would otherwise ever validate the merge result.
+# That case is routine here rather than theoretical, since Dependabot pull requests auto-merge on their own checks.
+# A feature branch matches no push entry, so a pull request still runs exactly once.
 on:
   pull_request:
+    branches: [main, develop]
+  push:
     branches: [main, develop]
   workflow_dispatch:
 
@@ -18,8 +25,9 @@ permissions: {}
 
 jobs:
 
-  # This repository builds one release target, the NuGet package.
-  # The single filter entry excludes a workflow-only change from the smoke build rather than separating targets this repository does not have (D1.1, D1.4).
+  # This repository builds one release target, the NuGet package (D1.1).
+  # The filter entries are the publisher's own shipped-input list, so the smoke gate and the publish gate agree on what affects the package by construction.
+  # Naming the inputs rather than excluding workflow files means a documentation-only or workflow-only pull request skips the smoke build rather than packing the library for nothing (D1.4, and scenarios S2 and S3).
   changes:
     name: Detect changed targets job
     runs-on: ubuntu-latest
@@ -29,7 +37,7 @@ jobs:
     outputs:
       release: ${{ steps.filter.outputs.release }}
     steps:
-      # Full history, since a workflow_dispatch run has no pull request to query and the filter diffs locally against the default branch instead.
+      # Full history, since a push or dispatch run has no pull request to query and the filter diffs locally instead.
       # A shallow checkout could leave it with no common ancestor to diff from.
       - name: Checkout code step
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -41,7 +49,10 @@ jobs:
         with:
           filters: |
             release:
-              - '!.github/workflows/**'
+              - 'Utilities/**'
+              - 'version.json'
+              - 'Directory.Build.props'
+              - 'Directory.Packages.props'
 
   validate:
     name: Validate job
@@ -52,10 +63,14 @@ jobs:
 
   # Build and pack the library in its branch configuration to prove it ships, publishing and uploading nothing (D1.3).
   # Setting smoke true hard-disables every publish path in the release task regardless of the flags below it.
+  #
+  # A dispatch runs the smoke build unconditionally.
+  # On that trigger the filter has no pull request to read and no distinct base to diff, so it reports only the tip commit's own paths.
+  # Gating on that would make a dispatch answer about the last commit rather than about the tree, and a dispatch is the only way to smoke-build a change the filter deliberately excludes.
   smoke-build:
     name: Smoke build job
     needs: [changes]
-    if: needs.changes.outputs.release == 'true'
+    if: needs.changes.outputs.release == 'true' || github.event_name == 'workflow_dispatch'
     uses: ptr727/ProjectTemplate/.github/workflows/build-release-task.yml@a3781210c622a61bdd3bbe31a6ac7a431c4a163d # 2.0.525
     permissions:
       contents: read
@@ -69,7 +84,7 @@ jobs:
       enable_dotnet_publish: false
       nuget_project: ./Utilities/Utilities.csproj
       # On a pull_request event github.ref_name is the pull request ref, for example 123/merge, never the target branch.
-      # The logical branch reads base_ref first and only falls back to ref_name on a non-pull-request trigger.
+      # The logical branch reads base_ref first and only falls back to ref_name on a push or dispatch.
       branch: ${{ github.base_ref || github.ref_name }}
 
   # Single required status check.
