@@ -46,9 +46,11 @@ public class StringHistory
     /// Appends a line to the history, respecting the configured limits.
     /// </summary>
     /// <remarks>
-    /// The line is not always stored. Where the head is full and <see cref="MaxLastLines"/> is
-    /// zero, the line is discarded rather than retained, and where both sides are full the oldest
-    /// retained tail line is evicted to make room for it.
+    /// The line is not always stored. Where <see cref="MaxLastLines"/> is zero and the head is not
+    /// taking it, the line is discarded rather than retained. Where the tail already holds
+    /// <see cref="MaxLastLines"/> lines, the oldest retained tail line is evicted to make room,
+    /// and that happens whether or not <see cref="MaxFirstLines"/> still has room, since the head
+    /// is closed once anything has been discarded and a later, larger limit does not reopen it.
     /// </remarks>
     /// <param name="value">The string value to append.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/> is null.</exception>
