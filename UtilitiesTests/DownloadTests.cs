@@ -36,7 +36,7 @@ public class DownloadTests
     }
 
     [Fact]
-    public void DownloadFile_WhenTheDownloadFails_ShouldLeaveTheDestination()
+    public void DownloadFile_WhenTheRequestFails_ShouldLeaveTheDestination()
     {
         using LoopbackServer server = new();
         string tempFile = Path.GetTempFileName();
@@ -48,7 +48,8 @@ public class DownloadTests
 
             _ = Download.DownloadFile(server.MissingUri, tempFile).Should().BeFalse();
 
-            // Truncating the destination at open time would leave an empty file here.
+            // The destination is opened only once the response is accepted.
+            // A request that never gets that far leaves it alone.
             _ = File.ReadAllText(tempFile).Should().Be(existing);
         }
         finally
@@ -70,10 +71,12 @@ public class DownloadTests
             "file.txt"
         );
 
-        // Naming the temporary file is part of the download.
-        // A destination that cannot hold one reports failure rather than throwing.
+        // A destination that cannot hold the file reports failure rather than throwing.
         _ = Download.DownloadFile(server.OkUri, missingDirectory).Should().BeFalse();
-        _ = File.Exists(missingDirectory).Should().BeFalse();
+
+        // The body is fetched before the destination is opened.
+        // The served request is what proves the failure came from the file rather than the request.
+        _ = server.RequestCount.Should().Be(1);
     }
 
     [Fact]

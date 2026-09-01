@@ -98,7 +98,7 @@ public class DownloadAsyncTests
     }
 
     [Fact]
-    public async Task DownloadFileAsync_WhenTheDownloadFails_ShouldLeaveTheDestination()
+    public async Task DownloadFileAsync_WhenTheRequestFails_ShouldLeaveTheDestination()
     {
         using LoopbackServer server = new();
         string tempFile = Path.GetTempFileName();
@@ -116,7 +116,8 @@ public class DownloadAsyncTests
 
             _ = result.Should().BeFalse();
 
-            // Truncating the destination at open time would leave an empty file here.
+            // The destination is opened only once the response is accepted.
+            // A request that never gets that far leaves it alone.
             string written = await File.ReadAllTextAsync(
                 tempFile,
                 TestContext.Current.CancellationToken
@@ -142,8 +143,7 @@ public class DownloadAsyncTests
             "file.txt"
         );
 
-        // Naming the temporary file is part of the download.
-        // A destination that cannot hold one reports failure rather than throwing.
+        // A destination that cannot hold the file reports failure rather than throwing.
         bool result = await Download.DownloadFileAsync(
             server.OkUri,
             missingDirectory,
@@ -151,7 +151,10 @@ public class DownloadAsyncTests
         );
 
         _ = result.Should().BeFalse();
-        _ = File.Exists(missingDirectory).Should().BeFalse();
+
+        // The body is fetched before the destination is opened.
+        // The served request is what proves the failure came from the file rather than the request.
+        _ = server.RequestCount.Should().Be(1);
     }
 
     [Fact]

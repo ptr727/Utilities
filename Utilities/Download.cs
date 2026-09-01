@@ -5,8 +5,6 @@ namespace ptr727.Utilities;
 /// </summary>
 public static class Download
 {
-    private const int TemporaryFileAttempts = 5;
-
     private static readonly Lazy<HttpClient> s_httpClient = new(() =>
         HttpClientFactory.CreateClient(
             new HttpClientOptions { Timeout = TimeSpan.FromSeconds(TimeoutSeconds) }
@@ -101,23 +99,22 @@ public static class Download
         ArgumentNullException.ThrowIfNull(uri);
         ArgumentNullException.ThrowIfNull(fileName);
 
-        // Named only once the file behind it exists, so a failure before that deletes nothing.
-        string tempFileName = string.Empty;
         try
         {
-            using (Stream httpStream = GetHttpClient().GetStreamAsync(uri).GetAwaiter().GetResult())
-            using (FileStream fileStream = CreateTemporaryFile(fileName, out tempFileName))
-            {
-                httpStream.CopyTo(fileStream);
-            }
+            using Stream httpStream = GetHttpClient().GetStreamAsync(uri).GetAwaiter().GetResult();
 
-            // The destination is replaced only once the whole body is on disk.
-            // A download that fails partway therefore leaves what was already there untouched.
-            File.Move(tempFileName, fileName, overwrite: true);
+            // Create truncates where OpenWrite left a longer file's tail behind the body.
+            // Rewriting in place keeps the destination's own permissions and links.
+            using FileStream fileStream = new(
+                fileName,
+                FileMode.Create,
+                FileAccess.Write,
+                FileShare.None
+            );
+            httpStream.CopyTo(fileStream);
         }
         catch (Exception e) when (Log.LogAndHandle(e))
         {
-            DeleteTemporary(tempFileName);
             return false;
         }
 
@@ -141,8 +138,6 @@ public static class Download
         ArgumentNullException.ThrowIfNull(uri);
         ArgumentNullException.ThrowIfNull(fileName);
 
-        // Named only once the file behind it exists, so a failure before that deletes nothing.
-        string tempFileName = string.Empty;
         try
         {
             Stream httpStream = await GetHttpClient()
@@ -150,7 +145,14 @@ public static class Download
                 .ConfigureAwait(false);
             await using (httpStream.ConfigureAwait(false))
             {
-                FileStream fileStream = CreateTemporaryFile(fileName, out tempFileName);
+                // Create truncates where OpenWrite left a longer file's tail behind the body.
+                // Rewriting in place keeps the destination's own permissions and links.
+                FileStream fileStream = new(
+                    fileName,
+                    FileMode.Create,
+                    FileAccess.Write,
+                    FileShare.None
+                );
                 await using (fileStream.ConfigureAwait(false))
                 {
                     await httpStream
@@ -158,14 +160,9 @@ public static class Download
                         .ConfigureAwait(false);
                 }
             }
-
-            // The destination is replaced only once the whole body is on disk.
-            // A download that fails partway therefore leaves what was already there untouched.
-            File.Move(tempFileName, fileName, overwrite: true);
         }
         catch (Exception e) when (Log.LogAndHandle(e))
         {
-            DeleteTemporary(tempFileName);
             return false;
         }
 
@@ -233,64 +230,6 @@ public static class Download
         Justification = "Exposed as a method so callers see they receive the shared, lazily-initialized HttpClient rather than a lightweight property value."
     )]
     public static HttpClient GetHttpClient() => s_httpClient.Value;
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Reliability",
-        "CA2000:Dispose objects before losing scope",
-        Justification = "Ownership of the stream transfers to the caller, which disposes it."
-    )]
-    private static FileStream CreateTemporaryFile(string fileName, out string tempFileName)
-    {
-        // The temporary file sits beside the destination, so the replacing move stays on one volume.
-        string? directory = Path.GetDirectoryName(fileName);
-        string parent = string.IsNullOrEmpty(directory) ? "." : directory;
-
-        for (int attempt = 0; ; attempt++)
-        {
-            string candidate = Path.Combine(parent, Path.GetRandomFileName());
-            try
-            {
-                // CreateNew rather than Create, so a name already taken is never overwritten.
-                FileStream stream = new(
-                    candidate,
-                    FileMode.CreateNew,
-                    FileAccess.Write,
-                    FileShare.None
-                );
-
-                // Assigned only here, so the caller deletes a path this call actually created.
-                tempFileName = candidate;
-                return stream;
-            }
-            catch (IOException) when (attempt < TemporaryFileAttempts && File.Exists(candidate))
-            {
-                // A random name collided, and another name is the whole remedy.
-                // Any other IO failure, a missing directory among them, is the caller's to report.
-            }
-        }
-    }
-
-    private static void DeleteTemporary(string fileName)
-    {
-        // Empty means no temporary file was created, so there is nothing of this call's to remove.
-        if (string.IsNullOrEmpty(fileName))
-        {
-            return;
-        }
-
-        try
-        {
-            File.Delete(fileName);
-        }
-        catch (IOException)
-        {
-            // A partial download left behind is not itself a download failure.
-        }
-        catch (UnauthorizedAccessException)
-        {
-            // Same, where the file or its directory denies the delete.
-        }
-    }
 
     /// <summary>
     /// Creates a URI with optional username and password credentials.
