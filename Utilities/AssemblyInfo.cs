@@ -4,12 +4,12 @@ using System.Reflection;
 namespace ptr727.Utilities;
 
 /// <summary>
-/// Provides AOT and trim safe access to assembly and consuming-application identity.
+/// Provides AOT-safe and trim-safe access to assembly and consuming-application identity.
 /// </summary>
 /// <remarks>
 /// Native AOT does not support <see cref="Assembly.GetExecutingAssembly"/> reliably
 /// (see https://github.com/dotnet/runtime/issues/94200). Use <see cref="For{T}"/> as the
-/// AOT safe substitute, passing a marker type from the assembly of interest. The
+/// AOT-safe substitute, passing a marker type from the assembly of interest. The
 /// application identity members make no assumptions about the hosting environment and
 /// fall back gracefully when the managed entry assembly is unavailable.
 /// </remarks>
@@ -21,7 +21,7 @@ public static class AssemblyInfo
     /// <typeparam name="T">A marker type from the assembly of interest.</typeparam>
     /// <returns>The assembly that defines <typeparamref name="T"/>.</returns>
     /// <remarks>
-    /// This is the AOT safe replacement for <see cref="Assembly.GetExecutingAssembly"/>:
+    /// This is the AOT-safe replacement for <see cref="Assembly.GetExecutingAssembly"/>:
     /// <c>typeof(T).Assembly</c> resolves at compile time with no stack walk or reflection.
     /// </remarks>
     public static Assembly For<T>() => typeof(T).Assembly;
@@ -49,7 +49,7 @@ public static class AssemblyInfo
     /// Gets the version of the consuming application (the entry assembly), or a fallback value.
     /// </summary>
     /// <remarks>
-    /// Uses the AOT safe <see cref="AssemblyName.Version"/> rather than reflecting over
+    /// Uses the AOT-safe <see cref="AssemblyName.Version"/> rather than reflecting over
     /// informational-version attributes, which the trimmer or AOT compiler may strip.
     /// </remarks>
     public static string AppVersion =>
