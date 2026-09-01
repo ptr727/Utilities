@@ -8,14 +8,16 @@ namespace ptr727.Utilities;
 /// while discarding intermediate content when limits are exceeded. Zero on a single side retains no
 /// lines on that side, and zero on both is the one unrestricted mode, where every appended line is
 /// retained. A limit assigned after lines have been appended re-partitions what is already
-/// stored, so the history never holds more than the limits then in force allow. Re-partitioning
-/// only ever discards: once a line has been dropped the head is closed, and a later, larger
-/// <see cref="MaxFirstLines"/> raises the ceiling without recovering or repopulating it.
+/// stored, so the history never holds more than the limits then in force allow, except that an
+/// assignment leaving both limits at zero enters the unrestricted mode and discards nothing.
+/// Re-partitioning only ever discards: once a line has been dropped the head is closed, and a
+/// later, larger <see cref="MaxFirstLines"/> raises the ceiling without refilling the head.
 /// </remarks>
 public class StringHistory
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="StringHistory"/> class with no limits.
+    /// Initializes a new instance of the <see cref="StringHistory"/> class in the unrestricted
+    /// mode, both limits zero, where every appended line is retained.
     /// </summary>
     public StringHistory() => StringList = _stringList.AsReadOnly();
 
@@ -43,6 +45,11 @@ public class StringHistory
     /// <summary>
     /// Appends a line to the history, respecting the configured limits.
     /// </summary>
+    /// <remarks>
+    /// The line is not always stored. Where the head is full and <see cref="MaxLastLines"/> is
+    /// zero, the line is discarded rather than retained, and where both sides are full the oldest
+    /// retained tail line is evicted to make room for it.
+    /// </remarks>
     /// <param name="value">The string value to append.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/> is null.</exception>
     public void AppendLine(string value)
@@ -100,9 +107,13 @@ public class StringHistory
     }
 
     /// <summary>
-    /// Returns all stored lines as a single string with line breaks.
+    /// Returns all stored lines as a single string, each line followed by
+    /// <see cref="Environment.NewLine"/>.
     /// </summary>
-    /// <returns>A string containing all stored lines.</returns>
+    /// <returns>
+    /// The stored lines, with a trailing newline after the last, or an empty string where nothing
+    /// is stored. The trailing newline means this is not a plain join of the lines.
+    /// </returns>
     public override string ToString() =>
         string.Join(Environment.NewLine, _stringList)
         + (_stringList.Count > 0 ? Environment.NewLine : string.Empty);
@@ -123,7 +134,9 @@ public class StringHistory
     /// safe. This method assigns both limits before re-partitioning at all, which is what removes
     /// the dependence on order.
     /// Both limits at zero is the one unrestricted mode, so passing zero twice retains every stored
-    /// line and every later one rather than discarding them.
+    /// line and every later one rather than discarding them. This applies both limits at once and
+    /// never recovers a line already dropped, so widening a limit raises the ceiling without
+    /// refilling the head from what is still stored.
     /// </remarks>
     public void SetLimits(int maxFirstLines, int maxLastLines)
     {
@@ -145,6 +158,9 @@ public class StringHistory
     /// <remarks>
     /// Assigning this re-partitions the lines already stored against the limits then in force,
     /// which discards whatever the new limits exclude and never recovers a line already dropped.
+    /// An assignment leaving both limits at zero is the exception, entering the unrestricted mode
+    /// and discarding nothing, so setting this to zero while the other limit is already zero
+    /// removes the bound rather than emptying the history.
     /// Setting both limits therefore applies them one at a time, and the first assignment can
     /// discard lines the second would have retained. Use <see cref="SetLimits"/> to apply both at
     /// once, or the two-argument constructor when both limits are known up front.
@@ -168,6 +184,9 @@ public class StringHistory
     /// <remarks>
     /// Assigning this re-partitions the lines already stored against the limits then in force,
     /// which discards whatever the new limits exclude and never recovers a line already dropped.
+    /// An assignment leaving both limits at zero is the exception, entering the unrestricted mode
+    /// and discarding nothing, so setting this to zero while the other limit is already zero
+    /// removes the bound rather than emptying the history.
     /// Setting both limits therefore applies them one at a time, and the first assignment can
     /// discard lines the second would have retained. Use <see cref="SetLimits"/> to apply both at
     /// once, or the two-argument constructor when both limits are known up front.
@@ -187,6 +206,13 @@ public class StringHistory
     /// <summary>
     /// Gets the read-only collection of stored strings.
     /// </summary>
+    /// <remarks>
+    /// This is a live view over the history rather than a snapshot, and the same instance is
+    /// returned every time, so what a caller holds changes as lines are appended or discarded.
+    /// Copy it before enumerating alongside an <see cref="AppendLine"/>, which would otherwise
+    /// throw <see cref="InvalidOperationException"/> as any list enumeration does when the list
+    /// changes under it. This type carries no thread-safety guarantee.
+    /// </remarks>
     public ReadOnlyCollection<string> StringList { get; }
 
     /// <summary>
