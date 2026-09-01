@@ -20,5 +20,8 @@ public class DownloadTests
             .GetContentInfo(server.MissingUri, out long _, out DateTime _)
             .Should()
             .BeFalse();
+
+        // A refused connection returns false too, so the failure is the route's only if it ran.
+        _ = server.RequestCount.Should().Be(1);
     }
 }

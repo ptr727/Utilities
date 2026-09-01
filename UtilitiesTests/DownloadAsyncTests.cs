@@ -70,6 +70,31 @@ public class DownloadAsyncTests
         );
 
         _ = success.Should().BeFalse();
+
+        // A refused connection returns false too, so the failure is the route's only if it ran.
+        _ = server.RequestCount.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task DownloadAsync_ConcurrentRequests_ShouldBothComplete()
+    {
+        using LoopbackServer server = new();
+
+        // One request must never queue behind another on the server's accept loop.
+        Task<(bool Success, string Value)> first = Download.DownloadStringAsync(
+            server.OkUri,
+            TestContext.Current.CancellationToken
+        );
+        Task<(bool Success, string Value)> second = Download.DownloadStringAsync(
+            server.OkUri,
+            TestContext.Current.CancellationToken
+        );
+
+        (bool Success, string Value)[] results = await Task.WhenAll(first, second)
+            .WaitAsync(s_signalTimeout, TestContext.Current.CancellationToken);
+
+        _ = results.Should().AllSatisfy(result => result.Success.Should().BeTrue());
+        _ = server.RequestCount.Should().Be(2);
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -90,7 +115,10 @@ public class DownloadAsyncTests
 
         // Cancelling only once the server holds the request proves the route was reached.
         // Any other failure would produce the same false result and prove nothing.
-        await server.SlowRequestStarted.WaitAsync(TestContext.Current.CancellationToken);
+        await server.SlowRequestStarted.WaitAsync(
+            s_signalTimeout,
+            TestContext.Current.CancellationToken
+        );
         long startedAt = Stopwatch.GetTimestamp();
         await cts.CancelAsync();
 
@@ -113,6 +141,9 @@ public class DownloadAsyncTests
             .Should()
             .ThrowAsync<ArgumentNullException>();
     }
+
+    // A signal that never arrives is a defect to report, not a test left hanging in CI.
+    private static readonly TimeSpan s_signalTimeout = TimeSpan.FromSeconds(30);
 
     [Fact]
     public void CreateUri_WithCredentials_ShouldIncludeCredentials()

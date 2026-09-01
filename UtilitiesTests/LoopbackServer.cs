@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -75,6 +76,12 @@ internal sealed class LoopbackServer : IDisposable
     public Task SlowRequestStarted => _slowRequestStarted.Task;
 
     /// <summary>
+    /// Gets the number of requests the server has routed, so a test asserting a failure can prove
+    /// the request reached the route rather than failing before it.
+    /// </summary>
+    public int RequestCount => Volatile.Read(ref _requestCount);
+
+    /// <summary>
     /// Stops the listener and waits for the accept loop to finish.
     /// </summary>
     public void Dispose()
@@ -90,9 +97,10 @@ internal sealed class LoopbackServer : IDisposable
         _listener.Dispose();
 
         // Teardown never fails a test whose assertions already passed.
-        // The accept loop is waited for without rethrowing its result, and the wait is bounded.
-        _ = Task.WhenAny(_acceptTask, Task.Delay(s_disposeTimeout)).GetAwaiter().GetResult();
-        _ = _acceptTask.Exception;
+        // The loops are waited for without rethrowing their results, and the wait is bounded.
+        Task served = Task.WhenAll([_acceptTask, .. _connections.Keys]);
+        _ = Task.WhenAny(served, Task.Delay(s_disposeTimeout)).GetAwaiter().GetResult();
+        _ = served.Exception;
 
         _cancellation.Dispose();
     }
@@ -121,10 +129,14 @@ internal sealed class LoopbackServer : IDisposable
                 return;
             }
 
-            using (client)
+            Task connection = Task.Run(async () =>
             {
-                await RespondAsync(client).ConfigureAwait(false);
-            }
+                using (client)
+                {
+                    await RespondAsync(client).ConfigureAwait(false);
+                }
+            });
+            _ = _connections.TryAdd(connection, 0);
         }
     }
 
@@ -139,6 +151,7 @@ internal sealed class LoopbackServer : IDisposable
         {
             NetworkStream stream = client.GetStream();
             string target = await ReadRequestTargetAsync(stream).ConfigureAwait(false);
+            _ = Interlocked.Increment(ref _requestCount);
 
             switch (target)
             {
@@ -236,5 +249,7 @@ internal sealed class LoopbackServer : IDisposable
         TaskCreationOptions.RunContinuationsAsynchronously
     );
     private readonly Task _acceptTask;
+    private readonly ConcurrentDictionary<Task, byte> _connections = new();
+    private int _requestCount;
     private bool _disposed;
 }

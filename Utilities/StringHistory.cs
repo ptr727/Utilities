@@ -48,17 +48,27 @@ public class StringHistory
         ArgumentNullException.ThrowIfNull(value);
 
         // No restrictions
+        // The line extends the tail once anything has been discarded, and the head otherwise.
+        // The counters then keep describing the stored list for a later limit change to read.
         if (MaxFirstLines == 0 && MaxLastLines == 0)
         {
             _stringList.Add(value);
-            _firstLines++;
+            if (_discarded)
+            {
+                _lastLines++;
+            }
+            else
+            {
+                _firstLines++;
+            }
+
             return;
         }
 
         // Restrict first lines
         // The head only grows while nothing has been discarded.
-        // A line appended once a tail exists is stored behind it and is not a first line.
-        if (!_discarded && _firstLines < MaxFirstLines)
+        // A line appended after a discard is not a first line, whatever the limit now allows.
+        if (!_discarded && _lastLines == 0 && _firstLines < MaxFirstLines)
         {
             _stringList.Add(value);
             _firstLines++;
@@ -152,33 +162,29 @@ public class StringHistory
     /// </summary>
     private void Repartition()
     {
-        // Both limits at zero is the unrestricted mode, where every line is retained.
-        // Nothing is discarded there, so the whole list is head and a later limit slices it freely.
+        // Both limits at zero is the unrestricted mode, which retains every line.
+        // Nothing is discarded here, so the counters already describe the stored list.
         if (MaxFirstLines == 0 && MaxLastLines == 0)
         {
-            _firstLines = _stringList.Count;
-            _lastLines = 0;
             return;
         }
 
         int storedCount = _stringList.Count;
-        int firstLines;
+
+        // The head is only ever the stream's own first lines.
+        // Once a line has been discarded the head is trimmed but never refilled.
+        // Before any discard the stored lines are the whole stream, so both sides cut from them.
+        int firstLines = Math.Min(MaxFirstLines, _discarded ? _firstLines : storedCount);
         int lastLines;
 
         if (_discarded)
         {
-            // A gap already separates the head from the tail, so the head can only shrink.
-            // Promoting a tail line into it would pin a line that is not among the first.
-            firstLines = Math.Min(MaxFirstLines, _firstLines);
             lastLines = Math.Min(MaxLastLines, _lastLines);
             _stringList.RemoveRange(firstLines, _firstLines - firstLines);
             _stringList.RemoveRange(firstLines, _lastLines - lastLines);
         }
         else
         {
-            // Nothing has been discarded, so the stored lines are the whole stream so far.
-            // The new head and the new tail are both cut from them.
-            firstLines = Math.Min(MaxFirstLines, storedCount);
             lastLines = Math.Min(MaxLastLines, storedCount - firstLines);
             _stringList.RemoveRange(firstLines, storedCount - firstLines - lastLines);
         }

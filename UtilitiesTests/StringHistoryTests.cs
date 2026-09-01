@@ -424,4 +424,66 @@ public class StringHistoryTests
         _ = history.StringList.Count.Should().Be(3);
         _ = history.StringList[2].Should().Be("Line 2");
     }
+
+    [Fact]
+    public void MaxFirstLines_RaisedOnATailOnlyHistory_ShouldNotAdoptTailLinesAsFirstLines()
+    {
+        StringHistory history = new(maxFirstLines: 0, maxLastLines: 5);
+        for (int i = 0; i < 6; i++)
+        {
+            history.AppendLine($"Line {i}");
+        }
+
+        // Line 0 is already gone, so no first line survives for a head to be built from.
+        // The retained lines stay the tail, rolling as before.
+        history.MaxFirstLines = 5;
+        history.AppendLine("Line 6");
+
+        _ = history.StringList.Count.Should().Be(5);
+        _ = history.StringList[0].Should().Be("Line 2");
+        _ = history.StringList[4].Should().Be("Line 6");
+    }
+
+    [Fact]
+    public void UnrestrictedAfterDiscard_ThenLimited_ShouldKeepTheMostRecentLines()
+    {
+        StringHistory history = new(maxFirstLines: 2, maxLastLines: 2);
+        for (int i = 0; i < 10; i++)
+        {
+            history.AppendLine($"Line {i}");
+        }
+
+        history.MaxFirstLines = 0;
+        history.MaxLastLines = 0;
+        history.AppendLine("Line 10");
+        history.AppendLine("Line 11");
+
+        // The lines added while unrestricted extend the tail.
+        // Limiting the tail again keeps them rather than the older ones the earlier limits kept.
+        history.MaxLastLines = 2;
+
+        _ = history.StringList.Count.Should().Be(2);
+        _ = history.StringList[0].Should().Be("Line 10");
+        _ = history.StringList[1].Should().Be("Line 11");
+    }
+
+    [Fact]
+    public void ClearingMaxFirstLines_ThenLimitingItAgain_ShouldNotRebuildTheHead()
+    {
+        StringHistory history = new(maxFirstLines: 2, maxLastLines: 2);
+        for (int i = 0; i < 10; i++)
+        {
+            history.AppendLine($"Line {i}");
+        }
+
+        // Clearing MaxFirstLines retains no first lines, so it discards the head it had.
+        history.MaxFirstLines = 0;
+        history.MaxLastLines = 0;
+        history.AppendLine("Line 10");
+
+        // No first line survives for a head, and MaxLastLines is 0 by now, so neither side keeps.
+        history.MaxFirstLines = 2;
+
+        _ = history.StringList.Should().BeEmpty();
+    }
 }
