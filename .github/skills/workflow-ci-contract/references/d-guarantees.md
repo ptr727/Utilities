@@ -32,13 +32,13 @@ Each guarantee is a MUST from `WORKFLOW.md` section 4, stated as input to output
 - **D4.2** `target_commitish` is the built commit's SHA (NBGV `GitCommitId`), never a branch name and never `github.sha`.
 - **D4.3** Every release is a tag plus source zip, README, and LICENSE, file targets attach `release-asset-*`, and a no-file-target caller passes `expect_release_assets: false` or the release-create step fails on unmatched files.
 - **D4.4** No-op republish: an unchanged version re-pushes nothing, the release-create skips when the tag exists (refreshed only on `workflow_dispatch`), registries dedupe server-side, and Docker always re-pushes by design.
-- **D4.5** A failed build blocks every publish target: `github-release` needs every build, the terminal registry pusher guards `!failure() && !cancelled()`, so nothing partial ships.
+- **D4.5** A failed build blocks every publish target: `github-release` needs every build, the terminal registry pusher guards `!failure() && !cancelled()`, and a package target's separate `publish-<target>` job `needs:` the release-task call, so nothing partial ships.
 - **D4.6** A deploy check asserts which release and which environment answer, waiting for convergence to a bounded timeout, with an unreachable host reported distinctly from an HTTP status.
 
 ## D5: Resource Cleanup
 
 - **D5.1** A cross-job transfer artifact is deleted at its point of consumption. An in-run intermediate may rely on the retention backstop.
-- **D5.2** The delete runs under the same condition as its consumer, so a no-op re-run skips the release-asset delete while the PyPI build-artifact delete still runs.
+- **D5.2** The delete runs under the same condition as its consumer, so a no-op re-run skips the release-asset delete while the `nuget-build-*` and `pypi-build-*` deletes still run.
 - **D5.3** Cleanup is best-effort (`continue-on-error`, tolerate a failed listing, delete all matching ids).
 - **D5.4** Every `upload-artifact` sets `retention-days: 1`.
 - **D5.5** Never blanket-delete the run's artifacts, which destroys diagnostics and auto-emitted build records.
@@ -49,12 +49,12 @@ Each guarantee is a MUST from `WORKFLOW.md` section 4, stated as input to output
 - **D6.1** The release job downloads by `pattern:`/`merge-multiple:`, never `artifact-ids:`, canonical for single-target repos too.
 - **D6.2** Branch-derived config reads `inputs.branch`, never `github.ref_name`.
 - **D6.3** Artifact names are branch-suffixed.
-- **D6.4** A target add or drop updates the whole surface together: `enable_<target>` input, `build-<target>` job, `github-release` `needs:` entry, paths-filter entry and output, and the `smoke-build` enable-forward.
+- **D6.4** A target add or drop updates the whole surface together: `enable_<target>` input, `build-<target>` job, its `github-release` and `build-docker` `needs:` entries, paths-filter entry and output, the `smoke-build` enable-forward, and a package target's separate `publish-<target>` job.
 
 ## D7: Concurrency, Permissions, Safety
 
 - **D7.1** The publisher serializes: global ref-independent concurrency group, `cancel-in-progress: false`.
-- **D7.2** Every reusable job declares valid `permissions:` (validated before `if:`), a callee's extra scope granted by the caller.
+- **D7.2** A reusable job declares `permissions:` only where every caller grants that scope at startup (the block is validated before `if:`), and otherwise declares none and runs under the calling job's grant, a callee's extra scope granted by the caller at the one entry point needing it.
 - **D7.3** Boolean inputs are declared in both trigger blocks and compared against both forms.
 - **D7.4** Optional-dependency chaining allowlists `success`/`skipped` explicitly.
 
