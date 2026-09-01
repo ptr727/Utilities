@@ -222,7 +222,10 @@ public class StringHistoryTests
     public void AppendLine_UnicodeCharacters_ShouldPreserve()
     {
         StringHistory history = new();
-        string unicodeLine = "Unicode: 你好世界 🌍🌎🌏";
+
+        // Escaped rather than literal, so the source stays ASCII while the string does not.
+        // Four CJK ideographs and three astral-plane emoji, the latter being surrogate pairs.
+        string unicodeLine = "Unicode: \u4F60\u597D\u4E16\u754C \U0001F30D\U0001F30E\U0001F30F";
 
         history.AppendLine(unicodeLine);
 
