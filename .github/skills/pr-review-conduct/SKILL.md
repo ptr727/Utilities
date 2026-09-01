@@ -78,13 +78,16 @@ that says only "open a PR" is not such an instruction.
 Run every `scripts/pr_review.py` command below from a hub checkout. The script is hosted there and
 is never carried into a downstream repository.
 
-Run `local-strict-review` against the branch's current diff before step 1's push, and again before any fix push under outcome 1 below.
+Run `local-strict-review` against the branch's current diff before step 1's push, and again before any fix push under outcome 1 below. Follow that skill's own ordering and record each pass, which is what a capture point reads, the hub's own `pre-push` hook being one and a repository having none until such a hook is carried to it. A push that hook refuses, where one is present, is the gate working rather than an obstacle to route around, and that skill's refusal table says what each refusal means and what clears it.
 
 1. Push changes to the PR branch and open the pull request when it does not exist.
-2. Run `scripts/pr_review.py status` once in the foreground and read its output.
+2. Run `scripts/pr_review.py status <number> --repo <owner>/<repo>` once in the foreground and read its output.
 3. Re-request a review for the **current head SHA**. Auto-trigger is unreliable, so request it
-   explicitly (mechanics in the Copilot runbook). The UI is a fallback only.
-4. Run a bounded `scripts/pr_review.py wait` in a background process and read its terminal output.
+   explicitly (mechanics in the Copilot runbook, `.github/copilot-instructions.md`), which step 4's
+   `wait` also does on its own, though it skips the request where a review already covers the head,
+   where the answer came outside a formal review, and where it detects drift. The UI is a fallback
+   only.
+4. Run a bounded `scripts/pr_review.py wait <number> --repo <owner>/<repo>` in a background process and read its terminal output.
    A completed review raising **no findings** is a valid terminal outcome, so do not re-trigger it
    or read silence as a missing review. A review whose body says it declined to review is the one
    exception, and it is terminal the other way. Nothing follows it, and re-requesting the same
@@ -94,7 +97,7 @@ Run `local-strict-review` against the branch's current diff before step 1's push
 7. Reply to each thread and resolve what was addressed.
 8. Re-run the loop after every fix push until the checks are green and no finding remains open.
 
-The review effort setting is user-controlled. The workflow never selects or changes it. `status` reports `Lite`, `Balanced`, or `Max` when the completed review exposes that metadata, and distinguishes an inherited `Default (<level>)` from an explicit choice. Missing effort metadata reports `unknown` and does not change coverage or completion. A pending effort-labeled request can complete without a `copilot_work_started` timeline event, so absence of that event never proves the request is abandoned. The bounded timeout reports `PENDING` when no review or terminal answer arrives. After a timeout with `requested=yes`, rerun `wait` for another bounded interval by default because the request may still be active. If the maintainer directs a retry, remove Copilot in the pull request UI, add it again, and rerun `wait`. This recovery replaces only the review request and never changes the effort setting.
+The review effort setting is user-controlled. The workflow never selects or changes it. `status` reports `effort=lite`, `effort=balanced`, or `effort=max` when the completed review exposes that metadata, lowercased, and names an inherited setting apart from a chosen one in a separate `effort_source=default|explicit` field, both reading `unknown` when no effort line parses. Missing effort metadata reports `unknown` and does not change coverage or completion. A pending effort-labeled request can complete without a `copilot_work_started` timeline event, so absence of that event never proves the request is abandoned. The bounded timeout reports `PENDING` when no review or terminal answer arrives. After a timeout with `requested=yes`, rerun `wait` for another bounded interval by default because the request may still be active. If the maintainer directs a retry, remove Copilot in the pull request UI, add it again, and rerun `wait`. This recovery replaces only the review request and never changes the effort setting.
 
 Drive to green, a review confirmed on the latest head SHA and every actionable finding closed,
 then apply the Merge Gate above. **Never exit the loop early.** A round count is not a stopping
@@ -105,8 +108,10 @@ After an authorized merge, run the `repo-worktree` post-merge cleanup procedure 
 
 ## Every finding ends in one of five outcomes
 
-1. **Real, so fix it.** Run `local-strict-review` against the branch's current diff before pushing
-   the fix, then reply with the fixing commit SHA. For a finding on platform-specific code
+1. **Real, so fix it.** Take the fix through `local-strict-review` the same way step 1's push
+   went, then reply with the fixing commit SHA. A branch already reviewed once
+   has not been reviewed for the fix, which is the round this gets dropped on and the churn
+   `local-strict-review` exists to stop. For a finding on platform-specific code
    (PowerShell, a macOS- or WSL-only path), "fixed" means executed on that platform, per
    `agent-conduct` "Before Claiming Done": a fix reasoned out by analogy to a tested equivalent
    elsewhere is not yet fixed, and the reply says so rather than claiming the SHA closes it.
@@ -156,7 +161,7 @@ reviewer's own words to identify it), give one bold verdict per finding (`Fixed 
 `Disproven`, or `No change needed`), state the `(N)` count the block gave so answers can be
 checked against findings, and link the review round. **Read every round, not only the head.** A
 suppressed finding does not retire when a later push supersedes it, it just stops showing up in a
-head-scoped query while still unanswered. Post the answer with `scripts/pr_review.py comment`
+head-scoped query while still unanswered. Post the answer with `scripts/pr_review.py comment <number> --repo <owner>/<repo> --body <text>`
 from a hub checkout. Do not use a provider connector or reconstruct the GitHub mutation.
 
 ## Escalate to the maintainer when
@@ -170,9 +175,12 @@ from a hub checkout. Do not use a provider connector or reconstruct the GitHub m
 ## Mechanics Live Elsewhere
 
 This skill is the provider-agnostic contract. Use `scripts/pr_review.py` from a hub checkout for
-the GitHub-specific API operations. `status` reports coverage, threads, body-only findings, and
+the GitHub-specific API operations, each taking `<number> --repo <owner>/<repo>`. `claims` checks the pull
+request description against the branch it describes, catching a commit or `uses:` ref the head no
+longer carries. `status` reports coverage, threads, body-only findings, and
 shapes in one call. `wait` requests and polls in-process. `comment` posts a PR-conversation
-answer after it reads the PR node ID. `reply` resolves a thread by matching the finding's own
-words instead of a line number a fix push can move. The repository's
+answer after it reads the PR node ID. `reply` answers a thread by matching the finding's own
+words instead of a line number a fix push can move, and resolves it only when `--resolve` is
+given. The repository's
 `.github/copilot-instructions.md` bootstraps Copilot into the `code-review` skill and its stable
 coverage marker. Do not reconstruct the API operations by hand.

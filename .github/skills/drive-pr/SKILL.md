@@ -54,28 +54,40 @@ promotion PR once the fix lands, is the early exit this skill exists to prevent.
 
 ## The Drive Loop
 
-1. Isolate into a worktree per repo-worktree, based on develop, before the first edit.
-2. Run `local-strict-review` against the branch's current diff, then push the branch and open
-   the feature -> develop PR if it does not exist yet.
+1. Isolate into a worktree per repo-worktree, based on the branch that skill's base rule names, develop unless the task is explicitly about main-only content, before the first edit.
+2. Commit the work, then run `local-strict-review` and record its pass in the order that skill
+   gives, its diff receipt following the commit, and its carried-content record instead preceding
+   the commit where the change moves a carried canonical unit in the repository that authors one,
+   because that ledger is tracked. Then push the branch and open the feature -> develop PR if it
+   does not exist yet. A push refused by a `.husky/pre-push` hook, which the hub carries and a
+   repository has only if it adds one, is that gate working rather than an
+   obstacle to route around, and that
+   skill's refusal table says what each refusal means and what clears it.
 3. Drive pr-review-conduct's review loop on it to the Merge Gate, disposing of every finding per
    "Disposing of Every Finding" below.
-4. Capture the branch's own tip before merging, `gh pr view [number] --json headRefOid --jq
+4. Capture the branch's own tip before merging, `gh pr view <number> --repo <owner>/<repo> --json headRefOid --jq
    .headRefOid`, needed for the verify-then-delete step below since `gh pr merge` itself reports
    the resulting squash commit on `develop`, not the PR's `headRefOid`. Merge the feature PR into
-   develop, `gh pr merge [number] --squash --repo owner/repo`. Never `--delete-branch` on this
+   develop, `gh pr merge <number> --squash --repo <owner>/<repo>`. Never `--delete-branch` on this
    call, it is run from inside the task's own worktree per step 1, where the feature branch is
    checked out, and `gh pr merge --delete-branch` needs to switch that worktree to the base branch
    to delete it, which fails when `develop` is already checked out somewhere else, the ordinary
-   case in this layout. Instead run repo-worktree's post-merge cleanup from the base clone: remove
-   the worktree, delete the now-merged local task branch, then verify before deleting the remote
-   one, `git ls-remote --heads --exit-code -- origin "refs/heads/<branch>"` matches the
-   `headRefOid` captured above, `--` before `origin` and the fully-qualified ref. `--heads origin
+   case in this layout. Instead run repo-worktree's post-merge cleanup from the base clone, remove
+   the worktree and delete the now-merged local task branch, then verify before deleting the remote
+   one, which is this skill's own step rather than that one's. Both remote commands resolve `origin`,
+   so they hold only where the pull request's head branch lives in this repository, which step 1
+   guarantees by branching here. A pull request opened from a fork follows
+   `upstream-contribution-workflow` instead and neither command applies to it, since `origin` would
+   name the base repository and exit `2` would mean the branch was never there rather than already
+   deleted. The object id in `git ls-remote --heads --exit-code -- origin "refs/heads/<branch>"`,
+   which prints `<oid>\t<ref>` so the id is its first field, matches the `headRefOid` captured above, `--` before `origin` and the fully-qualified ref. `--heads origin
    "<branch>"` alone still tail-matches a differently-prefixed branch sharing the same suffix, and
    `--` placed after `origin` instead of before it is not equivalent either, verified empirically
    against a `refs/heads/other/--` ref: after-origin also matched it, before-origin matched only
    the one intended. `--exit-code` distinguishes exit `2`, branch genuinely gone, from any other
    non-zero exit, a failed query, an unreachable remote and a gone branch both print nothing to
-   stdout otherwise. Stop and report either a mismatch or a failed query rather than deleting,
+   stdout otherwise. Exit `2` means the remote branch is already gone, so the delete is done and
+   the step is complete. Stop and report either a mismatch or a failed query rather than deleting,
    someone could have pushed to the branch after the merge, or the name could have been reused.
    `<branch>` is the real value, substituted as its own quoted argument (a shell variable
    expansion such as `"$branch"`, or an argv element), never handed to `eval` or `sh -c` for a
@@ -102,8 +114,10 @@ promotion PR once the fix lands, is the early exit this skill exists to prevent.
 
 pr-review-conduct's five outcomes are the actual rule, this is the mapping to use while driving:
 
-- Real, so fix it. Run `local-strict-review` against the branch's current diff, push it, reply
-  with its commit SHA (outcome 1).
+- Real, so fix it, then step 2's own order again before replying with the fixing commit SHA
+  (outcome 1). This is the round the pass is most often skipped on, since the fix looks small and
+  the branch was already reviewed once, and a fix push carries content no pass has read exactly as
+  the first push did.
 - Not real, or real but out of scope here, so decline in the thread with evidence: the command
   and its output, the code path, or the rule that governs it. An assertion never closes a finding
   on its own (outcome 2).
