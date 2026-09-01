@@ -367,4 +367,61 @@ public class StringHistoryTests
         _ = history.StringList[1].Should().Be("Line 9");
         _ = history.StringList[2].Should().Be("Line 10");
     }
+
+    [Fact]
+    public void MaxFirstLines_RaisedAfterDiscard_ShouldNotPromoteTailLinesIntoTheHead()
+    {
+        StringHistory history = new(maxFirstLines: 2, maxLastLines: 2);
+        for (int i = 0; i < 10; i++)
+        {
+            history.AppendLine($"Line {i}");
+        }
+
+        // The head is closed once a line has been dropped, so raising the limit changes nothing.
+        history.MaxFirstLines = 5;
+        for (int i = 10; i < 20; i++)
+        {
+            history.AppendLine($"Line {i}");
+        }
+
+        _ = history.StringList.Count.Should().Be(4);
+        _ = history.StringList[0].Should().Be("Line 0");
+        _ = history.StringList[1].Should().Be("Line 1");
+        _ = history.StringList[2].Should().Be("Line 18");
+        _ = history.StringList[3].Should().Be("Line 19");
+    }
+
+    [Fact]
+    public void MaxFirstLines_RaisedBeforeAnyDiscard_ShouldStillFillTheHead()
+    {
+        StringHistory history = new(maxFirstLines: 2, maxLastLines: 3);
+        history.AppendLine("Line 0");
+        history.AppendLine("Line 1");
+
+        // Nothing has been dropped yet, so the head is still open and the larger limit fills.
+        history.MaxFirstLines = 4;
+        history.AppendLine("Line 2");
+        history.AppendLine("Line 3");
+
+        _ = history.StringList.Count.Should().Be(4);
+        _ = history.MaxFirstLines.Should().Be(4);
+        _ = history.StringList[3].Should().Be("Line 3");
+    }
+
+    [Fact]
+    public void MaxFirstLines_RaisedAfterHeadOnlyDiscard_ShouldNotResumeTheHead()
+    {
+        StringHistory history = new(maxFirstLines: 3, maxLastLines: 0);
+        for (int i = 0; i < 10; i++)
+        {
+            history.AppendLine($"Line {i}");
+        }
+
+        // Lines 3 through 9 were dropped, so a larger limit must not start collecting again.
+        history.MaxFirstLines = 5;
+        history.AppendLine("Line 10");
+
+        _ = history.StringList.Count.Should().Be(3);
+        _ = history.StringList[2].Should().Be("Line 2");
+    }
 }

@@ -10,8 +10,10 @@ namespace ptr727.Utilities.Tests;
 /// third party staying reachable.
 /// </summary>
 /// <remarks>
-/// Each instance binds its own ephemeral port, so tests running in parallel do not share routes or
-/// state. Disposing the server stops the listener and completes any request still in flight.
+/// The responses are written straight onto a TCP socket rather than through
+/// <see cref="HttpListener"/>, which on Windows resolves an explicit-address prefix through
+/// http.sys and needs a URL reservation an unelevated developer does not have. Each instance binds
+/// its own ephemeral port, so tests running in parallel share no routes or state.
 /// </remarks>
 internal sealed class LoopbackServer : IDisposable
 {
@@ -21,8 +23,7 @@ internal sealed class LoopbackServer : IDisposable
     public const string Content = "loopback content";
 
     /// <summary>
-    /// How long the slow route holds a request before responding, long enough that a caller
-    /// cancelling after a short delay wins the race deterministically.
+    /// How long the slow route holds a request before responding, far longer than any test waits.
     /// </summary>
     public static readonly TimeSpan SlowResponseDelay = TimeSpan.FromSeconds(30);
 
@@ -31,14 +32,21 @@ internal sealed class LoopbackServer : IDisposable
     /// </summary>
     public LoopbackServer()
     {
-        // HttpListener takes a prefix rather than a socket, so a free port is probed and released first.
-        BaseAddress = new Uri(
-            FormattableString.Invariant($"http://127.0.0.1:{GetEphemeralPort()}/")
-        );
-        _listener.Prefixes.Add(BaseAddress.AbsoluteUri);
+        // Binding port 0 and reading the port back leaves no window for another listener to claim it.
+        _listener = new TcpListener(IPAddress.Loopback, 0);
         _listener.Start();
-        _listenTask = Task.Run(ListenAsync);
+
+        int port = ((IPEndPoint)_listener.LocalEndpoint).Port;
+        BaseAddress = new Uri(FormattableString.Invariant($"http://127.0.0.1:{port}/"));
+
+        _acceptTask = Task.Run(AcceptAsync);
     }
+
+    /// <summary>
+    /// Gets the byte length of <see cref="Content"/> on the wire, which is what a Content-Length
+    /// header and <see cref="Download.GetContentInfo"/> report.
+    /// </summary>
+    public static int ContentLength => Encoding.UTF8.GetByteCount(Content);
 
     /// <summary>
     /// Gets the root address the server is listening on.
@@ -61,124 +69,172 @@ internal sealed class LoopbackServer : IDisposable
     public Uri SlowUri => new(BaseAddress, SlowPath);
 
     /// <summary>
+    /// Gets a task that completes once the slow route has received a request, so a test cancels a
+    /// request the server is known to be holding rather than racing it.
+    /// </summary>
+    public Task SlowRequestStarted => _slowRequestStarted.Task;
+
+    /// <summary>
     /// Stops the listener and waits for the accept loop to finish.
     /// </summary>
     public void Dispose()
     {
-        _cancellation.Cancel();
-        _listener.Close();
+        if (_disposed)
+        {
+            return;
+        }
 
-        // The accept loop swallows its own failures, so a stopped listener is not a teardown failure.
-        _listenTask.GetAwaiter().GetResult();
+        _disposed = true;
+        _cancellation.Cancel();
+        _listener.Stop();
+        _listener.Dispose();
+
+        // Teardown never fails a test whose assertions already passed.
+        // The accept loop is waited for without rethrowing its result, and the wait is bounded.
+        _ = Task.WhenAny(_acceptTask, Task.Delay(s_disposeTimeout)).GetAwaiter().GetResult();
+        _ = _acceptTask.Exception;
 
         _cancellation.Dispose();
     }
 
-    private static int GetEphemeralPort()
-    {
-        using TcpListener probe = new(IPAddress.Loopback, 0);
-        probe.Start();
-        return ((IPEndPoint)probe.LocalEndpoint).Port;
-    }
-
-    private async Task ListenAsync()
+    private async Task AcceptAsync()
     {
         while (!_cancellation.IsCancellationRequested)
         {
-            HttpListenerContext context;
+            TcpClient client;
             try
             {
-                context = await _listener.GetContextAsync().ConfigureAwait(false);
+                client = await _listener
+                    .AcceptTcpClientAsync(_cancellation.Token)
+                    .ConfigureAwait(false);
             }
-            catch (HttpListenerException)
+            catch (OperationCanceledException)
             {
-                // The listener was closed by Dispose while waiting for a request.
                 return;
             }
             catch (ObjectDisposedException)
             {
                 return;
             }
+            catch (SocketException)
+            {
+                return;
+            }
 
-            await RespondAsync(context).ConfigureAwait(false);
+            using (client)
+            {
+                await RespondAsync(client).ConfigureAwait(false);
+            }
         }
     }
 
-    private async Task RespondAsync(HttpListenerContext context)
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design",
+        "CA1031:Do not catch general exception types",
+        Justification = "A test server's accept loop must not fault on one connection's failure."
+    )]
+    private async Task RespondAsync(TcpClient client)
     {
-        HttpListenerResponse response = context.Response;
         try
         {
-            switch (context.Request.Url?.AbsolutePath)
+            NetworkStream stream = client.GetStream();
+            string target = await ReadRequestTargetAsync(stream).ConfigureAwait(false);
+
+            switch (target)
             {
                 case "/" + OkPath:
-                    await WriteContentAsync(response).ConfigureAwait(false);
+                    await WriteResponseAsync(stream, 200, "OK", Content).ConfigureAwait(false);
                     break;
 
                 case "/" + SlowPath:
+                    _ = _slowRequestStarted.TrySetResult();
                     await Task.Delay(SlowResponseDelay, _cancellation.Token).ConfigureAwait(false);
-                    await WriteContentAsync(response).ConfigureAwait(false);
+                    await WriteResponseAsync(stream, 200, "OK", Content).ConfigureAwait(false);
                     break;
 
                 default:
-                    response.StatusCode = (int)HttpStatusCode.NotFound;
+                    await WriteResponseAsync(stream, 404, "Not Found", string.Empty)
+                        .ConfigureAwait(false);
                     break;
             }
         }
-        catch (OperationCanceledException)
+        catch (Exception)
         {
-            // Dispose ran, or the client went away, while the slow route was waiting.
-        }
-        catch (HttpListenerException)
-        {
-            // The client disconnected before the response was written, as the cancellation test does.
-        }
-        catch (IOException)
-        {
-            // Same disconnect, surfaced from the response stream rather than the listener.
-        }
-        finally
-        {
-            Close(response);
+            // A mid-response disconnect and a Dispose cancelling the slow route both land here.
         }
     }
 
-    private static async Task WriteContentAsync(HttpListenerResponse response)
+    private async Task<string> ReadRequestTargetAsync(NetworkStream stream)
     {
-        byte[] body = Encoding.UTF8.GetBytes(Content);
+        byte[] buffer = new byte[ReadBufferBytes];
+        StringBuilder head = new();
 
-        // GetContentInfo reports Content-Length as the size, so it is set rather than left to chunking.
-        response.StatusCode = (int)HttpStatusCode.OK;
-        response.ContentType = "text/plain; charset=utf-8";
-        response.ContentLength64 = body.Length;
-        response.Headers.Set("Last-Modified", s_lastModified.ToString("R", null));
+        while (head.Length < MaxRequestHeadBytes)
+        {
+            int read = await stream.ReadAsync(buffer, _cancellation.Token).ConfigureAwait(false);
+            if (read == 0)
+            {
+                break;
+            }
 
-        await response.OutputStream.WriteAsync(body).ConfigureAwait(false);
+            // The request line and the headers are ASCII, and only the request line is read.
+            _ = head.Append(Encoding.ASCII.GetString(buffer, 0, read));
+            if (head.ToString().Contains("\r\n\r\n", StringComparison.Ordinal))
+            {
+                break;
+            }
+        }
+
+        string text = head.ToString();
+        int lineEnd = text.IndexOf("\r\n", StringComparison.Ordinal);
+        string requestLine = lineEnd < 0 ? text : text[..lineEnd];
+        string[] parts = requestLine.Split(' ');
+
+        return parts.Length >= 2 ? parts[1] : string.Empty;
     }
 
-    private static void Close(HttpListenerResponse response)
+    private async Task WriteResponseAsync(
+        NetworkStream stream,
+        int status,
+        string reason,
+        string body
+    )
     {
-        try
-        {
-            response.Close();
-        }
-        catch (HttpListenerException)
-        {
-            // Closing a response whose client already disconnected is not a failure.
-        }
-        catch (ObjectDisposedException)
-        {
-            // The listener was disposed first.
-        }
+        byte[] payload = Encoding.UTF8.GetBytes(body);
+
+        // Content-Length is what GetContentInfo reports as the size, so it is always written.
+        string head = string.Join(
+            "\r\n",
+            FormattableString.Invariant($"HTTP/1.1 {status} {reason}"),
+            "Content-Type: text/plain; charset=utf-8",
+            FormattableString.Invariant($"Content-Length: {payload.Length}"),
+            "Last-Modified: " + LastModified,
+            "Connection: close",
+            string.Empty,
+            string.Empty
+        );
+
+        await stream
+            .WriteAsync(Encoding.ASCII.GetBytes(head), _cancellation.Token)
+            .ConfigureAwait(false);
+        await stream.WriteAsync(payload, _cancellation.Token).ConfigureAwait(false);
+        await stream.FlushAsync(_cancellation.Token).ConfigureAwait(false);
     }
 
     private const string OkPath = "ok";
     private const string MissingPath = "missing";
     private const string SlowPath = "slow";
+    private const string LastModified = "Wed, 01 Jan 2020 00:00:00 GMT";
+    private const int ReadBufferBytes = 2048;
+    private const int MaxRequestHeadBytes = 16384;
 
-    private static readonly DateTimeOffset s_lastModified = new(2020, 1, 1, 0, 0, 0, TimeSpan.Zero);
+    private static readonly TimeSpan s_disposeTimeout = TimeSpan.FromSeconds(10);
 
-    private readonly HttpListener _listener = new();
+    private readonly TcpListener _listener;
     private readonly CancellationTokenSource _cancellation = new();
-    private readonly Task _listenTask;
+    private readonly TaskCompletionSource _slowRequestStarted = new(
+        TaskCreationOptions.RunContinuationsAsynchronously
+    );
+    private readonly Task _acceptTask;
+    private bool _disposed;
 }

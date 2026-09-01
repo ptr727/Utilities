@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace ptr727.Utilities.Tests;
 
 public class DownloadAsyncTests
@@ -13,7 +15,7 @@ public class DownloadAsyncTests
         );
 
         _ = success.Should().BeTrue();
-        _ = size.Should().Be(LoopbackServer.Content.Length);
+        _ = size.Should().Be(LoopbackServer.ContentLength);
     }
 
     [Fact]
@@ -46,7 +48,7 @@ public class DownloadAsyncTests
 
             _ = result.Should().BeTrue();
             _ = File.Exists(tempFile).Should().BeTrue();
-            _ = new FileInfo(tempFile).Length.Should().Be(LoopbackServer.Content.Length);
+            _ = new FileInfo(tempFile).Length.Should().Be(LoopbackServer.ContentLength);
         }
         finally
         {
@@ -70,17 +72,35 @@ public class DownloadAsyncTests
         _ = success.Should().BeFalse();
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Reliability",
+        "CA2007:Consider calling ConfigureAwait on the awaited task",
+        Justification = "xUnit1030 forbids ConfigureAwait in a test method, and the request has to be started before it is cancelled."
+    )]
     [Fact]
     public async Task DownloadAsync_WithCancellation_ShouldRespectCancellation()
     {
         using LoopbackServer server = new();
         using CancellationTokenSource cts = new();
-        cts.CancelAfter(TimeSpan.FromMilliseconds(100));
 
-        // The slow route outlasts the cancellation delay, so the token always wins the race.
-        (bool Success, string _) = await Download.DownloadStringAsync(server.SlowUri, cts.Token);
+        Task<(bool Success, string Value)> download = Download.DownloadStringAsync(
+            server.SlowUri,
+            cts.Token
+        );
 
-        _ = Success.Should().BeFalse();
+        // Cancelling only once the server holds the request proves the route was reached.
+        // Any other failure would produce the same false result and prove nothing.
+        await server.SlowRequestStarted.WaitAsync(TestContext.Current.CancellationToken);
+        long startedAt = Stopwatch.GetTimestamp();
+        await cts.CancelAsync();
+
+        (bool success, string _) = await download;
+        TimeSpan elapsed = Stopwatch.GetElapsedTime(startedAt);
+
+        _ = success.Should().BeFalse();
+
+        // Returning far inside the route's own delay separates a cancelled request from a served one.
+        _ = elapsed.Should().BeLessThan(LoopbackServer.SlowResponseDelay / 2);
     }
 
     [Fact]

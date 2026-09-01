@@ -8,7 +8,9 @@ namespace ptr727.Utilities;
 /// while discarding intermediate content when limits are exceeded. Both limits at zero is the one
 /// unrestricted mode, where every appended line is retained; zero on a single side retains no lines
 /// on that side. A limit assigned after lines have been appended re-partitions what is already
-/// stored, so the history never holds more than the limits then in force allow.
+/// stored, so the history never holds more than the limits then in force allow. Re-partitioning
+/// only ever discards: once a line has been dropped the head is closed, and a later, larger
+/// <see cref="MaxFirstLines"/> raises the ceiling without recovering or repopulating it.
 /// </remarks>
 public class StringHistory
 {
@@ -49,11 +51,14 @@ public class StringHistory
         if (MaxFirstLines == 0 && MaxLastLines == 0)
         {
             _stringList.Add(value);
+            _firstLines++;
             return;
         }
 
         // Restrict first lines
-        if (_firstLines < MaxFirstLines)
+        // The head only grows while nothing has been discarded.
+        // A line appended once a tail exists is stored behind it and is not a first line.
+        if (!_discarded && _firstLines < MaxFirstLines)
         {
             _stringList.Add(value);
             _firstLines++;
@@ -63,6 +68,7 @@ public class StringHistory
         // If MaxLastLines is 0, don't add any more lines after MaxFirstLines
         if (MaxLastLines == 0)
         {
+            _discarded = true;
             return;
         }
 
@@ -75,8 +81,10 @@ public class StringHistory
         }
 
         // Roll the last lines
-        _stringList.RemoveAt(MaxFirstLines);
+        // The head is what is stored rather than the limit, which a widened one would index past.
+        _stringList.RemoveAt(_firstLines);
         _stringList.Add(value);
+        _discarded = true;
     }
 
     /// <summary>
@@ -93,9 +101,10 @@ public class StringHistory
     /// </summary>
     /// <remarks>
     /// Assigning this re-partitions the lines already stored against the limits then in force,
-    /// which discards whatever the new limits exclude. Setting both limits therefore applies them
-    /// one at a time, and the first assignment can discard lines the second would have retained.
-    /// Prefer the two-argument constructor when both limits are known up front.
+    /// which discards whatever the new limits exclude and never recovers a line already dropped.
+    /// Setting both limits therefore applies them one at a time, and the first assignment can
+    /// discard lines the second would have retained. Prefer the two-argument constructor when both
+    /// limits are known up front.
     /// </remarks>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the assigned value is negative.</exception>
     public int MaxFirstLines
@@ -115,9 +124,10 @@ public class StringHistory
     /// </summary>
     /// <remarks>
     /// Assigning this re-partitions the lines already stored against the limits then in force,
-    /// which discards whatever the new limits exclude. Setting both limits therefore applies them
-    /// one at a time, and the first assignment can discard lines the second would have retained.
-    /// Prefer the two-argument constructor when both limits are known up front.
+    /// which discards whatever the new limits exclude and never recovers a line already dropped.
+    /// Setting both limits therefore applies them one at a time, and the first assignment can
+    /// discard lines the second would have retained. Prefer the two-argument constructor when both
+    /// limits are known up front.
     /// </remarks>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the assigned value is negative.</exception>
     public int MaxLastLines
@@ -143,21 +153,42 @@ public class StringHistory
     private void Repartition()
     {
         // Both limits at zero is the unrestricted mode, where every line is retained.
+        // Nothing is discarded there, so the whole list is head and a later limit slices it freely.
         if (MaxFirstLines == 0 && MaxLastLines == 0)
         {
-            _firstLines = 0;
+            _firstLines = _stringList.Count;
             _lastLines = 0;
             return;
         }
 
-        int firstLines = Math.Min(MaxFirstLines, _stringList.Count);
-        int lastLines = Math.Min(MaxLastLines, _stringList.Count - firstLines);
+        int storedCount = _stringList.Count;
+        int firstLines;
+        int lastLines;
 
-        // Drop the lines between the retained head and the retained tail.
-        _stringList.RemoveRange(firstLines, _stringList.Count - firstLines - lastLines);
+        if (_discarded)
+        {
+            // A gap already separates the head from the tail, so the head can only shrink.
+            // Promoting a tail line into it would pin a line that is not among the first.
+            firstLines = Math.Min(MaxFirstLines, _firstLines);
+            lastLines = Math.Min(MaxLastLines, _lastLines);
+            _stringList.RemoveRange(firstLines, _firstLines - firstLines);
+            _stringList.RemoveRange(firstLines, _lastLines - lastLines);
+        }
+        else
+        {
+            // Nothing has been discarded, so the stored lines are the whole stream so far.
+            // The new head and the new tail are both cut from them.
+            firstLines = Math.Min(MaxFirstLines, storedCount);
+            lastLines = Math.Min(MaxLastLines, storedCount - firstLines);
+            _stringList.RemoveRange(firstLines, storedCount - firstLines - lastLines);
+        }
 
         _firstLines = firstLines;
         _lastLines = lastLines;
+        if (_stringList.Count < storedCount)
+        {
+            _discarded = true;
+        }
     }
 
     private readonly List<string> _stringList = [];
@@ -165,4 +196,5 @@ public class StringHistory
     private int _maxLastLines;
     private int _firstLines;
     private int _lastLines;
+    private bool _discarded;
 }
