@@ -20,10 +20,12 @@ publisher passes `branch: ${{ github.ref_name }}`, which the tasks forward and r
 `build-release-task.yml` is a hub-hosted task with per-target `enable_*` inputs, so a repo drops a
 target by setting its `enable_<target>: false` at the caller stub rather than deleting a job: the
 hub task carries the full job graph for every repo, and the caller stub's `with:` block is where
-the target list is expressed. A repo still curates its path-filter entry in
-`test-pull-request.yml`, and (for PyPI) the `publish-pypi` job in its own `publish-release.yml`,
-since `id-token: write` belongs at that one entry point. CodeGen, versioning, badge, merge-bot,
-and Dependabot are target-agnostic.
+the target list is expressed. A repo still curates, in `test-pull-request.yml`, its
+path-filter entry, that filter's output, and the `smoke-build` enable-forward, all three together
+per D6.4, since an entry nothing consumes never smoke-builds the target. And, for a package
+target, the `publish-nuget` or `publish-pypi` job in its own `publish-release.yml`, since
+`id-token: write` belongs at that one entry point. CodeGen, versioning, merge-bot, and Dependabot
+are target-agnostic.
 
 ## Orchestration vs. build: the override seam
 
@@ -62,22 +64,30 @@ and project-path inputs its targets need.
 Pick by where each artifact *goes*, not by language:
 
 - **Files attached to the GitHub Release** (zips, binaries, packaged libraries): a dotnet-publish
-  hook or a build-nuget hook per output, each uploading `release-asset-<branch>-<name>`. This is where the
-  .NET `dotnet publish` or `dotnet build` and package push lives. The hub default takes an explicit
+  hook or a build-nuget hook per output, each uploading `release-asset-<branch>-<target>`. This is where the
+  .NET `dotnet publish` or `dotnet build` lives, though a package push does not. The hub default takes an explicit
   project path, and a project needing different build behavior replaces the hook. A data-only
   repo's own output (e.g. a symbol library) is not yet
   expressible as a hub hook or an `enable_*` input, so it stays a carried leaf until the hub task
   grows one.
-- **Package-registry pushes** (NuGet.org, PyPI): the target both builds **and** publishes to its
-  registry. NuGet pushes from inside the build-nuget hook (OIDC trusted publishing through
-  `NuGet/login`, no stored API key) *and* also uploads a `release-asset-*` (.7z) for the GitHub
-  release. PyPI is split: the build-pypi hook only builds and uploads the
+- **Package-registry pushes** (NuGet.org, PyPI): both are split, and the push never sits in the
+  hook. OIDC trusted publishing validates the token's `job_workflow_ref` claim, which names the
+  workflow the job actually ran from, so a push from a hub-hosted task is rejected at the token
+  exchange, NuGet.org answering `HTTP 401` and PyPI under its own code. And because D7.2 has a callee
+  declare `permissions:` only where every caller grants that scope at startup, the release task's
+  jobs declare none and run under the calling job's whole grant, so a push anywhere inside that
+  task would put `id-token: write` on every job in it. The
+  build-nuget hook uploads a `nuget-build-<branch>` artifact for a separate `publish-nuget` job in
+  the caller's own `publish-release.yml`, which authenticates through `NuGet/login` and therefore
+  carries `id-token: write` (plus `actions: write` to delete the artifact it consumed), *and* also
+  uploads a `release-asset-*` (.7z) for the GitHub release. PyPI is the same shape: the build-pypi hook only builds and uploads the
   `pypi-build-<branch>` artifact, and the separate `publish-pypi` job in the caller's own
-  `publish-release.yml` does the OIDC Trusted-Publishing upload (`id-token: write` is granted only
-  at that one entry point), and PyPI contributes **no** `release-asset-*`.
+  `publish-release.yml` does the OIDC Trusted-Publishing upload, behind an `environment: pypi`
+  gate and with `skip-existing: true` (`id-token: write` is granted only at that one entry
+  point), and PyPI contributes **no** `release-asset-*`.
 - **Image-registry pushes** (Docker Hub): `build-docker-task.yml`, hub-hosted like
-  `build-release-task.yml`, pushes multi-arch tags directly and contributes **no**
-  `release-asset-*`. The image set comes from a docker-prepare hook (the hub default emits the
+  `build-release-task.yml`, pushes the default branch multi-arch (amd64+arm64) and any other
+  branch `amd64`-only, and contributes **no** `release-asset-*`. The image set comes from a docker-prepare hook (the hub default emits the
   single vanilla entry an `image` input implies). A multi-image or upstream-pinned repo carries its
   own hook, and a shared base layer comes from a required docker-build-base hook with no hub
   default. To publish the Docker Hub repository overview, the hub-hosted `publish-docker-readme-task.yml`
