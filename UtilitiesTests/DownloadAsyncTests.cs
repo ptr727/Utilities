@@ -152,7 +152,7 @@ public class DownloadAsyncTests
 
         _ = result.Should().BeFalse();
 
-        // The body is fetched before the destination is opened.
+        // The response headers are read before the destination is opened.
         // The served request is what proves the failure came from the file rather than the request.
         _ = server.RequestCount.Should().Be(1);
     }

@@ -24,7 +24,7 @@ Some useful and not so useful C# .NET utility classes.
 
 **Version: 4.1**:
 
-- Fixed `Download.DownloadFile()` and `DownloadFileAsync()` corrupting the destination when downloading over a longer existing file. The destination is now truncated and rewritten in place, keeping its permissions and any links to it.
+- Fixed `Download.DownloadFile()` and `DownloadFileAsync()` corrupting the destination when downloading over a longer existing file. The destination is now truncated and rewritten in place, keeping its permissions and any links to it. A download that fails partway leaves a short file rather than a mix of the new content and the old.
 - Fixed the `StringHistory` limit properties: `MaxFirstLines` and `MaxLastLines` now honor a limit assigned after lines have been appended, document zero as retaining no lines on that side rather than as no limit, and reject a negative value with `ArgumentOutOfRangeException`.
 
 See [Release History](./HISTORY.md) for complete release notes and older versions.

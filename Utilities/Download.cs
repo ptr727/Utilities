@@ -103,14 +103,17 @@ public static class Download
         {
             using Stream httpStream = GetHttpClient().GetStreamAsync(uri).GetAwaiter().GetResult();
 
-            // Create truncates where OpenWrite left a longer file's tail behind the body.
-            // Rewriting in place keeps the destination's own permissions and links.
+            // Rewriting in place keeps the destination's own permissions, ownership, and links.
+            // OpenOrCreate rather than Create, which on Windows refuses a hidden destination.
             using FileStream fileStream = new(
                 fileName,
-                FileMode.Create,
+                FileMode.OpenOrCreate,
                 FileAccess.Write,
                 FileShare.None
             );
+
+            // Truncate explicitly, which OpenWrite never did, leaving a longer file's tail behind.
+            fileStream.SetLength(0);
             httpStream.CopyTo(fileStream);
         }
         catch (Exception e) when (Log.LogAndHandle(e))
@@ -145,16 +148,18 @@ public static class Download
                 .ConfigureAwait(false);
             await using (httpStream.ConfigureAwait(false))
             {
-                // Create truncates where OpenWrite left a longer file's tail behind the body.
-                // Rewriting in place keeps the destination's own permissions and links.
+                // Rewriting in place keeps the destination's permissions, ownership, and links.
+                // OpenOrCreate rather than Create, which on Windows refuses a hidden destination.
                 FileStream fileStream = new(
                     fileName,
-                    FileMode.Create,
+                    FileMode.OpenOrCreate,
                     FileAccess.Write,
                     FileShare.None
                 );
                 await using (fileStream.ConfigureAwait(false))
                 {
+                    // Truncate explicitly, which OpenWrite never did, leaving a longer file's tail.
+                    fileStream.SetLength(0);
                     await httpStream
                         .CopyToAsync(fileStream, cancellationToken)
                         .ConfigureAwait(false);
