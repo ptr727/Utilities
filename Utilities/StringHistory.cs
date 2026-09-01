@@ -119,8 +119,9 @@ public class StringHistory
     /// Assigning <see cref="MaxFirstLines"/> and <see cref="MaxLastLines"/> one after the other
     /// re-partitions twice, so the first assignment measures against the other limit's previous
     /// value and can discard lines the final pair would have retained. Which order avoids that,
-    /// where either does, depends on the values and on what is stored, so no fixed ordering is safe
-    /// and this applies both before re-partitioning at all.
+    /// where either does, depends on the values and on what is stored, so no fixed ordering is
+    /// safe. This method assigns both limits before re-partitioning at all, which is what removes
+    /// the dependence on order.
     /// Both limits at zero is the one unrestricted mode, so passing zero twice retains every stored
     /// line and every later one rather than discarding them.
     /// </remarks>
