@@ -22,17 +22,10 @@ Some useful and not so useful C# .NET utility classes.
 
 ### Release Notes
 
-**Version: 4.0**:
+**Version: 4.1**:
 
-**⚠️ Breaking Changes**:
-
-- Renamed the NuGet package and namespace from `InsaneGenius.Utilities` to `ptr727.Utilities`.
-- Replaced Serilog with an injectable `Microsoft.Extensions.Logging` logging model.
-- Replaced `List<T>` in public methods with `Collection<T>` and `ReadOnlyCollection<T>`.
-
-**Summary**:
-
-- Added `HttpClientFactory`, a reusable resilient HTTP client factory (Polly retry and circuit breaker) with an AOT safe `AssemblyInfo` identity helper and a tunable `HttpClientOptions`.
+- Fixed `Download.DownloadFile()` and `DownloadFileAsync()` corrupting the destination when downloading over a longer existing file. The destination is now truncated and rewritten in place, keeping its permissions and any links to it. A download that fails partway leaves a short file rather than a mix of the new content and the old.
+- Fixed the `StringHistory` limit properties: `MaxFirstLines` and `MaxLastLines` now honor a limit assigned after lines have been appended, document zero on one side as retaining no lines on that side rather than as no limit, with both at zero remaining the one unrestricted mode, and reject a negative value with `ArgumentOutOfRangeException`.
 
 See [Release History](./HISTORY.md) for complete release notes and older versions.
 
