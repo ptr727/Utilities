@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace ptr727.Utilities.Tests;
 
 public class DownloadAsyncTests
@@ -5,53 +7,48 @@ public class DownloadAsyncTests
     [Fact]
     public async Task GetContentInfoAsync_WithValidUri_ShouldReturnSuccess()
     {
-        Uri uri = new(
-            "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
-        );
+        using LoopbackServer server = new();
 
         (bool success, long size, DateTime _) = await Download.GetContentInfoAsync(
-            uri,
+            server.OkUri,
             TestContext.Current.CancellationToken
         );
 
         _ = success.Should().BeTrue();
-        _ = (size > 0).Should().BeTrue();
+        _ = size.Should().Be(LoopbackServer.ContentLength);
     }
 
     [Fact]
     public async Task DownloadStringAsync_WithValidUri_ShouldReturnContent()
     {
-        Uri uri = new("https://www.google.com");
+        using LoopbackServer server = new();
 
         (bool success, string? content) = await Download.DownloadStringAsync(
-            uri,
+            server.OkUri,
             TestContext.Current.CancellationToken
         );
 
         _ = success.Should().BeTrue();
-        _ = content.Should().NotBeEmpty();
-        _ = content.Should().ContainEquivalentOf("google");
+        _ = content.Should().Be(LoopbackServer.Content);
     }
 
     [Fact]
     public async Task DownloadFileAsync_WithValidUri_ShouldCreateFile()
     {
-        Uri uri = new(
-            "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
-        );
+        using LoopbackServer server = new();
         string tempFile = Path.GetTempFileName();
 
         try
         {
             bool result = await Download.DownloadFileAsync(
-                uri,
+                server.OkUri,
                 tempFile,
                 TestContext.Current.CancellationToken
             );
 
             _ = result.Should().BeTrue();
             _ = File.Exists(tempFile).Should().BeTrue();
-            _ = (new FileInfo(tempFile).Length > 0).Should().BeTrue();
+            _ = new FileInfo(tempFile).Length.Should().Be(LoopbackServer.ContentLength);
         }
         finally
         {
@@ -63,29 +60,173 @@ public class DownloadAsyncTests
     }
 
     [Fact]
-    public async Task DownloadAsync_WithInvalidUri_ShouldReturnFalse()
+    public async Task DownloadFileAsync_OverALongerExistingFile_ShouldReplaceIt()
     {
-        Uri invalidUri = new("https://thisdoesnotexist123456789.com/file.txt");
+        using LoopbackServer server = new();
+        string tempFile = Path.GetTempFileName();
+
+        try
+        {
+            await File.WriteAllTextAsync(
+                tempFile,
+                new string('x', LoopbackServer.ContentLength * 4),
+                TestContext.Current.CancellationToken
+            );
+
+            bool result = await Download.DownloadFileAsync(
+                server.OkUri,
+                tempFile,
+                TestContext.Current.CancellationToken
+            );
+
+            _ = result.Should().BeTrue();
+
+            // Opening rather than creating the file would leave the seeded bytes after the body.
+            string written = await File.ReadAllTextAsync(
+                tempFile,
+                TestContext.Current.CancellationToken
+            );
+            _ = written.Should().Be(LoopbackServer.Content);
+        }
+        finally
+        {
+            if (File.Exists(tempFile))
+            {
+                File.Delete(tempFile);
+            }
+        }
+    }
+
+    [Fact]
+    public async Task DownloadFileAsync_WhenTheRequestFails_ShouldLeaveTheDestination()
+    {
+        using LoopbackServer server = new();
+        string tempFile = Path.GetTempFileName();
+        string existing = new('x', LoopbackServer.ContentLength * 4);
+
+        try
+        {
+            await File.WriteAllTextAsync(tempFile, existing, TestContext.Current.CancellationToken);
+
+            bool result = await Download.DownloadFileAsync(
+                server.MissingUri,
+                tempFile,
+                TestContext.Current.CancellationToken
+            );
+
+            _ = result.Should().BeFalse();
+
+            // The destination is opened only once the response is accepted.
+            // A request that never gets that far leaves it alone.
+            string written = await File.ReadAllTextAsync(
+                tempFile,
+                TestContext.Current.CancellationToken
+            );
+            _ = written.Should().Be(existing);
+        }
+        finally
+        {
+            if (File.Exists(tempFile))
+            {
+                File.Delete(tempFile);
+            }
+        }
+    }
+
+    [Fact]
+    public async Task DownloadFileAsync_WithAnUnusableDestination_ShouldReturnFalse()
+    {
+        using LoopbackServer server = new();
+        string missingDirectory = Path.Combine(
+            Path.GetTempPath(),
+            Path.GetRandomFileName(),
+            "file.txt"
+        );
+
+        // A destination that cannot hold the file reports failure rather than throwing.
+        bool result = await Download.DownloadFileAsync(
+            server.OkUri,
+            missingDirectory,
+            TestContext.Current.CancellationToken
+        );
+
+        _ = result.Should().BeFalse();
+
+        // The response headers are read before the destination is opened.
+        // The served request is what proves the failure came from the file rather than the request.
+        _ = server.RequestCount.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task GetContentInfoAsync_WithNotFoundUri_ShouldReturnFalse()
+    {
+        using LoopbackServer server = new();
 
         (bool success, long _, DateTime _) = await Download.GetContentInfoAsync(
-            invalidUri,
+            server.MissingUri,
             TestContext.Current.CancellationToken
         );
 
         _ = success.Should().BeFalse();
+
+        // A refused connection returns false too, so the failure is the route's only if it ran.
+        _ = server.RequestCount.Should().Be(1);
     }
 
     [Fact]
+    public async Task DownloadAsync_ConcurrentRequests_ShouldBothComplete()
+    {
+        using LoopbackServer server = new();
+
+        // One request must never queue behind another on the server's accept loop.
+        Task<(bool Success, string Value)> first = Download.DownloadStringAsync(
+            server.OkUri,
+            TestContext.Current.CancellationToken
+        );
+        Task<(bool Success, string Value)> second = Download.DownloadStringAsync(
+            server.OkUri,
+            TestContext.Current.CancellationToken
+        );
+
+        (bool Success, string Value)[] results = await Task.WhenAll(first, second)
+            .WaitAsync(s_signalTimeout, TestContext.Current.CancellationToken);
+
+        _ = results.Should().AllSatisfy(result => result.Success.Should().BeTrue());
+        _ = server.RequestCount.Should().Be(2);
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Reliability",
+        "CA2007:Consider calling ConfigureAwait on the awaited task",
+        Justification = "xUnit1030 forbids ConfigureAwait in a test method, and the request has to be started before it is cancelled."
+    )]
+    [Fact]
     public async Task DownloadAsync_WithCancellation_ShouldRespectCancellation()
     {
-        Uri uri = new("https://httpstat.us/200?sleep=5000"); // Slow endpoint
+        using LoopbackServer server = new();
         using CancellationTokenSource cts = new();
-        cts.CancelAfter(TimeSpan.FromMilliseconds(100)); // Cancel after 100ms
 
-        (bool Success, string _) = await Download.DownloadStringAsync(uri, cts.Token);
+        Task<(bool Success, string Value)> download = Download.DownloadStringAsync(
+            server.SlowUri,
+            cts.Token
+        );
 
-        // Should either throw cancellation or return false due to cancellation
-        _ = Success.Should().BeFalse();
+        // Cancelling only once the server holds the request proves the route was reached.
+        // Any other failure would produce the same false result and prove nothing.
+        await server.SlowRequestStarted.WaitAsync(
+            s_signalTimeout,
+            TestContext.Current.CancellationToken
+        );
+        long startedAt = Stopwatch.GetTimestamp();
+        await cts.CancelAsync();
+
+        (bool success, string _) = await download;
+        TimeSpan elapsed = Stopwatch.GetElapsedTime(startedAt);
+
+        _ = success.Should().BeFalse();
+
+        // Returning far inside the route's own delay separates a cancelled request from a served one.
+        _ = elapsed.Should().BeLessThan(LoopbackServer.SlowResponseDelay / 2);
     }
 
     [Fact]
@@ -98,6 +239,9 @@ public class DownloadAsyncTests
             .Should()
             .ThrowAsync<ArgumentNullException>();
     }
+
+    // A signal that never arrives is a defect to report, not a test left hanging in CI.
+    private static readonly TimeSpan s_signalTimeout = TimeSpan.FromSeconds(30);
 
     [Fact]
     public void CreateUri_WithCredentials_ShouldIncludeCredentials()

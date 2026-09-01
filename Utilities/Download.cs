@@ -102,7 +102,18 @@ public static class Download
         try
         {
             using Stream httpStream = GetHttpClient().GetStreamAsync(uri).GetAwaiter().GetResult();
-            using FileStream fileStream = File.OpenWrite(fileName);
+
+            // Rewriting in place keeps the destination's own permissions, ownership, and links.
+            // OpenOrCreate rather than Create, which on Windows refuses a hidden destination.
+            using FileStream fileStream = new(
+                fileName,
+                FileMode.OpenOrCreate,
+                FileAccess.Write,
+                FileShare.None
+            );
+
+            // Truncate explicitly, which OpenWrite never did, leaving a longer file's tail behind.
+            fileStream.SetLength(0);
             httpStream.CopyTo(fileStream);
         }
         catch (Exception e) when (Log.LogAndHandle(e))
@@ -137,9 +148,18 @@ public static class Download
                 .ConfigureAwait(false);
             await using (httpStream.ConfigureAwait(false))
             {
-                FileStream fileStream = File.OpenWrite(fileName);
+                // Rewriting in place keeps the destination's permissions, ownership, and links.
+                // OpenOrCreate rather than Create, which on Windows refuses a hidden destination.
+                FileStream fileStream = new(
+                    fileName,
+                    FileMode.OpenOrCreate,
+                    FileAccess.Write,
+                    FileShare.None
+                );
                 await using (fileStream.ConfigureAwait(false))
                 {
+                    // Truncate explicitly, which OpenWrite never did, leaving a longer file's tail.
+                    fileStream.SetLength(0);
                     await httpStream
                         .CopyToAsync(fileStream, cancellationToken)
                         .ConfigureAwait(false);
