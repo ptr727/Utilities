@@ -228,4 +228,143 @@ public class StringHistoryTests
 
         _ = history.StringList[0].Should().Be(unicodeLine);
     }
+
+    [Fact]
+    public void Constructor_WithNegativeFirstLines_ShouldThrowArgumentOutOfRangeException()
+    {
+        _ = FluentActions
+            .Invoking(() => new StringHistory(maxFirstLines: -1, maxLastLines: 2))
+            .Should()
+            .Throw<ArgumentOutOfRangeException>()
+            .WithParameterName("maxFirstLines");
+    }
+
+    [Fact]
+    public void Constructor_WithNegativeLastLines_ShouldThrowArgumentOutOfRangeException()
+    {
+        _ = FluentActions
+            .Invoking(() => new StringHistory(maxFirstLines: 2, maxLastLines: -1))
+            .Should()
+            .Throw<ArgumentOutOfRangeException>()
+            .WithParameterName("maxLastLines");
+    }
+
+    [Fact]
+    public void MaxFirstLines_SetNegative_ShouldThrowArgumentOutOfRangeException()
+    {
+        StringHistory history = new();
+
+        _ = FluentActions
+            .Invoking(() => history.MaxFirstLines = -1)
+            .Should()
+            .Throw<ArgumentOutOfRangeException>();
+
+        // The rejected value never reaches the property.
+        _ = history.MaxFirstLines.Should().Be(0);
+    }
+
+    [Fact]
+    public void MaxLastLines_SetNegative_ShouldThrowArgumentOutOfRangeException()
+    {
+        StringHistory history = new();
+
+        _ = FluentActions
+            .Invoking(() => history.MaxLastLines = -1)
+            .Should()
+            .Throw<ArgumentOutOfRangeException>();
+
+        _ = history.MaxLastLines.Should().Be(0);
+    }
+
+    [Fact]
+    public void MaxLastLines_SetAfterAppend_ShouldRepartitionStoredLines()
+    {
+        StringHistory history = new();
+        for (int i = 0; i < 10; i++)
+        {
+            history.AppendLine($"Line {i}");
+        }
+
+        history.MaxLastLines = 3;
+
+        // The unbounded lines already stored are brought within the new limit rather than kept.
+        _ = history.StringList.Count.Should().Be(3);
+        _ = history.StringList[0].Should().Be("Line 7");
+        _ = history.StringList[2].Should().Be("Line 9");
+    }
+
+    [Fact]
+    public void MaxFirstLines_SetAfterAppend_ShouldRepartitionStoredLines()
+    {
+        StringHistory history = new();
+        for (int i = 0; i < 10; i++)
+        {
+            history.AppendLine($"Line {i}");
+        }
+
+        history.MaxFirstLines = 2;
+
+        // MaxLastLines is still 0, which retains no last lines, so only the head survives.
+        _ = history.StringList.Count.Should().Be(2);
+        _ = history.StringList[0].Should().Be("Line 0");
+        _ = history.StringList[1].Should().Be("Line 1");
+    }
+
+    [Fact]
+    public void AppendLine_AfterLimitChange_ShouldHonorTheNewLimits()
+    {
+        StringHistory history = new();
+        for (int i = 0; i < 10; i++)
+        {
+            history.AppendLine($"Line {i}");
+        }
+
+        history.MaxLastLines = 2;
+        history.AppendLine("Line 10");
+
+        // Appending rolls the retained tail rather than growing past the configured bound.
+        _ = history.StringList.Count.Should().Be(2);
+        _ = history.StringList[0].Should().Be("Line 9");
+        _ = history.StringList[1].Should().Be("Line 10");
+    }
+
+    [Fact]
+    public void MaxFirstLines_ReducedBelowStoredCount_ShouldTrimTheHead()
+    {
+        StringHistory history = new(maxFirstLines: 5, maxLastLines: 2);
+        for (int i = 0; i < 10; i++)
+        {
+            history.AppendLine($"Line {i}");
+        }
+
+        history.MaxFirstLines = 2;
+
+        // 2 head lines plus the 2 tail lines the previous limits already retained.
+        _ = history.StringList.Count.Should().Be(4);
+        _ = history.StringList[0].Should().Be("Line 0");
+        _ = history.StringList[1].Should().Be("Line 1");
+        _ = history.StringList[2].Should().Be("Line 8");
+        _ = history.StringList[3].Should().Be("Line 9");
+    }
+
+    [Fact]
+    public void Limits_ClearedToZero_ShouldRetainEveryLaterLine()
+    {
+        StringHistory history = new(maxFirstLines: 2, maxLastLines: 2);
+        for (int i = 0; i < 10; i++)
+        {
+            history.AppendLine($"Line {i}");
+        }
+
+        history.MaxFirstLines = 0;
+        history.MaxLastLines = 0;
+        history.AppendLine("Line 10");
+
+        // Clearing MaxFirstLines first re-partitions against a MaxLastLines still at 2, leaving the tail.
+        // Clearing MaxLastLines then restores the unrestricted mode, so the later line is added.
+        _ = history.StringList.Count.Should().Be(3);
+        _ = history.StringList[0].Should().Be("Line 8");
+        _ = history.StringList[1].Should().Be("Line 9");
+        _ = history.StringList[2].Should().Be("Line 10");
+    }
 }

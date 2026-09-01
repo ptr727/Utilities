@@ -5,53 +5,48 @@ public class DownloadAsyncTests
     [Fact]
     public async Task GetContentInfoAsync_WithValidUri_ShouldReturnSuccess()
     {
-        Uri uri = new(
-            "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
-        );
+        using LoopbackServer server = new();
 
         (bool success, long size, DateTime _) = await Download.GetContentInfoAsync(
-            uri,
+            server.OkUri,
             TestContext.Current.CancellationToken
         );
 
         _ = success.Should().BeTrue();
-        _ = (size > 0).Should().BeTrue();
+        _ = size.Should().Be(LoopbackServer.Content.Length);
     }
 
     [Fact]
     public async Task DownloadStringAsync_WithValidUri_ShouldReturnContent()
     {
-        Uri uri = new("https://www.google.com");
+        using LoopbackServer server = new();
 
         (bool success, string? content) = await Download.DownloadStringAsync(
-            uri,
+            server.OkUri,
             TestContext.Current.CancellationToken
         );
 
         _ = success.Should().BeTrue();
-        _ = content.Should().NotBeEmpty();
-        _ = content.Should().ContainEquivalentOf("google");
+        _ = content.Should().Be(LoopbackServer.Content);
     }
 
     [Fact]
     public async Task DownloadFileAsync_WithValidUri_ShouldCreateFile()
     {
-        Uri uri = new(
-            "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
-        );
+        using LoopbackServer server = new();
         string tempFile = Path.GetTempFileName();
 
         try
         {
             bool result = await Download.DownloadFileAsync(
-                uri,
+                server.OkUri,
                 tempFile,
                 TestContext.Current.CancellationToken
             );
 
             _ = result.Should().BeTrue();
             _ = File.Exists(tempFile).Should().BeTrue();
-            _ = (new FileInfo(tempFile).Length > 0).Should().BeTrue();
+            _ = new FileInfo(tempFile).Length.Should().Be(LoopbackServer.Content.Length);
         }
         finally
         {
@@ -63,12 +58,12 @@ public class DownloadAsyncTests
     }
 
     [Fact]
-    public async Task DownloadAsync_WithInvalidUri_ShouldReturnFalse()
+    public async Task GetContentInfoAsync_WithNotFoundUri_ShouldReturnFalse()
     {
-        Uri invalidUri = new("https://thisdoesnotexist123456789.com/file.txt");
+        using LoopbackServer server = new();
 
         (bool success, long _, DateTime _) = await Download.GetContentInfoAsync(
-            invalidUri,
+            server.MissingUri,
             TestContext.Current.CancellationToken
         );
 
@@ -78,13 +73,13 @@ public class DownloadAsyncTests
     [Fact]
     public async Task DownloadAsync_WithCancellation_ShouldRespectCancellation()
     {
-        Uri uri = new("https://httpstat.us/200?sleep=5000"); // Slow endpoint
+        using LoopbackServer server = new();
         using CancellationTokenSource cts = new();
-        cts.CancelAfter(TimeSpan.FromMilliseconds(100)); // Cancel after 100ms
+        cts.CancelAfter(TimeSpan.FromMilliseconds(100));
 
-        (bool Success, string _) = await Download.DownloadStringAsync(uri, cts.Token);
+        // The slow route outlasts the cancellation delay, so the token always wins the race.
+        (bool Success, string _) = await Download.DownloadStringAsync(server.SlowUri, cts.Token);
 
-        // Should either throw cancellation or return false due to cancellation
         _ = Success.Should().BeFalse();
     }
 

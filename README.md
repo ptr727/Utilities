@@ -29,6 +29,7 @@ Some useful and not so useful C# .NET utility classes.
 - Renamed the NuGet package and namespace from `InsaneGenius.Utilities` to `ptr727.Utilities`.
 - Replaced Serilog with an injectable `Microsoft.Extensions.Logging` logging model.
 - Replaced `List<T>` in public methods with `Collection<T>` and `ReadOnlyCollection<T>`.
+- Changed `StringHistory.MaxFirstLines` and `MaxLastLines` to re-partition the lines already stored when assigned, and to reject a negative value.
 
 **Summary**:
 
