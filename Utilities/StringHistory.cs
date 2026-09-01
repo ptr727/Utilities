@@ -22,8 +22,8 @@ public class StringHistory
     /// <summary>
     /// Initializes a new instance of the <see cref="StringHistory"/> class with specified limits.
     /// </summary>
-    /// <param name="maxFirstLines">Maximum number of first lines to retain, or 0 to retain none.</param>
-    /// <param name="maxLastLines">Maximum number of last lines to retain, or 0 to retain none.</param>
+    /// <param name="maxFirstLines">Maximum number of first lines to retain, or 0 to retain none on that side.</param>
+    /// <param name="maxLastLines">Maximum number of last lines to retain, or 0 to retain none on that side.</param>
     /// <exception cref="ArgumentOutOfRangeException">
     /// Thrown when <paramref name="maxFirstLines"/> or <paramref name="maxLastLines"/> is negative.
     /// </exception>
@@ -110,16 +110,19 @@ public class StringHistory
     /// <summary>
     /// Sets both limits together, re-partitioning the stored lines once against the pair.
     /// </summary>
-    /// <param name="maxFirstLines">Maximum number of first lines to retain, or 0 to retain none.</param>
-    /// <param name="maxLastLines">Maximum number of last lines to retain, or 0 to retain none.</param>
+    /// <param name="maxFirstLines">Maximum number of first lines to retain, or 0 to retain none on that side.</param>
+    /// <param name="maxLastLines">Maximum number of last lines to retain, or 0 to retain none on that side.</param>
     /// <exception cref="ArgumentOutOfRangeException">
     /// Thrown when <paramref name="maxFirstLines"/> or <paramref name="maxLastLines"/> is negative.
     /// </exception>
     /// <remarks>
     /// Assigning <see cref="MaxFirstLines"/> and <see cref="MaxLastLines"/> one after the other
     /// re-partitions twice, so the first assignment measures against the other limit's previous
-    /// value and can discard lines the final pair would have retained. This applies both before
-    /// re-partitioning, which is the only way to avoid that on an instance that already holds lines.
+    /// value and can discard lines the final pair would have retained. Which order avoids that,
+    /// where either does, depends on the values and on what is stored, so no fixed ordering is safe
+    /// and this applies both before re-partitioning at all.
+    /// Both limits at zero is the one unrestricted mode, so passing zero twice retains every stored
+    /// line and every later one rather than discarding them.
     /// </remarks>
     public void SetLimits(int maxFirstLines, int maxLastLines)
     {

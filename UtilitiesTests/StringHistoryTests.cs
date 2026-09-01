@@ -579,4 +579,30 @@ public class StringHistoryTests
         _ = history.StringList.Count.Should().Be(5);
         _ = history.StringList[4].Should().Be("Line 10");
     }
+
+    [Fact]
+    public void SetLimits_OnADiscardedHistory_ShouldTrimEachSideAgainstItsOwnCount()
+    {
+        StringHistory history = new(maxFirstLines: 2, maxLastLines: 0);
+        for (int i = 0; i < 5; i++)
+        {
+            history.AppendLine($"Line {i}");
+        }
+
+        // Lines 2 through 4 are gone, so the head is closed at two.
+        history.SetLimits(maxFirstLines: 0, maxLastLines: 0);
+        history.AppendLine("Line 5");
+        history.AppendLine("Line 6");
+        history.AppendLine("Line 7");
+
+        history.SetLimits(maxFirstLines: 5, maxLastLines: 2);
+
+        // Each side is capped against what it holds rather than against the whole list.
+        // The head stays at two and the tail drops its oldest line.
+        _ = history.StringList.Count.Should().Be(4);
+        _ = history.StringList[0].Should().Be("Line 0");
+        _ = history.StringList[1].Should().Be("Line 1");
+        _ = history.StringList[2].Should().Be("Line 6");
+        _ = history.StringList[3].Should().Be("Line 7");
+    }
 }

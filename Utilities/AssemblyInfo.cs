@@ -4,7 +4,7 @@ using System.Reflection;
 namespace ptr727.Utilities;
 
 /// <summary>
-/// Provides AOT and trim safe access to assembly and consuming-application identity.
+/// Provides AOT-safe and trim-safe access to assembly and consuming-application identity.
 /// </summary>
 /// <remarks>
 /// Native AOT does not support <see cref="Assembly.GetExecutingAssembly"/> reliably

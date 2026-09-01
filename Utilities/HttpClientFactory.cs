@@ -170,7 +170,7 @@ public static class HttpClientFactory
         // - A request timeout, which is a cancellation with an inner TimeoutException.
         // - A network or IO error, an HttpRequestException with no status or an IOException.
         // - An HttpRequestException whose own status code is transient, 408, 429 or >= 500.
-        // Caller cancellation, an open circuit, a 4xx, and anything else are not retried.
+        // Caller cancellation, an open circuit, and anything not listed above are not retried.
         return outcome.Exception switch
         {
             OperationCanceledException canceled => canceled.InnerException is TimeoutException,
