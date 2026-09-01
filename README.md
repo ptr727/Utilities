@@ -34,6 +34,7 @@ Some useful and not so useful C# .NET utility classes.
 **Summary**:
 
 - Added `HttpClientFactory`, a reusable resilient HTTP client factory (Polly retry and circuit breaker) with an AOT safe `AssemblyInfo` identity helper and a tunable `HttpClientOptions`.
+- Fixed `Download.DownloadFile` and `DownloadFileAsync` leaving trailing bytes when downloading over a longer existing file.
 
 See [Release History](./HISTORY.md) for complete release notes and older versions.
 

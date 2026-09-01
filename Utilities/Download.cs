@@ -102,7 +102,9 @@ public static class Download
         try
         {
             using Stream httpStream = GetHttpClient().GetStreamAsync(uri).GetAwaiter().GetResult();
-            using FileStream fileStream = File.OpenWrite(fileName);
+
+            // Created rather than opened, so a shorter download replaces an existing file whole.
+            using FileStream fileStream = File.Create(fileName);
             httpStream.CopyTo(fileStream);
         }
         catch (Exception e) when (Log.LogAndHandle(e))
@@ -137,7 +139,8 @@ public static class Download
                 .ConfigureAwait(false);
             await using (httpStream.ConfigureAwait(false))
             {
-                FileStream fileStream = File.OpenWrite(fileName);
+                // Created rather than opened, so a shorter download replaces an existing file whole.
+                FileStream fileStream = File.Create(fileName);
                 await using (fileStream.ConfigureAwait(false))
                 {
                     await httpStream

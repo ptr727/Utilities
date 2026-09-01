@@ -5,6 +5,7 @@ Some useful and not so useful C# .NET utility classes.
 ## Release History
 
 - v4.0:
+  - Fixed `Download.DownloadFile` and `DownloadFileAsync` truncating the destination: both opened it with `File.OpenWrite`, which does not truncate, so a download over a longer existing file left that file's trailing bytes after the downloaded content and reported success.
   - Tightened the `StringHistory` limit contract: `MaxFirstLines` and `MaxLastLines` now document zero as retaining no lines on that side rather than as no limit (both at zero remains the unrestricted mode), reject a negative value with `ArgumentOutOfRangeException` at the constructor and at the property rather than at a later append, and re-partition the lines already stored when assigned, so a limit set after appending is honored instead of ignored.
   - Added `HttpClientFactory`, a reusable resilient HTTP client factory built on `Microsoft.Extensions.Http.Resilience` (Polly) with retry, circuit breaker, and connection pooling, tunable through the new `HttpClientOptions`; it exposes a shared singleton client, caller-owned clients, and the resilience handler for callers that build their own client with a custom base address or headers.
   - Added `AssemblyInfo`, an AOT safe assembly and application identity helper whose `For<T>()` substitutes for `Assembly.GetExecutingAssembly()` (unreliable under Native AOT), and which supplies the consuming application name, version, and a default User-Agent.

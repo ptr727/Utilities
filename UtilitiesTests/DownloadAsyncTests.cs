@@ -60,6 +60,44 @@ public class DownloadAsyncTests
     }
 
     [Fact]
+    public async Task DownloadFileAsync_OverALongerExistingFile_ShouldReplaceIt()
+    {
+        using LoopbackServer server = new();
+        string tempFile = Path.GetTempFileName();
+
+        try
+        {
+            await File.WriteAllTextAsync(
+                tempFile,
+                new string('x', LoopbackServer.ContentLength * 4),
+                TestContext.Current.CancellationToken
+            );
+
+            bool result = await Download.DownloadFileAsync(
+                server.OkUri,
+                tempFile,
+                TestContext.Current.CancellationToken
+            );
+
+            _ = result.Should().BeTrue();
+
+            // Opening rather than creating the file would leave the seeded bytes after the body.
+            string written = await File.ReadAllTextAsync(
+                tempFile,
+                TestContext.Current.CancellationToken
+            );
+            _ = written.Should().Be(LoopbackServer.Content);
+        }
+        finally
+        {
+            if (File.Exists(tempFile))
+            {
+                File.Delete(tempFile);
+            }
+        }
+    }
+
+    [Fact]
     public async Task GetContentInfoAsync_WithNotFoundUri_ShouldReturnFalse()
     {
         using LoopbackServer server = new();
