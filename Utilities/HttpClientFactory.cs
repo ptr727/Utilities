@@ -7,7 +7,7 @@ namespace ptr727.Utilities;
 
 /// <summary>
 /// Creates resilient <see cref="HttpClient"/> instances with retry and circuit-breaker
-/// policies, connection pooling, and an AOT safe default User-Agent.
+/// policies, connection pooling, and an AOT-safe default User-Agent.
 /// </summary>
 /// <remarks>
 /// Use <see cref="GetClient"/> for a shared singleton, <see cref="CreateClient(HttpClientOptions)"/>
@@ -166,11 +166,11 @@ public static class HttpClientFactory
                 && IsTransientStatusCode((int)outcome.Result.StatusCode);
         }
 
-        // Retry known-transient failures: a request timeout (a cancellation with an inner
-        // TimeoutException), a network or IO error (an HttpRequestException with no status, or an
-        // IOException), or an HttpRequestException whose own status code is transient (408, 429,
-        // >= 500). Caller cancellation, an open circuit, a 4xx status, and any other exception
-        // (including programming errors) are not retried.
+        // Retry only known-transient failures.
+        // - A request timeout, which is a cancellation with an inner TimeoutException.
+        // - A network or IO error, an HttpRequestException with no status or an IOException.
+        // - An HttpRequestException whose own status code is transient, 408, 429 or >= 500.
+        // Caller cancellation, an open circuit, a 4xx, and anything else are not retried.
         return outcome.Exception switch
         {
             OperationCanceledException canceled => canceled.InnerException is TimeoutException,
