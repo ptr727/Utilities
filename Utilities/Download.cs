@@ -99,16 +99,29 @@ public static class Download
         ArgumentNullException.ThrowIfNull(uri);
         ArgumentNullException.ThrowIfNull(fileName);
 
+        string tempFileName = CreateTemporaryPath(fileName);
         try
         {
-            using Stream httpStream = GetHttpClient().GetStreamAsync(uri).GetAwaiter().GetResult();
+            using (Stream httpStream = GetHttpClient().GetStreamAsync(uri).GetAwaiter().GetResult())
+            using (
+                FileStream fileStream = new(
+                    tempFileName,
+                    FileMode.Create,
+                    FileAccess.Write,
+                    FileShare.None
+                )
+            )
+            {
+                httpStream.CopyTo(fileStream);
+            }
 
-            // Created rather than opened, so a shorter download replaces an existing file whole.
-            using FileStream fileStream = File.Create(fileName);
-            httpStream.CopyTo(fileStream);
+            // The destination is replaced only once the whole body is on disk.
+            // A download that fails partway therefore leaves what was already there untouched.
+            File.Move(tempFileName, fileName, overwrite: true);
         }
         catch (Exception e) when (Log.LogAndHandle(e))
         {
+            DeleteTemporary(tempFileName);
             return false;
         }
 
@@ -132,6 +145,7 @@ public static class Download
         ArgumentNullException.ThrowIfNull(uri);
         ArgumentNullException.ThrowIfNull(fileName);
 
+        string tempFileName = CreateTemporaryPath(fileName);
         try
         {
             Stream httpStream = await GetHttpClient()
@@ -139,8 +153,12 @@ public static class Download
                 .ConfigureAwait(false);
             await using (httpStream.ConfigureAwait(false))
             {
-                // Created rather than opened, so a shorter download replaces an existing file whole.
-                FileStream fileStream = File.Create(fileName);
+                FileStream fileStream = new(
+                    tempFileName,
+                    FileMode.Create,
+                    FileAccess.Write,
+                    FileShare.None
+                );
                 await using (fileStream.ConfigureAwait(false))
                 {
                     await httpStream
@@ -148,9 +166,14 @@ public static class Download
                         .ConfigureAwait(false);
                 }
             }
+
+            // The destination is replaced only once the whole body is on disk.
+            // A download that fails partway therefore leaves what was already there untouched.
+            File.Move(tempFileName, fileName, overwrite: true);
         }
         catch (Exception e) when (Log.LogAndHandle(e))
         {
+            DeleteTemporary(tempFileName);
             return false;
         }
 
@@ -218,6 +241,32 @@ public static class Download
         Justification = "Exposed as a method so callers see they receive the shared, lazily-initialized HttpClient rather than a lightweight property value."
     )]
     public static HttpClient GetHttpClient() => s_httpClient.Value;
+
+    private static string CreateTemporaryPath(string fileName)
+    {
+        // The temporary file sits beside the destination, so the replacing move stays on one volume.
+        string? directory = Path.GetDirectoryName(fileName);
+        return Path.Combine(
+            string.IsNullOrEmpty(directory) ? "." : directory,
+            Path.GetRandomFileName()
+        );
+    }
+
+    private static void DeleteTemporary(string fileName)
+    {
+        try
+        {
+            File.Delete(fileName);
+        }
+        catch (IOException)
+        {
+            // A partial download left behind is not itself a download failure.
+        }
+        catch (UnauthorizedAccessException)
+        {
+            // Same, where the file or its directory denies the delete.
+        }
+    }
 
     /// <summary>
     /// Creates a URI with optional username and password credentials.

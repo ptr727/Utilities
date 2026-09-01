@@ -98,6 +98,41 @@ public class DownloadAsyncTests
     }
 
     [Fact]
+    public async Task DownloadFileAsync_WhenTheDownloadFails_ShouldLeaveTheDestination()
+    {
+        using LoopbackServer server = new();
+        string tempFile = Path.GetTempFileName();
+        string existing = new('x', LoopbackServer.ContentLength * 4);
+
+        try
+        {
+            await File.WriteAllTextAsync(tempFile, existing, TestContext.Current.CancellationToken);
+
+            bool result = await Download.DownloadFileAsync(
+                server.MissingUri,
+                tempFile,
+                TestContext.Current.CancellationToken
+            );
+
+            _ = result.Should().BeFalse();
+
+            // Truncating the destination at open time would leave an empty file here.
+            string written = await File.ReadAllTextAsync(
+                tempFile,
+                TestContext.Current.CancellationToken
+            );
+            _ = written.Should().Be(existing);
+        }
+        finally
+        {
+            if (File.Exists(tempFile))
+            {
+                File.Delete(tempFile);
+            }
+        }
+    }
+
+    [Fact]
     public async Task GetContentInfoAsync_WithNotFoundUri_ShouldReturnFalse()
     {
         using LoopbackServer server = new();

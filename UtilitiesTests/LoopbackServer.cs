@@ -97,8 +97,13 @@ internal sealed class LoopbackServer : IDisposable
         _listener.Dispose();
 
         // Teardown never fails a test whose assertions already passed.
-        // The loops are waited for without rethrowing their results, and the wait is bounded.
-        Task served = Task.WhenAll([_acceptTask, .. _connections.Keys]);
+        // The loops are waited for without rethrowing their results, and each wait is bounded.
+        // The accept loop is the only thing that adds a connection.
+        // Waiting for it first is what makes the set final rather than a mid-iteration snapshot.
+        _ = Task.WhenAny(_acceptTask, Task.Delay(s_disposeTimeout)).GetAwaiter().GetResult();
+        _ = _acceptTask.Exception;
+
+        Task served = Task.WhenAll(_connections.Keys);
         _ = Task.WhenAny(served, Task.Delay(s_disposeTimeout)).GetAwaiter().GetResult();
         _ = served.Exception;
 
@@ -151,6 +156,14 @@ internal sealed class LoopbackServer : IDisposable
         {
             NetworkStream stream = client.GetStream();
             string target = await ReadRequestTargetAsync(stream).ConfigureAwait(false);
+
+            // A peer that connects and sends nothing is not a request.
+            // Counting it would make the exact-count assertions depend on whether one happened.
+            if (target.Length == 0)
+            {
+                return;
+            }
+
             _ = Interlocked.Increment(ref _requestCount);
 
             switch (target)
@@ -165,6 +178,8 @@ internal sealed class LoopbackServer : IDisposable
                     await WriteResponseAsync(stream, 200, "OK", Content).ConfigureAwait(false);
                     break;
 
+                // The default arm answers the same way, so this case is what names the route.
+                case "/" + MissingPath:
                 default:
                     await WriteResponseAsync(stream, 404, "Not Found", string.Empty)
                         .ConfigureAwait(false);

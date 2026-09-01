@@ -36,6 +36,31 @@ public class DownloadTests
     }
 
     [Fact]
+    public void DownloadFile_WhenTheDownloadFails_ShouldLeaveTheDestination()
+    {
+        using LoopbackServer server = new();
+        string tempFile = Path.GetTempFileName();
+        string existing = new('x', LoopbackServer.ContentLength * 4);
+
+        try
+        {
+            File.WriteAllText(tempFile, existing);
+
+            _ = Download.DownloadFile(server.MissingUri, tempFile).Should().BeFalse();
+
+            // Truncating the destination at open time would leave an empty file here.
+            _ = File.ReadAllText(tempFile).Should().Be(existing);
+        }
+        finally
+        {
+            if (File.Exists(tempFile))
+            {
+                File.Delete(tempFile);
+            }
+        }
+    }
+
+    [Fact]
     public void GetContentInfo_WithNotFoundUri_ShouldReturnFalse()
     {
         using LoopbackServer server = new();

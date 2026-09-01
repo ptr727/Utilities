@@ -5,9 +5,9 @@ namespace ptr727.Utilities;
 /// </summary>
 /// <remarks>
 /// This class is useful for maintaining a bounded history buffer, keeping the first N and last M lines
-/// while discarding intermediate content when limits are exceeded. Both limits at zero is the one
-/// unrestricted mode, where every appended line is retained; zero on a single side retains no lines
-/// on that side. A limit assigned after lines have been appended re-partitions what is already
+/// while discarding intermediate content when limits are exceeded. Zero on a single side retains no
+/// lines on that side, and zero on both is the one unrestricted mode, where every appended line is
+/// retained. A limit assigned after lines have been appended re-partitions what is already
 /// stored, so the history never holds more than the limits then in force allow. Re-partitioning
 /// only ever discards: once a line has been dropped the head is closed, and a later, larger
 /// <see cref="MaxFirstLines"/> raises the ceiling without recovering or repopulating it.
@@ -30,12 +30,14 @@ public class StringHistory
     public StringHistory(int maxFirstLines, int maxLastLines)
         : this()
     {
-        // Validated here rather than in the setters so the exception names the caller's parameter.
+        // Validated here so the exception names the caller's own parameter rather than "value".
         ArgumentOutOfRangeException.ThrowIfNegative(maxFirstLines);
         ArgumentOutOfRangeException.ThrowIfNegative(maxLastLines);
 
-        MaxFirstLines = maxFirstLines;
-        MaxLastLines = maxLastLines;
+        // Assigned to the fields because the two limits apply together.
+        // The setters would apply them one at a time and re-partition an empty history twice.
+        _maxFirstLines = maxFirstLines;
+        _maxLastLines = maxLastLines;
     }
 
     /// <summary>
@@ -107,7 +109,7 @@ public class StringHistory
 
     /// <summary>
     /// Gets or sets the maximum number of first lines to retain.
-    /// Set to 0 to retain no first lines; both limits at 0 retains every line.
+    /// Set to 0 to retain no first lines. Every line is retained only when both limits are 0.
     /// </summary>
     /// <remarks>
     /// Assigning this re-partitions the lines already stored against the limits then in force,
@@ -130,7 +132,7 @@ public class StringHistory
 
     /// <summary>
     /// Gets or sets the maximum number of last lines to retain.
-    /// Set to 0 to retain no last lines; both limits at 0 retains every line.
+    /// Set to 0 to retain no last lines. Every line is retained only when both limits are 0.
     /// </summary>
     /// <remarks>
     /// Assigning this re-partitions the lines already stored against the limits then in force,
@@ -162,7 +164,7 @@ public class StringHistory
     /// </summary>
     private void Repartition()
     {
-        // Both limits at zero is the unrestricted mode, which retains every line.
+        // Zero on both limits is the unrestricted mode, which retains every line.
         // Nothing is discarded here, so the counters already describe the stored list.
         if (MaxFirstLines == 0 && MaxLastLines == 0)
         {
