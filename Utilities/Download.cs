@@ -5,6 +5,8 @@ namespace ptr727.Utilities;
 /// </summary>
 public static class Download
 {
+    private const int TemporaryFileAttempts = 5;
+
     private static readonly Lazy<HttpClient> s_httpClient = new(() =>
         HttpClientFactory.CreateClient(
             new HttpClientOptions { Timeout = TimeSpan.FromSeconds(TimeoutSeconds) }
@@ -99,18 +101,12 @@ public static class Download
         ArgumentNullException.ThrowIfNull(uri);
         ArgumentNullException.ThrowIfNull(fileName);
 
-        string tempFileName = CreateTemporaryPath(fileName);
+        // Named only once the file behind it exists, so a failure before that deletes nothing.
+        string tempFileName = string.Empty;
         try
         {
             using (Stream httpStream = GetHttpClient().GetStreamAsync(uri).GetAwaiter().GetResult())
-            using (
-                FileStream fileStream = new(
-                    tempFileName,
-                    FileMode.Create,
-                    FileAccess.Write,
-                    FileShare.None
-                )
-            )
+            using (FileStream fileStream = CreateTemporaryFile(fileName, out tempFileName))
             {
                 httpStream.CopyTo(fileStream);
             }
@@ -145,7 +141,8 @@ public static class Download
         ArgumentNullException.ThrowIfNull(uri);
         ArgumentNullException.ThrowIfNull(fileName);
 
-        string tempFileName = CreateTemporaryPath(fileName);
+        // Named only once the file behind it exists, so a failure before that deletes nothing.
+        string tempFileName = string.Empty;
         try
         {
             Stream httpStream = await GetHttpClient()
@@ -153,12 +150,7 @@ public static class Download
                 .ConfigureAwait(false);
             await using (httpStream.ConfigureAwait(false))
             {
-                FileStream fileStream = new(
-                    tempFileName,
-                    FileMode.Create,
-                    FileAccess.Write,
-                    FileShare.None
-                );
+                FileStream fileStream = CreateTemporaryFile(fileName, out tempFileName);
                 await using (fileStream.ConfigureAwait(false))
                 {
                     await httpStream
@@ -242,18 +234,50 @@ public static class Download
     )]
     public static HttpClient GetHttpClient() => s_httpClient.Value;
 
-    private static string CreateTemporaryPath(string fileName)
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Reliability",
+        "CA2000:Dispose objects before losing scope",
+        Justification = "Ownership of the stream transfers to the caller, which disposes it."
+    )]
+    private static FileStream CreateTemporaryFile(string fileName, out string tempFileName)
     {
         // The temporary file sits beside the destination, so the replacing move stays on one volume.
         string? directory = Path.GetDirectoryName(fileName);
-        return Path.Combine(
-            string.IsNullOrEmpty(directory) ? "." : directory,
-            Path.GetRandomFileName()
-        );
+        string parent = string.IsNullOrEmpty(directory) ? "." : directory;
+
+        for (int attempt = 0; ; attempt++)
+        {
+            string candidate = Path.Combine(parent, Path.GetRandomFileName());
+            try
+            {
+                // CreateNew rather than Create, so a name already taken is never overwritten.
+                FileStream stream = new(
+                    candidate,
+                    FileMode.CreateNew,
+                    FileAccess.Write,
+                    FileShare.None
+                );
+
+                // Assigned only here, so the caller deletes a path this call actually created.
+                tempFileName = candidate;
+                return stream;
+            }
+            catch (IOException) when (attempt < TemporaryFileAttempts && File.Exists(candidate))
+            {
+                // A random name collided, and another name is the whole remedy.
+                // Any other IO failure, a missing directory among them, is the caller's to report.
+            }
+        }
     }
 
     private static void DeleteTemporary(string fileName)
     {
+        // Empty means no temporary file was created, so there is nothing of this call's to remove.
+        if (string.IsNullOrEmpty(fileName))
+        {
+            return;
+        }
+
         try
         {
             File.Delete(fileName);

@@ -61,6 +61,22 @@ public class DownloadTests
     }
 
     [Fact]
+    public void DownloadFile_WithAnUnusableDestination_ShouldReturnFalse()
+    {
+        using LoopbackServer server = new();
+        string missingDirectory = Path.Combine(
+            Path.GetTempPath(),
+            Path.GetRandomFileName(),
+            "file.txt"
+        );
+
+        // Naming the temporary file is part of the download.
+        // A destination that cannot hold one reports failure rather than throwing.
+        _ = Download.DownloadFile(server.OkUri, missingDirectory).Should().BeFalse();
+        _ = File.Exists(missingDirectory).Should().BeFalse();
+    }
+
+    [Fact]
     public void GetContentInfo_WithNotFoundUri_ShouldReturnFalse()
     {
         using LoopbackServer server = new();

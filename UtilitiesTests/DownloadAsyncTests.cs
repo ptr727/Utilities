@@ -133,6 +133,28 @@ public class DownloadAsyncTests
     }
 
     [Fact]
+    public async Task DownloadFileAsync_WithAnUnusableDestination_ShouldReturnFalse()
+    {
+        using LoopbackServer server = new();
+        string missingDirectory = Path.Combine(
+            Path.GetTempPath(),
+            Path.GetRandomFileName(),
+            "file.txt"
+        );
+
+        // Naming the temporary file is part of the download.
+        // A destination that cannot hold one reports failure rather than throwing.
+        bool result = await Download.DownloadFileAsync(
+            server.OkUri,
+            missingDirectory,
+            TestContext.Current.CancellationToken
+        );
+
+        _ = result.Should().BeFalse();
+        _ = File.Exists(missingDirectory).Should().BeFalse();
+    }
+
+    [Fact]
     public async Task GetContentInfoAsync_WithNotFoundUri_ShouldReturnFalse()
     {
         using LoopbackServer server = new();
