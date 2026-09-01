@@ -22,8 +22,8 @@ public class StringHistory
     /// <summary>
     /// Initializes a new instance of the <see cref="StringHistory"/> class with specified limits.
     /// </summary>
-    /// <param name="maxFirstLines">Maximum number of first lines to retain, or 0 to retain none.</param>
-    /// <param name="maxLastLines">Maximum number of last lines to retain, or 0 to retain none.</param>
+    /// <param name="maxFirstLines">Maximum number of first lines to retain, or 0 to retain none on that side.</param>
+    /// <param name="maxLastLines">Maximum number of last lines to retain, or 0 to retain none on that side.</param>
     /// <exception cref="ArgumentOutOfRangeException">
     /// Thrown when <paramref name="maxFirstLines"/> or <paramref name="maxLastLines"/> is negative.
     /// </exception>
@@ -108,6 +108,36 @@ public class StringHistory
         + (_stringList.Count > 0 ? Environment.NewLine : string.Empty);
 
     /// <summary>
+    /// Sets both limits together, re-partitioning the stored lines once against the pair.
+    /// </summary>
+    /// <param name="maxFirstLines">Maximum number of first lines to retain, or 0 to retain none on that side.</param>
+    /// <param name="maxLastLines">Maximum number of last lines to retain, or 0 to retain none on that side.</param>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when <paramref name="maxFirstLines"/> or <paramref name="maxLastLines"/> is negative.
+    /// </exception>
+    /// <remarks>
+    /// Assigning <see cref="MaxFirstLines"/> and <see cref="MaxLastLines"/> one after the other
+    /// re-partitions twice, so the first assignment measures against the other limit's previous
+    /// value and can discard lines the final pair would have retained. Which order avoids that,
+    /// where either does, depends on the values and on what is stored, so no fixed ordering is safe
+    /// and this applies both before re-partitioning at all.
+    /// Both limits at zero is the one unrestricted mode, so passing zero twice retains every stored
+    /// line and every later one rather than discarding them.
+    /// </remarks>
+    public void SetLimits(int maxFirstLines, int maxLastLines)
+    {
+        // Validated here so the exception names the caller's own parameter rather than "value".
+        ArgumentOutOfRangeException.ThrowIfNegative(maxFirstLines);
+        ArgumentOutOfRangeException.ThrowIfNegative(maxLastLines);
+
+        // Assigned to the fields rather than through the setters.
+        // Those re-partition once each, which is the order dependence this method removes.
+        _maxFirstLines = maxFirstLines;
+        _maxLastLines = maxLastLines;
+        Repartition();
+    }
+
+    /// <summary>
     /// Gets or sets the maximum number of first lines to retain.
     /// Set to 0 to retain no first lines. Every line is retained only when both limits are 0.
     /// </summary>
@@ -115,8 +145,8 @@ public class StringHistory
     /// Assigning this re-partitions the lines already stored against the limits then in force,
     /// which discards whatever the new limits exclude and never recovers a line already dropped.
     /// Setting both limits therefore applies them one at a time, and the first assignment can
-    /// discard lines the second would have retained. Prefer the two-argument constructor when both
-    /// limits are known up front.
+    /// discard lines the second would have retained. Use <see cref="SetLimits"/> to apply both at
+    /// once, or the two-argument constructor when both limits are known up front.
     /// </remarks>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the assigned value is negative.</exception>
     public int MaxFirstLines
@@ -138,8 +168,8 @@ public class StringHistory
     /// Assigning this re-partitions the lines already stored against the limits then in force,
     /// which discards whatever the new limits exclude and never recovers a line already dropped.
     /// Setting both limits therefore applies them one at a time, and the first assignment can
-    /// discard lines the second would have retained. Prefer the two-argument constructor when both
-    /// limits are known up front.
+    /// discard lines the second would have retained. Use <see cref="SetLimits"/> to apply both at
+    /// once, or the two-argument constructor when both limits are known up front.
     /// </remarks>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the assigned value is negative.</exception>
     public int MaxLastLines
