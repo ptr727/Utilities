@@ -41,11 +41,14 @@ visible comments, routinely still carries a finding nobody has answered. Treatin
 2. A review is confirmed on the **current head SHA**, matched by commit SHA rather than assumed
    from a green merge-state. A push makes checks go green *before* the re-review lands, and the
    matched review is **read**, not just counted. A review can carry the head SHA and still decline
-   the PR outright, or say it read only part of the changed files. `pr_review.py`'s
-   `review_on_head` names Copilot's own coverage specifically, the currently required reviewer,
-   not "no review of any kind covers this head": a trialed advisory reviewer (CodeRabbit,
-   Qodo) carrying the exact head under `other_reviewed`, with an empty review body and no new
-   threads, is its own ordinary "reviewed, nothing to flag" shape, not a missing review (#1066).
+   the PR outright, or say it read only part of the changed files. The coverage this item
+   requires is Copilot's, and CodeRabbit and Qodo are advisory, since the hub's
+   `docs/pr-reviewer-evaluation.md` "Status" names Copilot the incumbent and says no candidate is
+   a required reviewer: an advisory reviewer's absence blocks nothing, while its findings owe
+   item 3 exactly as Copilot's do. `pr_review.py`'s `review_on_head` names Copilot's own coverage
+   specifically, not "no review of any kind covers this head": an advisory reviewer carrying the
+   exact head under `other_reviewed`, with an empty review body and no new threads, is its own
+   ordinary "reviewed, nothing to flag" shape, not a missing review (#1066).
 3. **Every** finding on that head SHA is closed: threads resolved, issue-level comments (which
    have no resolve action) triaged and replied to, **and** the low-confidence findings collapsed
    in the review body investigated and answered. Those appear in no thread, so polling threads
@@ -55,6 +58,22 @@ visible comments, routinely still carries a finding nobody has answered. Treatin
    give each one the same triage the low-confidence findings above already get (#1058). Qodo's own
    `Resolved`/`Dismissed` self-tracked badge is a fast pre-triage signal, not a substitute for
    reading the finding, spot-verify against `gh pr diff` rather than trusting it outright.
+   What closing a finding owes turns on whether it is `pre-existing`. A finding on text inside a
+   canonical Markdown unit, one the hub's `scripts/canonical_review.py list` names, classed
+   `pre-existing` by the classes `local-strict-review` "Disposing of Findings" defines for a
+   local pass, applied here to a PR-hosted finding, is outcome 4 of "Every finding ends in one
+   of five outcomes" below applied once per unit rather than once per finding: the round gathers
+   that unit's such findings onto the unit's tracker, an open hub issue whose title carries the
+   unit key, retitled by the change that moves the key and filed by whichever round first needs
+   it, and answers each finding with that issue's link, resolving a thread on that reply, so a
+   `pre-existing` remark on a sentence the change never touched costs one link rather than a
+   decline or an issue per finding. The batch runs in the hub, which authors the text of every
+   verbatim unit. A carrying repository routes a finding on a verbatim unit by fidelity rather
+   than by class, since a resync writes the whole text there: it declines the finding under
+   that section's outcome 2, ownership sitting elsewhere, and files it on the same tracker,
+   while a finding on an intent unit is filed there too, the carrier adapting its own copy
+   meanwhile, since the defect is still fixed at the source. Every other finding, a `style`
+   remark on untouched text included, takes its own outcome in that section.
 4. Nothing in the review was a shape the tooling could not read (an unrecognized heading, a moved
    section, an unfamiliar coverage wording). An unrecognized shape blocks the gate on its own.
    File an issue naming it and quoting the body, rather than guessing what the new wording
@@ -100,19 +119,22 @@ Run `local-strict-review` against the branch's current diff before step 1's push
 The review effort setting is user-controlled. The workflow never selects or changes it. `status` reports `effort=lite`, `effort=balanced`, or `effort=max` when the completed review exposes that metadata, lowercased, and names an inherited setting apart from a chosen one in a separate `effort_source=default|explicit` field, both reading `unknown` when no effort line parses. Missing effort metadata reports `unknown` and does not change coverage or completion. A pending effort-labeled request can complete without a `copilot_work_started` timeline event, so absence of that event never proves the request is abandoned. The bounded timeout reports `PENDING` when no review or terminal answer arrives. After a timeout with `requested=yes`, rerun `wait` for another bounded interval by default because the request may still be active. If the maintainer directs a retry, remove Copilot in the pull request UI, add it again, and rerun `wait`. This recovery replaces only the review request and never changes the effort setting.
 
 Drive to green, a review confirmed on the latest head SHA and every actionable finding closed,
-then apply the Merge Gate above. **Never exit the loop early.** A round count is not a stopping
-condition, and neither is patience running out. Reporting only that the PR was opened is an early
-exit unless the maintainer explicitly instructed the agent not to monitor or drive its review.
+then apply the Merge Gate above. **Never exit this PR-hosted loop early.** Its pre-push
+counterpart is bounded instead by `local-strict-review` "Disposing of Findings". A round count
+is not a stopping condition here, and neither is patience running out. Reporting only that the
+PR was opened is an early exit unless the maintainer explicitly instructed the agent not to
+monitor or drive its review.
 
 After an authorized merge, run the `repo-worktree` post-merge cleanup procedure unless the user explicitly asks to retain the checkout or branch. The pull request loop is incomplete while its finished worktree or local task branch remains. It is also incomplete until the base clone returns to fetched and fast-forwarded `develop`.
 
 ## Every finding ends in one of five outcomes
 
-1. **Real, so fix it.** Take the fix through `local-strict-review` the same way step 1's push
-   went, then reply with the fixing commit SHA. A branch already reviewed once
-   has not been reviewed for the fix, which is the round this gets dropped on and the churn
-   `local-strict-review` exists to stop. For a finding on platform-specific code
-   (PowerShell, a macOS- or WSL-only path), "fixed" means executed on that platform, per
+1. **Real, so fix it.** Take the fix through `local-strict-review` the same way the push that
+   opened the pull request went, per `pr-review-conduct` "Expected review loop", then reply with
+   the fixing commit SHA. A branch already reviewed once has not been reviewed for the fix, which
+   is the round the `local-strict-review` pass gets dropped on and the churn `local-strict-review`
+   exists to stop. For a finding on platform-specific code (PowerShell, a macOS- or WSL-only
+   path), "fixed" means executed on that platform, per
    `agent-conduct` "Before Claiming Done": a fix reasoned out by analogy to a tested equivalent
    elsewhere is not yet fixed, and the reply says so rather than claiming the SHA closes it.
 2. **Not real, or real but structurally out of scope, so decline in the thread with evidence.**
@@ -140,6 +162,9 @@ After an authorized merge, run the `repo-worktree` post-merge cleanup procedure 
 on a sibling repo or PR, even within one batch or one session, gets its own outcome: its own
 evidence-backed decline (outcome 2) or its own explicit maintainer answer (outcome 3). A prior
 instance's outcome is context for the new one, never a standing answer to reuse in its place.
+
+`pr-review-conduct` "Every finding ends in one of five outcomes" keeps the full rule, and the
+`drive-pr` Skill carries it whole as a generated include, applying it while driving.
 
 ## Triaging findings
 
@@ -171,6 +196,16 @@ from a hub checkout. Do not use a provider connector or reconstruct the GitHub m
   change), don't keep silently re-declining it.
 - A finding is judged real but should not be fixed. That decision is never the agent's alone.
 - An architectural redesign is proposed rather than a bug fix.
+
+An agent that cannot reach the maintainer directly, a dispatched subagent being the ordinary case,
+escalates to whoever dispatched it and stops that unit of work there. It never substitutes its own
+judgment for the escalation because asking is inconvenient from where it sits, and it never resolves
+the thread to keep moving. A dispatcher receiving one puts it to the maintainer at the point that
+work stopped, per `GOVERNANCE.md` "Communicating with the User", and deciding it instead so the
+dispatcher's own work keeps moving is the same resolution by silence this skill's own
+ask-the-maintainer outcome forbids, one seat further from the maintainer. The escalation may travel through several seats, and what stays stopped is the
+escalated unit of work, in whichever seat holds it, until the answer arrives. A dispatcher's other
+work is not stopped by it.
 
 ## Mechanics Live Elsewhere
 
