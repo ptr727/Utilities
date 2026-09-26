@@ -15,7 +15,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="All" />
     <!-- coverlet.collector is VSTest-only; Microsoft.Testing.Extensions.CodeCoverage is the
          native MTP coverage provider (drives the dotnet test coverage flag). -->
     <!-- Unlike coverlet.collector, this extension's self-registration code is compiled in, so
