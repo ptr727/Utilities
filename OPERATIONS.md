@@ -35,7 +35,7 @@ docker run --rm -v "$PWD":/check --workdir /check mstruebing/editorconfig-checke
 ```shell
 hub=/path/to/ProjectTemplate
 base=develop
-python3 "$hub/.github/actions/prose-gate/prose_lint.py" --diff "origin/$base"
+uv run --no-project --script "$hub/.github/actions/prose-gate/prose_lint.py" --diff "origin/$base"
 python3 "$hub/.github/actions/repo-gate/repo_gate.py" --root .
 ```
 
