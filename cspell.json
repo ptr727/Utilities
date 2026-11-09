@@ -5,7 +5,8 @@
     "**/bin/**",
     "**/obj/**",
     ".artifacts/**",
-    ".git/**"
+    ".git/**",
+    "**/*.min.*"
   ],
   "ignoreRegExpList": [
     "/```mermaid[\\s\\S]*?```/g"
