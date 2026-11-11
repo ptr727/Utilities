@@ -8,7 +8,7 @@
         <File Path="ARCHITECTURE.md" />
         <File Path="AUDIT.md" />
         <File Path="CLAUDE.md" />
-        <File Path="codecov.yml" />
+        <File Path=".codecov.yml" />
         <File Path="CODESTYLE.md" />
         <File Path="cspell.json" />
         <File Path="Directory.Build.props" />
