@@ -77,8 +77,8 @@ public static class Download
             _ = httpResponse.EnsureSuccessStatusCode();
 
             long size = httpResponse.Content.Headers.ContentLength ?? 0;
-            DateTime modifiedTime =
-                httpResponse.Content.Headers.LastModified?.DateTime ?? DateTime.MinValue;
+            DateTime modifiedTime = httpResponse.Content.Headers.LastModified?.DateTime
+                ?? DateTime.MinValue;
             return (true, size, modifiedTime);
         }
         catch (Exception e) when (Log.LogAndHandle(e))
