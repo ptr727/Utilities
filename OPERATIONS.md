@@ -95,6 +95,6 @@ The library itself logs through an `ILoggerFactory` seam and configures no sink,
 - [`.gitattributes`](./.gitattributes): git's own line-ending enforcement, normalizing every detected text file to LF and holding the Windows command-script exceptions.
 - [`.markdownlint-cli2.jsonc`](./.markdownlint-cli2.jsonc), [`cspell.json`](./cspell.json), [`.editorconfig-checker.json`](./.editorconfig-checker.json): the document lint configuration the editor, the CLI, and CI share.
 - [`global.json`](./global.json): the `dotnet test` runner selection, which is what puts the test run on Microsoft.Testing.Platform.
-- [`codecov.yml`](./codecov.yml): coverage reporting, informational so a coverage delta never gates a pull request.
+- [`.codecov.yml`](./.codecov.yml): coverage reporting, informational so a coverage delta never gates a pull request.
 - [`host-tools.json`](./host-tools.json): what a host needs beyond the fleet declaration, layered over it tighten-only.
 - [`.github/dependabot.yml`](./.github/dependabot.yml): every ecosystem listed twice, once per target branch, so `main` and `develop` stay current independently.
