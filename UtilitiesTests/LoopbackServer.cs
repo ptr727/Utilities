@@ -100,24 +100,15 @@ internal sealed class LoopbackServer : IDisposable
         // The loops are waited for without rethrowing their results, and each wait is bounded.
         // The accept loop is the only thing that adds a connection.
         // Waiting for it first is what makes the set final rather than a mid-iteration snapshot.
-        WaitBounded(_acceptTask);
+        _ = Task.WaitAny([_acceptTask], s_disposeTimeout);
         _ = _acceptTask.Exception;
 
         Task served = Task.WhenAll(_connections.Keys);
-        WaitBounded(served);
+        _ = Task.WaitAny([served], s_disposeTimeout);
         _ = served.Exception;
 
         _cancellation.Dispose();
     }
-
-    private static void WaitBounded(Task task) =>
-        _ = task.ContinueWith(
-                static _ => { },
-                CancellationToken.None,
-                TaskContinuationOptions.ExecuteSynchronously,
-                TaskScheduler.Default
-            )
-            .Wait(s_disposeTimeout);
 
     private async Task AcceptAsync()
     {
