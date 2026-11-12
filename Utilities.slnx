@@ -1,5 +1,6 @@
 <Solution>
     <Folder Name="/Solution Items/">
+        <File Path=".codecov.yml" />
         <File Path=".editorconfig" />
         <File Path=".editorconfig-checker.json" />
         <File Path=".gitattributes" />
@@ -8,7 +9,6 @@
         <File Path="ARCHITECTURE.md" />
         <File Path="AUDIT.md" />
         <File Path="CLAUDE.md" />
-        <File Path="codecov.yml" />
         <File Path="CODESTYLE.md" />
         <File Path="cspell.json" />
         <File Path="Directory.Build.props" />
