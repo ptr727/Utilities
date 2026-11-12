@@ -110,8 +110,6 @@ internal sealed class LoopbackServer : IDisposable
         _cancellation.Dispose();
     }
 
-    // Waits up to the dispose timeout for a task to finish, whatever its outcome.
-    // The continuation never faults, so the wait never rethrows, and no timer outlives it.
     private static void WaitBounded(Task task) =>
         _ = task.ContinueWith(
                 static _ => { },
