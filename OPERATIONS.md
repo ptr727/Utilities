@@ -30,7 +30,7 @@ docker run --rm -v "$PWD":/work -w /work rhysd/actionlint
 docker run --rm -v "$PWD":/check --workdir /check mstruebing/editorconfig-checker:latest
 ```
 
-The VS Code Lint tasks for these four linters run them through the hub's `scripts/docker_lint.py`, fetched by [`hub_fetch_run.py`](./hub_fetch_run.py). Each container sees a read-only snapshot of the tracked and unignored files, with no network. `Lint: EOL` and `Lint: Prose` run the repository gate's EOL check and the prose gate through the same helper, with no container. `Lint: Prose` reads the whole repository rather than the changed lines, so it reports findings the diff-scoped CI run below does not.
+The VS Code Lint tasks for these linters run them through the hub's `scripts/docker_lint.py`, fetched by [`hub_fetch_run.py`](./hub_fetch_run.py). Each container sees a read-only snapshot of the tracked and unignored files, with no network. `Lint: EOL` and `Lint: Prose` run the repository gate's EOL check and the prose gate through the same helper, with no container. `Lint: Prose` reads the whole repository rather than the changed lines, so it reports findings the diff-scoped CI run below does not.
 
 **The repository gates run from a hub checkout**, because the prose and repository gates are hosted there rather than carried here. Both are read-only, and CI runs them on every pull request. Run them from this repository's root, since both resolve their target from the working directory. Point `hub` at a checkout of the fleet template fetched at `main`, and set `base` to the branch the work actually targets, since the prose gate reports only on lines changed against it and a promotion branch targets `main` rather than `develop`:
 
