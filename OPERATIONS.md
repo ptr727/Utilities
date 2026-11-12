@@ -30,7 +30,7 @@ docker run --rm -v "$PWD":/work -w /work rhysd/actionlint
 docker run --rm -v "$PWD":/check --workdir /check mstruebing/editorconfig-checker:latest
 ```
 
-The VS Code Lint tasks run the same linters through the hub's `scripts/docker_lint.py`, fetched by [`hub_fetch_run.py`](./hub_fetch_run.py). Each container sees a read-only snapshot of the tracked and unignored files, with no network.
+The VS Code Lint tasks for these four linters run them through the hub's `scripts/docker_lint.py`, fetched by [`hub_fetch_run.py`](./hub_fetch_run.py). Each container sees a read-only snapshot of the tracked and unignored files, with no network. `Lint: EOL` and `Lint: Prose` run the repository gate's EOL check and the prose gate through the same helper, with no container. `Lint: Prose` reads the whole repository rather than the changed lines, so it reports findings the diff-scoped CI run below does not.
 
 **The repository gates run from a hub checkout**, because the prose and repository gates are hosted there rather than carried here. Both are read-only, and CI runs them on every pull request. Run them from this repository's root, since both resolve their target from the working directory. Point `hub` at a checkout of the fleet template fetched at `main`, and set `base` to the branch the work actually targets, since the prose gate reports only on lines changed against it and a promotion branch targets `main` rather than `develop`:
 
@@ -96,7 +96,7 @@ The library itself logs through an `ILoggerFactory` seam and configures no sink,
 - [`.editorconfig`](./.editorconfig): the per-file-type line endings and indentation plus the C# and ReSharper style block. The one repo-wide analyzer relaxation is written here with its reason. [`Utilities/.editorconfig`](./Utilities/.editorconfig) and [`UtilitiesTests/.editorconfig`](./UtilitiesTests/.editorconfig) narrow rules to their own project.
 - [`.gitattributes`](./.gitattributes): git's own line-ending enforcement, normalizing every detected text file to LF and holding the Windows command-script exceptions.
 - [`.markdownlint-cli2.jsonc`](./.markdownlint-cli2.jsonc), [`cspell.json`](./cspell.json), [`.editorconfig-checker.json`](./.editorconfig-checker.json): the document lint configuration the editor, the CLI, and CI share.
-- [`global.json`](./global.json): the SDK line and the `dotnet test` runner. It pins the .NET 10 SDK and rolls forward to its latest installed feature band. So a host with a newer SDK still builds with the one CI uses. It also puts the test run on Microsoft.Testing.Platform.
+- [`global.json`](./global.json): the SDK line and the `dotnet test` runner. It pins the .NET 10 SDK and rolls forward to its latest installed feature band. So a host with a newer SDK installed still builds on the .NET 10 line CI uses. It also puts the test run on Microsoft.Testing.Platform.
 - [`hub_fetch_run.py`](./hub_fetch_run.py): the hub helper the VS Code Lint tasks call. It fetches a hub script from `main` and runs it through uv.
 - [`.codecov.yml`](./.codecov.yml): coverage reporting, informational so a coverage delta never gates a pull request.
 - [`host-tools.json`](./host-tools.json): what a host needs beyond the fleet declaration, layered over it tighten-only.
